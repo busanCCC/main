@@ -4,6 +4,7 @@ import WorshipOrderSection from "../components/WorshipOrderSection";
 import MainSection from "../components/MainSection";
 import AnnouncementSection from "../components/AnnouncementSection";
 import NewsSection from "../components/NewsSection";
+import Header from "../components/ui/Header";
 
 export default function Main() {
   const [activeIndexes, setActiveIndexes] = useState<Set<string>>(
@@ -22,6 +23,7 @@ export default function Main() {
 
   return (
     <div className="w-full h-full overflow-y-auto">
+      <Header />
       <MainSection />
       <WorshipOrderSection
         activeIndexes={activeIndexes}
