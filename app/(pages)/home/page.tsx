@@ -16,7 +16,7 @@ export default function Home() {
             <button>자세히 보기</button>
           </div>
         </div>
-        <div className="pt-10">
+        <div className="pt-10 w-[50%]">
           <EventCarousel />
         </div>
       </main>

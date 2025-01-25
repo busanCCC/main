@@ -19,7 +19,7 @@ export default function EventCard({
   schedule,
 }: EventCardProps) {
   return (
-    <Card>
+    <Card className="max-h-64 flex-auto justify-items-center">
       <CardContent className="flex-col justify-items-center py-20 px-14 space-y-2">
         <CardDescription>
           {new Date(schedule).toLocaleDateString()}

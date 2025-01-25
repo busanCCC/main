@@ -7,10 +7,9 @@ import { useEffect, useState } from "react";
 export default function EventList() {
   const [events, setEvents] = useState([]);
 
-  // 클라이언트 측에서 데이터 fetch
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("/api/events"); // 로컬 API 호출
+      const res = await fetch("/api/events");
       const data = await res.json();
       setEvents(data);
     };
