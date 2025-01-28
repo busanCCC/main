@@ -24,17 +24,20 @@ let posts = [
   },
 ];
 
-// GET: 모든 글 반환
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
-  const post = posts.find((post) => post.id === parseInt(id));
+// GET: 모든 글 반환 또는 특정 ID로 글 조회
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id"); // 쿼리 매개변수에서 ID 가져오기
 
-  if (!post) {
-    return NextResponse.json({ message: "Post not found." }, { status: 404 });
+  if (id) {
+    const post = posts.find((post) => post.id === parseInt(id));
+    if (!post) {
+      return NextResponse.json({ message: "Post not found." }, { status: 404 });
+    }
+    return NextResponse.json(post, { status: 200 });
   }
+
+  // 모든 글 반환
   return NextResponse.json(posts, { status: 200 });
 }
 
@@ -95,10 +98,17 @@ export async function PUT(req: Request) {
 
 // DELETE: 글 삭제
 export async function DELETE(req: Request) {
-  const body = await req.json();
-  const { deleteId } = body;
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id"); // 쿼리 매개변수에서 ID 가져오기
 
-  posts = posts.filter((post) => post.id !== deleteId);
+  if (!id) {
+    return NextResponse.json(
+      { message: "ID is required for deletion." },
+      { status: 400 }
+    );
+  }
+
+  posts = posts.filter((post) => post.id !== parseInt(id));
 
   return NextResponse.json(
     { message: "Post deleted successfully." },

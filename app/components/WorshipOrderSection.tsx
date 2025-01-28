@@ -1,3 +1,4 @@
+"use client";
 import Message from "./worship-order/Message";
 import Praise from "./worship-order/Praise";
 import Prayer from "./worship-order/Prayer";

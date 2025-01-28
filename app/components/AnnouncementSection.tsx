@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import Announcement from "./announcement/Announcement";
 import CustomAnnouncement from "./announcement/CustomAnnouncement";

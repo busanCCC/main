@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import NewsYoutube from "./news/NewsYoutube";
 import Image from "next/image";
