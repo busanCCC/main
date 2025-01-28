@@ -23,7 +23,7 @@ export default function Message({
       <div className="font-light tracking-widest">메세지</div>
       <h3 className="gsans-bold text-2xl mt-2">{title}</h3>
       <MessagePassageDrawer passage={passage} words={words}>
-        <div className="font-light underline">{passage}</div>
+        <div className="font-light underline cursor-pointer">{passage}</div>
       </MessagePassageDrawer>
       <div className="font-extralight">{messenger}</div>
     </div>
