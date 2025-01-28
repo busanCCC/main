@@ -1,4 +1,14 @@
+import { Button } from "../ui/button";
 import MessagePassageDrawer from "./MessagePassageDrawer";
+import { UserSearch } from "lucide-react";
+
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/app/components/ui/hover-card";
+import { Avatar } from "@radix-ui/react-avatar";
+import { AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type MessageProps = {
   title: string;
@@ -25,7 +35,37 @@ export default function Message({
       <MessagePassageDrawer passage={passage} words={words}>
         <div className="font-light underline cursor-pointer">{passage}</div>
       </MessagePassageDrawer>
-      <div className="font-extralight">{messenger}</div>
+      <div className="font-extralight">
+        <p className="flex gap-1 items-center">
+          {messenger}
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button
+                variant="link"
+                size="icon"
+                onClick={() => console.log("clicked")}
+              >
+                <UserSearch />
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80">
+              <div className="flex justify-between">
+                <Avatar>
+                  <AvatarImage
+                    src="https://github.com/vercel.png"
+                    className="size-20"
+                  />
+                  <AvatarFallback>VC</AvatarFallback>
+                </Avatar>
+                <div className="space-y-1">
+                  <h4 className="text-sm font-semibold">정선원 간사</h4>
+                  <p className="text-sm">CCC 부산지구 대표간사</p>
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        </p>
+      </div>
     </div>
   );
 }

@@ -23,7 +23,7 @@ export default function EventCarousel() {
   // 클라이언트 측에서 데이터 fetch
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("/api/events"); // 로컬 API 호출
+      const res = await fetch("/api/posts"); // 로컬 API 호출
       const data: Event[] = await res.json();
       setEvents(data);
     };
@@ -36,7 +36,10 @@ export default function EventCarousel() {
       <Carousel className=" flex-col justify-center">
         <CarouselContent className="w-[350px] flex-row px-5">
           {events.map((event) => (
-            <CarouselItem key={event.id} className="w-[300px] px-4">
+            <CarouselItem
+              key={event.id}
+              className="w-[300px] px-4 transition delay-150 duration-300 ease-in-out lg:hover:translate-y-1 lg:hover:scale-110 hover:text-gray-400"
+            >
               <EventCard
                 title={event.title}
                 createdAt={event.createdAt}

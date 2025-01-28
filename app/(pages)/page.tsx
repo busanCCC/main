@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import WorshipOrderSection from "../components/WorshipOrderSection";
 import MainSection from "../components/MainSection";
@@ -6,7 +5,18 @@ import AnnouncementSection from "../components/AnnouncementSection";
 import NewsSection from "../components/NewsSection";
 import Header from "../components/ui/Header";
 
-export default function Main() {
+async function getPost(id: string) {
+  const res = await fetch(`http://localhost:3000/api/posts/${id}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch post");
+  }
+  return res.json();
+}
+export default async function Main({ params }: { params: { id: string } }) {
+  const post = await getPost(params.id);
+
   const [activeIndexes, setActiveIndexes] = useState<Set<string>>(
     new Set(["announcement", "order", "news"])
   );

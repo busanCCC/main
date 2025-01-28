@@ -19,12 +19,12 @@ export default function EventCard({
   schedule,
 }: EventCardProps) {
   return (
-    <Card className="max-h-64 flex-auto justify-items-center">
+    <Card className="max-h-64 flex-auto justify-items-center ">
       <CardContent className="flex-col justify-items-center py-20 px-14 space-y-2">
         <CardDescription>
           {new Date(schedule).toLocaleDateString()}
         </CardDescription>
-        <CardTitle className="w-[120px] text-center text-ellipsis">
+        <CardTitle className="w-[120px] text-center text-ellipsis ">
           {title}
         </CardTitle>
         <CardDescription>테스트</CardDescription>
