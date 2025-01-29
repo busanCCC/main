@@ -26,22 +26,17 @@ let posts = [
 
 // GET: 모든 글 반환 또는 특정 ID로 글 조회
 export async function GET(
-  req: Request,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
-  const url = new URL(req.url);
-  const id = url.searchParams.get("id"); // 쿼리 매개변수에서 ID 가져오기
+  const eventId = parseInt(params.id);
+  const post = posts.find((p) => p.id === eventId);
 
-  if (id) {
-    const post = posts.find((post) => post.id === parseInt(id));
-    if (!post) {
-      return NextResponse.json({ message: "Post not found." }, { status: 404 });
-    }
-    return NextResponse.json(post, { status: 200 });
+  if (!post) {
+    return NextResponse.json({ message: "Post not found" }, { status: 404 });
   }
 
-  // 모든 글 반환
-  return NextResponse.json(posts, { status: 200 });
+  return NextResponse.json(post);
 }
 
 // POST: 새 글 생성
