@@ -5,14 +5,29 @@ import Announcement from "./announcement/Announcement";
 import CustomAnnouncement from "./announcement/CustomAnnouncement";
 import { Button } from "./ui/button";
 import { SearchIcon } from "lucide-react";
+import { useState } from "react";
 
-export default function AnnouncementSection({
-  activeIndexes,
-  toggleAccordion,
-}: {
-  activeIndexes: Set<string>;
-  toggleAccordion: (index: string) => void;
-}) {
+type Props = {
+  content: string;
+};
+
+export default function AnnouncementSection({ content }: Props) {
+  const [activeIndexes, setActiveIndexes] = useState<Set<string>>(
+    new Set(["announcement"])
+  );
+
+  const toggleAccordion = (index: string) => {
+    setActiveIndexes((prevIndexes) => {
+      const newIndexes = new Set(prevIndexes);
+      if (newIndexes.has(index)) {
+        newIndexes.delete(index);
+      } else {
+        newIndexes.add(index);
+      }
+      return newIndexes;
+    });
+  };
+
   return (
     <div className="w-full">
       <div className="bg-zinc-100">

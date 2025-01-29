@@ -2,7 +2,7 @@
 import EventCarousel from "@/app/components/EventCarousel";
 import Footer from "@/app/components/Footer";
 import Header from "@/app/components/ui/Header";
-export default function Home() {
+export default function Main() {
   return (
     <div className="w-full h-full flex-row justify-items-center">
       <div className="w-full h-[45%] bg-slate-400 flex-row justify-items-center">

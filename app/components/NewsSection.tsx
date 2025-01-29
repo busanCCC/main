@@ -4,13 +4,29 @@ import { motion } from "framer-motion";
 import NewsYoutube from "./news/NewsYoutube";
 import Image from "next/image";
 import news2Img from "@/public/news2.png";
-export default function NewsSection({
-  activeIndexes,
-  toggleAccordion,
-}: {
-  activeIndexes: Set<string>;
-  toggleAccordion: (index: string) => void;
-}) {
+import { useState } from "react";
+
+type Props = {
+  createdAt: string;
+  schedule: string;
+};
+
+export default function NewsSection({ createdAt, schedule }: Props) {
+  const [activeIndexes, setActiveIndexes] = useState<Set<string>>(
+    new Set(["news"])
+  );
+
+  const toggleAccordion = (index: string) => {
+    setActiveIndexes((prevIndexes) => {
+      const newIndexes = new Set(prevIndexes);
+      if (newIndexes.has(index)) {
+        newIndexes.delete(index);
+      } else {
+        newIndexes.add(index);
+      }
+      return newIndexes;
+    });
+  };
   return (
     <div className="w-full">
       <div className="bg-stone-200 bg-texture">

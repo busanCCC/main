@@ -1,4 +1,7 @@
-export default function MainSection() {
+type MainSectionProps = {
+  title: string;
+};
+export default function MainSection({ title }: MainSectionProps) {
   return (
     <div
       className="w-full h-screen bg-stone-100 flex

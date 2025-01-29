@@ -8,6 +8,7 @@ import {
 import EventCard from "./EventCard";
 import { CardDescription, CardTitle } from "./ui/card";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 // Event 타입 정의
 type Event = {
@@ -40,22 +41,24 @@ export default function EventCarousel() {
               key={event.id}
               className="w-[300px] px-4 transition delay-150 duration-300 ease-in-out lg:hover:translate-y-1 lg:hover:scale-110 hover:text-gray-400"
             >
-              <EventCard
-                title={event.title}
-                createdAt={event.createdAt}
-                schedule={event.schedule}
-              />
-              <div className="pt-2 ">
-                <CardTitle className="text-[18px] font-thin">
-                  {event.title}
-                </CardTitle>
-                <CardDescription className="text-sm font-thin">
-                  일정 :{new Date(event.schedule).toLocaleString()}
-                </CardDescription>
-                <CardDescription>
-                  생성된 시간 : {new Date(event.createdAt).toLocaleString()}
-                </CardDescription>
-              </div>
+              <Link href={`event/${event.id}`}>
+                <EventCard
+                  title={event.title}
+                  createdAt={event.createdAt}
+                  schedule={event.schedule}
+                />
+                <div className="pt-2 ">
+                  <CardTitle className="text-[18px] font-thin">
+                    {event.title}
+                  </CardTitle>
+                  <CardDescription className="text-sm font-thin">
+                    일정 :{new Date(event.schedule).toLocaleString()}
+                  </CardDescription>
+                  <CardDescription>
+                    생성된 시간 : {new Date(event.createdAt).toLocaleString()}
+                  </CardDescription>
+                </div>
+              </Link>
             </CarouselItem>
           ))}
         </CarouselContent>
