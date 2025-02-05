@@ -1,7 +1,7 @@
 "use client";
 
-import AdminHeader from "@/app/components/Admin/AdminHeader";
-import { AdminNavigation } from "@/app/components/Admin/AdminNavigation";
+import AdminHeader from "@/app/components/admin/AdminHeader";
+import { AdminNavigation } from "@/app/components/admin/AdminNavigation";
 import Calendar from "@/app/components/Calendar";
 import EventCarousel from "@/app/components/EventCarousel";
 import { Button } from "@/app/components/ui/button";
@@ -64,7 +64,7 @@ export default function AdminPage() {
           <Plus />
         </Button>
       </div>
-      <div className="sm:min-w-[400px] md:min-w-[800px] h-full py-10">
+      <div className="sm:min-w-[400px] md:min-w-[800px] h-full py-4">
         {handleToggle ? <Calendar /> : <EventCarousel />}
       </div>
     </div>
