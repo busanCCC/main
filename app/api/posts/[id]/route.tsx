@@ -16,7 +16,7 @@ let posts = [
     id: 2,
     title: "2025 TST수련회 개회예배",
     passage: "요한복음 1장 2절",
-    messenger: "간사1",
+    messenger: "간사2",
     word: "2   그가 태초에 하나님과 함께 계셨고",
     content: "This is the second post",
     createdAt: new Date().toISOString(),
