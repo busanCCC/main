@@ -9,7 +9,7 @@ export default function EventList() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("/api/events");
+      const res = await fetch("/api/posts");
       const data = await res.json();
       setEvents(data);
     };
