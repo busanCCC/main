@@ -13,11 +13,13 @@ import {
 } from "@/app/components/ui/dialog";
 import { Separator } from "@/app/components/ui/separator";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function AdminPage() {
   const [handleToggle, setToggle] = useState(false);
-
+  const router = useRouter();
   return (
     <div className="h-full w-full justify-items-center">
       <div className="w-full">
@@ -54,6 +56,14 @@ export default function AdminPage() {
         </div>
       </div>
       <Separator className="my-4" />
+      <div className="flex w-full justify-end">
+        <Button
+          className="mx-3 size-10"
+          onClick={() => router.push("/admin-page/add-event")}
+        >
+          <Plus />
+        </Button>
+      </div>
       <div className="sm:min-w-[400px] md:min-w-[800px] h-full py-10">
         {handleToggle ? <Calendar /> : <EventCarousel />}
       </div>
