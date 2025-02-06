@@ -13,37 +13,38 @@ type Praise = {
   youtubeUrl: string; // 유튜브 링크
 };
 
-type CallToAction = {
-  text: string;
-  url?: string;
+type CallToAction = { // 버튼 생성시 
+  text: string; // 버튼 내용
+  url?: string; // 다이렉트 할 url
 };
 
-type Announcements = {
+type Announcements = { // 광고
   id: number;
-  title: string;
-  content?: string;
-  subContent?: string;
+  title: string; // 광고 제목
+  content?: string; // 광고 내용
+  subContent?: string; // 부가 설명 내용
   callToAction?: CallToAction[];
 };
 
 type Post = {
   id: number;
-  title: string;
-  subTitle?: string; // 🔹 선택 속성으로 추가
-  passage: string;
-  messenger: string;
-  word: string;
-  content?: string;
-  createdAt: string;
-  schedule: string;
+  title: string; // 이벤트 제목
+  subTitle?: string; // 이벤트 부제목 ex)~섬김채플, 기도회 등
+  passage: string; // 말씀 구절 ex) 요한복음 1장 1절 ~ 5절
+  messenger: string; // 메신저
+  word: string; // 말씀 본문
+  content?: string; // 내용
+  createdAt: string; // 글생성 타임스탬프
+  schedule: string; // 일정
   liveUrl?: string; // youtube 생방송 URL
-  openingPrayer?: string;
-  generalPrayer?: string;
-  offeringPrayer?: string;
-  testimonyPrayer?: string;
-  praises?: Praise[];
-  announcements?: Announcements[];
-  news?: NewsData[];
+  openingPrayer?: string; // 시작 기도
+  generalPrayer?: string; // 대표 기도
+  offeringPrayer?: string; // 헌금 기도
+  testimonyPrayer?: string; // 간증
+  testimonyTitle?: string; // 간증 제목
+  praises?: Praise[]; // 찬양 목록
+  announcements?: Announcements[]; // 광고 목록
+  news?: NewsData[]; // 부산지구 소식 목록
 };
 
 export let posts: Post[] = [
@@ -157,6 +158,7 @@ export let posts: Post[] = [
     openingPrayer: "권혜림 순장2",
     generalPrayer: "심민균 순장2",
     testimonyPrayer: "신종웅 순장2",
+    testimonyTitle: "TST 간증",
     offeringPrayer: "서혜나 순장2",
     praises: [
       {

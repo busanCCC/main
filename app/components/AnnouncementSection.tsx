@@ -16,6 +16,7 @@ type AnnouncementData = {
   id: number;
   title: string;
   content?: string;
+  subContent?: string;
   callToAction?: {
     text: string;
     url?: string;
@@ -93,6 +94,12 @@ export default function AnnouncementSection({ content, id }: Props) {
                 <div style={{ whiteSpace: "pre-wrap" }}>
                   {announcement.content}
                 </div>
+                {announcement.subContent && (
+                  <div style={{ whiteSpace: "pre-wrap", color: "#6B7280" }}>
+                    {announcement.subContent}
+                  </div>
+                )}
+
                 {announcement.callToAction &&
                   announcement.callToAction.length > 0 &&
                   announcement.callToAction.map((cta, idx) => (

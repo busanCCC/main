@@ -9,7 +9,8 @@ type Props = {
   openingPrayer?: string; // 🔹 시작 기도
   generalPrayer?: string; // 🔹 대표 기도
   offeringPrayer?: string; // 🔹 헌금 기도
-  testimonyPrayer?: string;
+  testimonyPrayer?: string; // 간증
+  testimonyTitle?: string; // 간증 제목
   passage?: string; // 🔹 메시지 관련 데이터
   messenger?: string;
   word?: string;
