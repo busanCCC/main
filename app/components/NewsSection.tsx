@@ -39,7 +39,6 @@ export default function NewsSection({ id }: Props) {
           throw new Error("Failed to fetch News");
         }
         const data = await response.json();
-        console.log("받아온 data", data);
         setNews(data.news || []);
       } catch (error: any) {
         setError(error.message);

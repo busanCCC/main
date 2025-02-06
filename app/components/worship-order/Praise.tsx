@@ -35,7 +35,6 @@ export default function Praise({ className = "", id }: PraiseProps) {
       }
     }
     fetchPraiseData();
-    console.log("받은 찬양 데이터", praiseList);
   }, [id]); // id가 변경될 때마다 새로 호출
 
   return (

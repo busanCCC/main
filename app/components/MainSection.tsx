@@ -8,6 +8,7 @@ export default function MainSection() {
   const [schedule, setSchedule] = useState<string | null>(null);
   const [title, setTitle] = useState<string | null>(null);
   const [subTitle, setSubTitle] = useState<string | null>(null);
+  const [place, setPlace] = useState<string | null>(null);
   useEffect(() => {
     async function fetchData() {
       if (!eventId) return;
@@ -15,10 +16,10 @@ export default function MainSection() {
       if (!response.ok) throw new Error(`API 요청 실패: ${response.status}`);
 
       const data = await response.json();
-      console.log("📜 받은 데이터:", data);
 
       setTitle(data.title);
       setSubTitle(data.subTitle);
+      setPlace(data.place);
       // 📌 UTC -> KST 변환 (UTC+9)
       const utcDate = new Date(data.schedule);
       const formattedSchedule = `${utcDate.getFullYear()}년 ${
@@ -37,7 +38,9 @@ export default function MainSection() {
       className="w-full h-screen bg-stone-100 flex
            justify-center items-center flex-col gap-2"
     >
-      <div className="font-thin text-center">{schedule}| 산성교회</div>
+      <div className="font-thin text-center">
+        {schedule} | {place}
+      </div>
       <div className="font-extrabold text-4xl gsans-bold text-center">
         {title}
       </div>
