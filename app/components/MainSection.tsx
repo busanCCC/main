@@ -3,16 +3,26 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-export default function MainSection() {
+export default function MainSection({ isAdmin }: { isAdmin: boolean }) {
   const { id: eventId } = useParams();
+
+  const eventIdString = Array.isArray(eventId) ? eventId[0] : eventId;
+
   const [schedule, setSchedule] = useState<string | null>(null);
   const [title, setTitle] = useState<string | null>(null);
   const [subTitle, setSubTitle] = useState<string | null>(null);
   const [place, setPlace] = useState<string | null>(null);
+
+  // 🔥 편집 상태 관리 (관리자만 사용)
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingSchedule, setIsEditingSchedule] = useState(false);
+  const [isEditingPlace, setIsEditingPlace] = useState(false);
+  const [isEditingSubTitle, setIsEditingSubTitle] = useState(false);
+
   useEffect(() => {
     async function fetchData() {
-      if (!eventId) return;
-      const response = await fetch(`/api/posts/${eventId}`);
+      if (!eventIdString) return;
+      const response = await fetch(`/api/posts/${eventIdString}`);
       if (!response.ok) throw new Error(`API 요청 실패: ${response.status}`);
 
       const data = await response.json();
@@ -31,20 +41,130 @@ export default function MainSection() {
       setSchedule(formattedSchedule);
     }
     fetchData();
-  }, [eventId]);
+  }, [eventIdString]);
+
+  // 🔄 서버로 데이터 업데이트 (관리자 전용)
+  async function updateEvent(field: string, value: string) {
+    if (!isAdmin || !eventIdString) return;
+
+    const data: { id: string; [key: string]: string } = { id: eventIdString };
+
+    if (field === "title") data.newTitle = value;
+    if (field === "subTitle") data.newSubTitle = value;
+    if (field === "schedule") data.newSchedule = value;
+    if (field === "place") data.newPlace = value;
+    const response = await fetch(`/api/posts/${eventIdString}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      console.error("업데이트 실패");
+    }
+  }
 
   return (
     <div
       className="w-full h-screen bg-stone-100 flex
            justify-center items-center flex-col gap-2"
     >
-      <div className="font-thin text-center">
-        {schedule} | {place}
-      </div>
-      <div className="font-extrabold text-4xl gsans-bold text-center">
-        {title}
-      </div>
-      <div className="font-medium text-xl text-center">{subTitle}</div>
+      {/* 🕒 일정 (관리자만 수정 가능) */}
+      {isAdmin && isEditingSchedule ? (
+        <input
+          type="datetime-local"
+          value={schedule ?? ""}
+          onChange={(e) => setSchedule(e.target.value)}
+          onBlur={() => {
+            setIsEditingSchedule(false);
+            if (schedule) updateEvent("schedule", schedule);
+          }}
+          onKeyDown={(e) => e.key === "Enter" && setIsEditingSchedule(false)}
+          className="border-b border-gray-400 focus:outline-none"
+          autoFocus
+        />
+      ) : (
+        <div
+          className={`font-thin text-center ${
+            isAdmin ? "cursor-pointer hover:text-blue-500" : ""
+          }`}
+          onClick={() => isAdmin && setIsEditingSchedule(true)}
+        >
+          {schedule} |{" "}
+          {isAdmin && isEditingPlace ? (
+            <input
+              type="text"
+              value={place ?? ""}
+              onChange={(e) => setPlace(e.target.value)}
+              onBlur={() => {
+                setIsEditingPlace(false);
+                if (place) updateEvent("place", place);
+              }}
+              onKeyDown={(e) => e.key === "Enter" && setIsEditingPlace(false)}
+              className="border-b border-gray-400 focus:outline-none"
+              autoFocus
+            />
+          ) : (
+            <span
+              className={`${
+                isAdmin ? "cursor-pointer hover:text-blue-500" : ""
+              }`}
+              onClick={() => isAdmin && setIsEditingPlace(true)}
+            >
+              {place}
+            </span>
+          )}
+        </div>
+      )}
+      {/* 🏷 제목 (관리자만 수정 가능) */}
+      {isAdmin && isEditingTitle ? (
+        <input
+          type="text"
+          value={title ?? ""}
+          onChange={(e) => setTitle(e.target.value)}
+          onBlur={() => {
+            setIsEditingTitle(false);
+            if (title) updateEvent("title", title);
+          }}
+          onKeyDown={(e) => e.key === "Enter" && setIsEditingTitle(false)}
+          className="text-4xl font-extrabold text-center border-b border-gray-400 focus:outline-none"
+          autoFocus
+        />
+      ) : (
+        <div
+          className={`font-extrabold text-4xl text-center ${
+            isAdmin ? "cursor-pointer hover:text-blue-500" : ""
+          }`}
+          onClick={() => isAdmin && setIsEditingTitle(true)}
+        >
+          {title}
+        </div>
+      )}
+      {/* 📌 부제목 (관리자만 수정 가능) */}
+      {isAdmin && isEditingSubTitle ? (
+        <input
+          type="text"
+          value={subTitle ?? ""}
+          onChange={(e) => setSubTitle(e.target.value)}
+          onBlur={() => {
+            setIsEditingSubTitle(false);
+            if (subTitle) updateEvent("subTitle", subTitle);
+          }}
+          onKeyDown={(e) => e.key === "Enter" && setIsEditingSubTitle(false)}
+          className="font-medium text-xl text-center border-b border-gray-400 focus:outline-none"
+          autoFocus
+        />
+      ) : (
+        <div
+          className={`font-medium text-xl text-center ${
+            isAdmin ? "cursor-pointer hover:text-blue-500" : ""
+          }`}
+          onClick={() => isAdmin && setIsEditingSubTitle(true)}
+        >
+          {subTitle}
+        </div>
+      )}
     </div>
   );
 }

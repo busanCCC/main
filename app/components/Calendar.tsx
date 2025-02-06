@@ -9,7 +9,6 @@ import {
 } from "./ui/dialog";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Button } from "./ui/button";
-import { Ghost } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type Schedule = {

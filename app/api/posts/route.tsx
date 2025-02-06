@@ -8,7 +8,16 @@ export async function GET() {
 // POST: 새 글 생성
 export async function POST(req: Request) {
   const body = await req.json();
-  const { title, subTitle, passage, messenger, word, content, schedule } = body;
+  const {
+    title,
+    place,
+    subTitle,
+    passage,
+    messenger,
+    word,
+    content,
+    schedule,
+  } = body;
 
   if (!title || !content) {
     return NextResponse.json(
@@ -21,6 +30,7 @@ export async function POST(req: Request) {
     id: posts.length + 1,
     title,
     subTitle,
+    place,
     passage,
     messenger,
     word,

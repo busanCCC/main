@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { posts, updatePosts } from "../data"; 
+import { posts, updatePosts } from "../data";
 // DELETE test 시 posts import 해제 후 밑에 주석바꾸기
 
 // GET: 모든 글 반환 또는 특정 ID로 글 조회
@@ -27,10 +27,11 @@ export async function PUT(req: Request) {
     id,
     newTitle,
     newSubTitle,
-    newPassage,
-    newMessenger,
-    newWord,
-    newContent,
+    newPlace,
+    // newPassage,
+    // newMessenger,
+    // newWord,
+    // newContent,
     newSchedule,
   } = body;
 
@@ -41,10 +42,11 @@ export async function PUT(req: Request) {
 
   if (newTitle) posts[postIndex].title = newTitle;
   if (newSubTitle) posts[postIndex].subTitle = newSubTitle;
-  if (newPassage) posts[postIndex].passage = newPassage;
-  if (newMessenger) posts[postIndex].messenger = newMessenger;
-  if (newWord) posts[postIndex].word = newWord;
-  if (newContent) posts[postIndex].content = newContent;
+  if (newPlace) posts[postIndex].place = newPlace;
+  // if (newPassage) posts[postIndex].passage = newPassage;
+  // if (newMessenger) posts[postIndex].messenger = newMessenger;
+  // if (newWord) posts[postIndex].word = newWord;
+  // if (newContent) posts[postIndex].content = newContent;
   if (newSchedule) posts[postIndex].schedule = newSchedule;
 
   updatePosts(posts);

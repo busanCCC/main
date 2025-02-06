@@ -21,7 +21,7 @@ export function AdminNavigation() {
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <Link href="/eventlist" legacyBehavior passHref>
+            <Link href="/admin-page" legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                 이벤트
               </NavigationMenuLink>
