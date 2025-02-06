@@ -4,6 +4,19 @@ type Praise = {
   youtubeUrl: string; // 유튜브 링크
 };
 
+type CallToAction = {
+  text: string;
+  url?: string;
+};
+
+type Announcements = {
+  id: number;
+  title: string;
+  content?: string;
+  subContent?: string;
+  callToAction?: CallToAction[];
+};
+
 type Post = {
   id: number;
   title: string;
@@ -20,6 +33,7 @@ type Post = {
   offeringPrayer?: string;
   testimonyPrayer?: string;
   praises?: Praise[];
+  announcements?: Announcements[];
 };
 
 export let posts: Post[] = [
@@ -53,6 +67,55 @@ export let posts: Post[] = [
         youtubeUrl: "https://www.youtube.com/watch?v=09BcoSNaxdk",
       },
     ],
+    announcements: [
+      {
+        id: 1,
+        title: "2024 금식수련회 가등록",
+        content:
+          "일시: 12월 26일~28일 | 장소: 감림산 기도원 \n 회비: 가등록 2만원/완등록 6만원",
+        callToAction: [
+          {
+            text: "등록하러가기",
+            url: "https://sites.google.com/kccc.org/2024fastpray/home",
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: "금식수련회 이벤트: 복권 이벤트",
+        content:
+          "금식수련회 기도회 노트가 오늘 배부됩니다! \n 기도 노트에 10개의 기도제목을 작성하시면 복권 1개!",
+      },
+      {
+        id: 3,
+        title: "홀리라이프 금식수련회 연합찬양팀 모집",
+        content:
+          "모집분야: 건반, 드럼, 베이스, 일렉기타, 싱어, 호산나\n연습일정: 12월 23~24일\n신청 및 문의사항 최기정순장(010-1234-5678)",
+      },
+      {
+        id: 4,
+        title: "예배 전 기도회",
+        content:
+          "시간: 오후 5시\n장소: 산성교회 지하 세미나실\n예배를 위해서 기도할 기도핑을 찾습니다!\n함께 예배를 세워가는 모두가 됩시다!",
+      },
+      {
+        id: 5,
+        title: "부산지구 리트릿",
+        content:
+          "시간: 오후 9시\n장소: 부산 CCC 비전센터\n기도로 무장하는 부산지구 C맨이 됩시다!",
+        subContent: "*졸업반 모임이 시작됩니다",
+      },
+      {
+        id: 6,
+        title: "다음주 채플은 '넘치는 교회'에서 진행합니다.",
+        callToAction: [
+          {
+            text: "넘치는 교회 위치 확인하기",
+            url: "https://naver.me/xOC1Cl3z",
+          },
+        ],
+      },
+    ],
   },
   {
     id: 2,
@@ -83,6 +146,55 @@ export let posts: Post[] = [
         id: 3,
         title: "주가 일하시네2",
         youtubeUrl: "https://www.youtube.com/watch?v=09BcoSNaxdk",
+      },
+    ],
+    announcements: [
+      {
+        id: 1,
+        title: "2025 TST 수련회 가등록",
+        content:
+          "일시: 2월 3일~8일 | 장소: 거제 썬트리팜 \n 회비: 가등록 3만원/완등록 15만원",
+        callToAction: [
+          {
+            text: "등록하러가기",
+            url: "https://sites.google.com/kccc.org/2025tst/home",
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: "금식수련회 이벤트: 복권 이벤트",
+        content:
+          "금식수련회 기도회 노트가 오늘 배부됩니다! \n 기도 노트에 10개의 기도제목을 작성하시면 복권 1개!",
+      },
+      {
+        id: 3,
+        title: "홀리라이프 금식수련회 연합찬양팀 모집",
+        content:
+          "모집분야: 건반, 드럼, 베이스, 일렉기타, 싱어, 호산나\n연습일정: 12월 23~24일\n신청 및 문의사항 최기정순장(010-1234-5678)",
+      },
+      {
+        id: 4,
+        title: "예배 전 기도회",
+        content:
+          "시간: 오후 5시\n장소: 산성교회 지하 세미나실\n예배를 위해서 기도할 기도핑을 찾습니다!\n함께 예배를 세워가는 모두가 됩시다!",
+      },
+      {
+        id: 5,
+        title: "부산지구 리트릿",
+        content:
+          "시간: 오후 9시\n장소: 부산 CCC 비전센터\n기도로 무장하는 부산지구 C맨이 됩시다!",
+        subContent: "*졸업반 모임이 시작됩니다",
+      },
+      {
+        id: 6,
+        title: "다음주 채플은 '넘치는 교회'에서 진행합니다.",
+        callToAction: [
+          {
+            text: "넘치는 교회 위치 확인하기",
+            url: "https://naver.me/xOC1Cl3z",
+          },
+        ],
       },
     ],
   },

@@ -63,9 +63,9 @@ export default async function EventPage({
         passage={postData.passage}
         messenger={postData.messenger}
         word={postData.word}
-        id = {id}
+        id={id}
       />
-      <AnnouncementSection content={postData.content} />
+      <AnnouncementSection content={postData.content} id={id} />
       <NewsSection
         createdAt={postData.createdAt}
         schedule={postData.schedule}
