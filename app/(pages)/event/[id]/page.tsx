@@ -66,10 +66,7 @@ export default async function EventPage({
         id={id}
       />
       <AnnouncementSection content={postData.content} id={id} />
-      <NewsSection
-        createdAt={postData.createdAt}
-        schedule={postData.schedule}
-      />
+      <NewsSection id={id} />
     </div>
   );
 }

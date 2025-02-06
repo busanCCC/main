@@ -1,3 +1,12 @@
+type NewsData = {
+  id: number;
+  title: string;
+  type: "video" | "image" | "text";
+  content: string; // 실제 내용 (영상 url, 이미지 url, 텍스트 등)
+  callToAction?: CallToAction[];
+  description?: string; // 부가설명 내용
+};
+
 type Praise = {
   id: number; // 찬양 index
   title: string; // 찬양 제목
@@ -34,6 +43,7 @@ type Post = {
   testimonyPrayer?: string;
   praises?: Praise[];
   announcements?: Announcements[];
+  news?: NewsData[];
 };
 
 export let posts: Post[] = [
@@ -116,6 +126,23 @@ export let posts: Post[] = [
         ],
       },
     ],
+    news: [
+      {
+        id: 1,
+        title: "금식수련회 총단 간증영상",
+        type: "video",
+        content: "cQcxxaMN87I",
+        description: "함께 가요 금식수련회",
+      },
+      {
+        id: 2,
+        title: "소원 총단과 함께하는 여호수아 기도회 아웃도어",
+        type: "image",
+        content: "https://picsum.photos/300",
+        description:
+          "부산지구 10월 31일 목요채플 광고입니다 !\n이번주 목요채플은 ❝ 여호수아 기도회 ❞ 로 함께합니다 ◡̈ \n소원총단 🐮☝🏻 과 함께하는 특별한 아웃도어 시간이 준비되어 있으니 많관부‼️",
+      },
+    ],
   },
   {
     id: 2,
@@ -195,6 +222,23 @@ export let posts: Post[] = [
             url: "https://naver.me/xOC1Cl3z",
           },
         ],
+      },
+    ],
+    news: [
+      {
+        id: 1,
+        title: "TST 홍보영상",
+        type: "video",
+        content: "cd7X-TGx7to",
+        description: '"말씀앞에서" 2025 TST 수련회',
+      },
+      {
+        id: 2,
+        title: "소원 총단과 함께하는 여호수아 기도회 아웃도어",
+        type: "image",
+        content: "https://picsum.photos/300",
+        description:
+          "부산지구 10월 31일 목요채플 광고입니다 !\n이번주 목요채플은 ❝ 여호수아 기도회 ❞ 로 함께합니다 ◡̈ \n소원총단 🐮☝🏻 과 함께하는 특별한 아웃도어 시간이 준비되어 있으니 많관부‼️",
       },
     ],
   },

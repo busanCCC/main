@@ -38,7 +38,6 @@ export default function AnnouncementSection({ content, id }: Props) {
           throw new Error("Failed to fetch announcements");
         }
         const data = await response.json();
-        console.log("받아온 data", data);
         setAnnouncements(data.announcements || []); // 받은 데이터를 상태에 저장
       } catch (error: any) {
         setError(error.message);
@@ -48,10 +47,6 @@ export default function AnnouncementSection({ content, id }: Props) {
     };
     fetchAnnouncements();
   }, [id]);
-
-  useEffect(() => {
-    console.log("받아온 광고", announcements); // announcements 상태가 업데이트된 후 출력
-  }, [announcements]); // announcements가 변경될 때마다 실행
 
   const toggleAccordion = (index: string) => {
     setActiveIndexes((prevIndexes) => {
