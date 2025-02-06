@@ -25,7 +25,7 @@ const Calendar = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/events"); // 로컬 API 호출
+        const res = await fetch("/api/posts"); // 로컬 API 호출
         if (!res.ok) throw new Error("Failed to fetch events");
         const data: Schedule[] = await res.json();
 
@@ -76,7 +76,6 @@ const Calendar = () => {
         plugins={[dayGridPlugin]}
         events={events} // events 속성에 데이터 전달
         locale="ko"
-        timeZone="Asia/Seoul"
         contentHeight={550}
         eventMouseEnter={handleEventMouseEnter} // 마우스 오버 핸들러
         eventMouseLeave={handleEventMouseLeave} // 마우스 아웃 핸들러
