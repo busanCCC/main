@@ -1,12 +1,3 @@
-type Prayer = {
-  prayType: "opening" | "offering" | "general" | "testimony"; // 시작 / 헌금 / 대표 / 간증
-  testimonyTitle?: string; // 간증 제목 (선택 사항)
-  member: {
-    name: string; // 기도자 이름
-    role: "순장" | "순원" | "간사"; // 역할 (순장, 순원, 간사)
-  };
-};
-
 type Praise = {
   id: number; // 찬양 index
   title: string; // 찬양 제목
@@ -24,7 +15,10 @@ type Post = {
   createdAt: string;
   schedule: string;
   liveUrl?: string; // youtube 생방송 URL
-  prayers?: Prayer[];
+  openingPrayer?: string;
+  generalPrayer?: string;
+  offeringPrayer?: string;
+  testimonyPrayer?: string;
   praises?: Praise[];
 };
 
@@ -39,25 +33,9 @@ export let posts: Post[] = [
     content: "This is the first post",
     createdAt: new Date().toISOString(),
     schedule: "2025-01-23T00:00Z",
-    prayers: [
-      {
-        prayType: "opening",
-        member: { name: "권혜림", role: "순장" },
-      },
-      {
-        prayType: "general",
-        member: { name: "심민균", role: "순장" },
-      },
-      {
-        prayType: "testimony",
-        testimonyTitle: "TST수련회 간증",
-        member: { name: "신종웅", role: "순장" },
-      },
-      {
-        prayType: "offering",
-        member: { name: "용용용", role: "순원" },
-      },
-    ],
+    openingPrayer: "권혜림 순장",
+    generalPrayer: "심민균 순장",
+    offeringPrayer: "서혜나 순장",
     praises: [
       {
         id: 1,
@@ -72,7 +50,7 @@ export let posts: Post[] = [
       {
         id: 3,
         title: "주가 일하시네",
-        youtubeUrl: "https://www.youtube.com/watch?v=M6MzmzXe7gQ",
+        youtubeUrl: "https://www.youtube.com/watch?v=09BcoSNaxdk",
       },
     ],
   },
@@ -86,26 +64,10 @@ export let posts: Post[] = [
     content: "This is the second post",
     createdAt: new Date().toISOString(),
     schedule: "2025-02-03T00:00Z",
-
-    prayers: [
-      {
-        prayType: "opening",
-        member: { name: "권혜림2", role: "순장" },
-      },
-      {
-        prayType: "general",
-        member: { name: "심민균2", role: "순장" },
-      },
-      {
-        prayType: "testimony",
-        testimonyTitle: "TST수련회 간증",
-        member: { name: "신종웅2", role: "순장" },
-      },
-      {
-        prayType: "offering",
-        member: { name: "용용용2", role: "순원" },
-      },
-    ],
+    openingPrayer: "권혜림 순장2",
+    generalPrayer: "심민균 순장2",
+    testimonyPrayer: "신종웅 순장2",
+    offeringPrayer: "서혜나 순장2",
     praises: [
       {
         id: 1,
@@ -120,7 +82,7 @@ export let posts: Post[] = [
       {
         id: 3,
         title: "주가 일하시네2",
-        youtubeUrl: "https://www.youtube.com/watch?v=M6MzmzXe7gQ",
+        youtubeUrl: "https://www.youtube.com/watch?v=09BcoSNaxdk",
       },
     ],
   },

@@ -8,7 +8,7 @@ import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
-  content: string;
+  content?: string;
 };
 
 export default function AnnouncementSection({ content }: Props) {

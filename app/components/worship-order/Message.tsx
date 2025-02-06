@@ -12,9 +12,9 @@ import { AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type MessageProps = {
   title: string;
-  passage: string;
-  messenger: string;
-  words: string;
+  passage?: string;
+  messenger?: string;
+  words?: string;
   className?: string;
 };
 

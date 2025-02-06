@@ -1,22 +1,57 @@
 import { Link2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type PraiseProps = {
   className?: string;
+  id: string;
 };
 
-export default function Praise({ className = "" }: PraiseProps) {
+type PraiseItem = {
+  title: string;
+  id: number;
+  youtubeUrl: string;
+};
+
+export default function Praise({ className = "", id }: PraiseProps) {
+  const [praiseList, setPraiseList] = useState<PraiseItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // API에서 praise 데이터를 불러오는 함수
+    async function fetchPraiseData() {
+      try {
+        const res = await fetch(`/api/posts/${id}`); // 동적 id 기반 API 호출
+        if (!res.ok) {
+          throw new Error("데이터를 불러오는데 실패했습니다.");
+        }
+        const data = await res.json();
+        // praise 데이터를 데이터 구조에 맞게 추출
+        setPraiseList(data.praises || []);
+      } catch (error) {
+        setError(error as string);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPraiseData();
+    console.log("받은 찬양 데이터", praiseList);
+  }, [id]); // id가 변경될 때마다 새로 호출
+
   return (
     <div
       className={`flex flex-col justify-center items-center gap-6 text-gray-800
     ${className}`}
     >
       <div className="font-light tracking-widest">찬양 LIST</div>
-      {praiseDummyData.map((praise, index) => (
+      {praiseList.map((praise, index) => (
         <div
           key={index}
           className="flex justify-center items-center gap-2 gsans-bold text-xl"
         >
-          <p>{praise.title}</p>
+          <p>
+            {praise.id}. {praise.title}
+          </p>
           <Link2
             size={20}
             className="cursor-pointer"

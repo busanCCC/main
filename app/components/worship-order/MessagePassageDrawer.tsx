@@ -22,8 +22,8 @@ import { useState } from "react";
 
 type MessagePassageDrawerProps = {
   children: React.ReactNode;
-  passage: string;
-  words: string;
+  passage?: string;
+  words?: string;
 };
 
 export default function MessagePassageDrawer({

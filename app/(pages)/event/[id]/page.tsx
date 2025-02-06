@@ -4,17 +4,24 @@ import MainSection from "../../../components/MainSection";
 import AnnouncementSection from "../../../components/AnnouncementSection";
 import NewsSection from "../../../components/NewsSection";
 import Header from "../../../components/ui/Header";
+import { PrayType } from "@/app/types/worship";
 
 type Post = {
+  id: number;
+  title: string;
+  subTitle?: string; // 🔹 선택 속성으로 추가
   passage: string;
   messenger: string;
   word: string;
-  title: string;
-  content: string;
+  content?: string;
   createdAt: string;
   schedule: string;
+  liveUrl?: string; // youtube 생방송 URL
+  openingPrayer?: string;
+  generalPrayer?: string;
+  offeringPrayer?: string;
+  testimonyPrayer?: string;
 };
-
 async function fetchPostData(id: string): Promise<Post | null> {
   const res = await fetch(`http://localhost:3000/api/posts/${id}`, {
     cache: "no-store",
@@ -49,9 +56,14 @@ export default async function EventPage({
       <Header />
       <MainSection />
       <WorshipOrderSection
+        openingPrayer={postData.openingPrayer}
+        generalPrayer={postData.generalPrayer}
+        offeringPrayer={postData.offeringPrayer}
+        testimonyPrayer={postData.testimonyPrayer}
         passage={postData.passage}
         messenger={postData.messenger}
         word={postData.word}
+        id = {id}
       />
       <AnnouncementSection content={postData.content} />
       <NewsSection

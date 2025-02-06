@@ -6,15 +6,25 @@ import Prayer from "./worship-order/Prayer";
 import { motion } from "framer-motion";
 
 type Props = {
-  passage: string;
-  messenger: string;
-  word: string;
+  openingPrayer?: string; // 🔹 시작 기도
+  generalPrayer?: string; // 🔹 대표 기도
+  offeringPrayer?: string; // 🔹 헌금 기도
+  testimonyPrayer?: string;
+  passage?: string; // 🔹 메시지 관련 데이터
+  messenger?: string;
+  word?: string;
+  id?: string;
 };
 
 export default function WorshipOrderSection({
+  openingPrayer,
+  generalPrayer,
+  offeringPrayer,
+  testimonyPrayer,
   passage,
   messenger,
   word,
+  id,
 }: Props) {
   const [activeIndexes, setActiveIndexes] = useState<Set<string>>(
     new Set(["order"])
@@ -53,13 +63,24 @@ export default function WorshipOrderSection({
           className="flex flex-col gap-28 justify-center items-center px-4 overflow-hidden"
         >
           {/* 시작기도 */}
-          <Prayer prayType="opening" prayer="권혜림 순장" className="mt-24" />
-
+          {openingPrayer && (
+            <Prayer
+              prayType="opening"
+              prayer={openingPrayer}
+              className="mt-24"
+            />
+          )}
           {/* 찬양 */}
-          <Praise />
+          <Praise id={id as string} />
 
           {/* 대표기도 */}
-          <Prayer prayType="general" prayer="심민균 순장" />
+          {generalPrayer && (
+            <Prayer prayType="general" prayer={generalPrayer} />
+          )}
+
+          {testimonyPrayer && (
+            <Prayer prayType="testimony" prayer={testimonyPrayer} />
+          )}
 
           {/* 메시지 */}
           <Message
@@ -70,7 +91,13 @@ export default function WorshipOrderSection({
           />
 
           {/* 헌금기도 */}
-          <Prayer prayType="offering" prayer="서혜나 순장" className="mb-24" />
+          {offeringPrayer && (
+            <Prayer
+              prayType="offering"
+              prayer={offeringPrayer}
+              className="mb-24"
+            />
+          )}
         </motion.div>
       </div>
     </div>
