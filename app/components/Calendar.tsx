@@ -8,6 +8,9 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { Button } from "./ui/button";
+import { Ghost } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type Schedule = {
   id: number;
@@ -68,6 +71,33 @@ const Calendar = () => {
     // 강조 효과 제거
     el.style.opacity = "1";
   };
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    if (!selectedEvent) return;
+
+    const confirmDelete = confirm("정말 삭제하시겠습니까?");
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`/api/posts/${selectedEvent.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("삭제 실패!");
+
+      alert("삭제되었습니다.");
+
+      // 삭제된 일정 제거 후 다이얼로그 닫기
+      setSchedules((prev) =>
+        prev.filter((event) => event.id !== selectedEvent.id)
+      );
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("삭제 오류:", error);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <div className="App">
@@ -92,6 +122,17 @@ const Calendar = () => {
               <p>
                 생성된 시간:
                 {new Date(selectedEvent.createdAt).toLocaleString("ko-KR")}
+              </p>
+              <p className="flex justify-center mt-4 gap-4">
+                <Button
+                  variant="outline"
+                  onClick={() => router.push(`/event/${selectedEvent.id}`)}
+                >
+                  수정하기
+                </Button>
+                <Button variant="destructive" onClick={handleDelete}>
+                  삭제하기
+                </Button>
               </p>
             </DialogDescription>
           </DialogContent>
