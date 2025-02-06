@@ -9,6 +9,9 @@ export async function GET(
   const eventId = parseInt(params.id);
   const post = posts.find((p) => p.id === eventId);
 
+  console.log("🔎 요청된 이벤트 ID:", eventId);
+  console.log("📋 posts 데이터:", post);
+
   if (!post) {
     return NextResponse.json({ message: "Post not found" }, { status: 404 });
   }
@@ -22,6 +25,7 @@ export async function PUT(req: Request) {
   const {
     id,
     newTitle,
+    newSubTitle,
     newPassage,
     newMessenger,
     newWord,
@@ -35,6 +39,7 @@ export async function PUT(req: Request) {
   }
 
   if (newTitle) posts[postIndex].title = newTitle;
+  if (newSubTitle) posts[postIndex].subTitle = newSubTitle;
   if (newPassage) posts[postIndex].passage = newPassage;
   if (newMessenger) posts[postIndex].messenger = newMessenger;
   if (newWord) posts[postIndex].word = newWord;

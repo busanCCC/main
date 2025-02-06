@@ -19,6 +19,8 @@ export default function Prayer({
         return "헌금 기도";
       case "general":
         return "대표 기도";
+      case "testimony":
+        return "간증";
     }
   };
 

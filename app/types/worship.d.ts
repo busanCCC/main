@@ -1,1 +1,1 @@
-export type PrayType = "opening" | "general" | "offering";
+export type PrayType = "opening" | "general" | "offering" | "testimony";

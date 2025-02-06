@@ -17,7 +17,8 @@ import { Input } from "@/app/components/ui/input";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  title: z.string().min(2, { message: "이벤트 명은 2글자 이상이어야합니다." }),
+  title: z.string().min(2, { message: "이벤트 명은 2글자 이상이어야 합니다." }),
+  subTitle: z.string().optional(), // 🔹 subTitle 추가 (선택 입력)
 });
 
 export default function EventForm() {
@@ -26,11 +27,14 @@ export default function EventForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
+      subTitle: "",
     },
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
     router.push(
-      `/admin-page/add-event/time?title=${encodeURIComponent(values.title)}`
+      `/admin-page/add-event/time?title=${encodeURIComponent(
+        values.title
+      )}&subTitle=${encodeURIComponent(values.subTitle || "")}`
     );
   }
 
@@ -38,7 +42,7 @@ export default function EventForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 flex-col"
+        className="space-y-4 flex-col"
       >
         <FormField
           control={form.control}
@@ -49,8 +53,21 @@ export default function EventForm() {
               <FormControl>
                 <Input
                   placeholder="OO월OO일 목요채플, 수련회 개회예배 등.."
-                  {...form.register("title")}
+                  {...field}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="subTitle"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>부제목</FormLabel>
+              <FormControl>
+                <Input placeholder="OO섬김 채플, 기도회 등.." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

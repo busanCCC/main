@@ -47,7 +47,7 @@ export default async function EventPage({
   return (
     <div className="w-full h-full overflow-y-auto">
       <Header />
-      <MainSection title={postData.title} />
+      <MainSection />
       <WorshipOrderSection
         passage={postData.passage}
         messenger={postData.messenger}

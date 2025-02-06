@@ -11,6 +11,7 @@ export default function EventTimePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const title = searchParams.get("title") || "";
+  const subTitle = searchParams.get("subTitle") || "";
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
 
@@ -19,15 +20,14 @@ export default function EventTimePage() {
       alert("날짜와 시간을 모두 입력해주세요.");
       return;
     }
-
-    const schedule = `${date}T${time}:00Z`;
-
+    const schedule = new Date(`${date}T${time}:00`).toISOString();
     try {
       const response = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
+          subTitle,
           schedule, // 'schedule' 값은 날짜/시간 형식이어야 합니다.
           passage: "q", // 빈 문자열이지만, 필수 파라미터로 처리될 수 있습니다.
           messenger: "q",
@@ -61,17 +61,16 @@ export default function EventTimePage() {
             className="justify-center"
             type="date"
             id="date"
-            placeholder={"날짜"}
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
         </div>
         <div className="py-2 pb-4">
+          <Label htmlFor="Time">시간</Label>
           <Input
             className="justify-center"
             type="time"
             id="time"
-            placeholder={`${(<Clock />)}시간`}
             value={time}
             onChange={(e) => setTime(e.target.value)}
           />
