@@ -10,6 +10,7 @@ import {
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/api/supabase";
 
 type Schedule = {
   id: number;
@@ -18,28 +19,47 @@ type Schedule = {
   schedule: string; // ISO 8601 형식의 날짜
 };
 
+type Event = {
+  id: number;
+  title: string;
+  createdAt: string;
+  schedule: string;
+};
+
 const Calendar = () => {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Schedule | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // 클라이언트 측에서 데이터 fetch
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchSchedules = async () => {
       try {
-        const res = await fetch("/api/posts"); // 로컬 API 호출
-        if (!res.ok) throw new Error("Failed to fetch events");
-        const data: Schedule[] = await res.json();
+        const { data, error } = await supabase.from("posts").select("*");
 
-        setSchedules(data);
-      } catch (error) {
-        console.error("Error fetching events:", error);
+        if (error) {
+          throw error;
+        }
+
+        setSchedules(data); // 데이터 받아오면 상태 업데이트
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message); // 에러 처리
+        setLoading(false); // 로딩 상태 종료
       }
     };
 
-    fetchData();
+    fetchSchedules();
   }, []);
 
+  if (loading) {
+    return <div>Loading...</div>; // 로딩 중일 때 표시
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>; // 에러 발생 시 표시
+  }
   // FullCalendar에 전달할 events 배열 생성
   const events = schedules.map((schedule) => ({
     title: schedule.title,
@@ -58,7 +78,6 @@ const Calendar = () => {
   // eventMouseEnter 핸들러
   const handleEventMouseEnter = (mouseEnterInfo: any) => {
     const { event, el } = mouseEnterInfo;
-    console.log("Mouse entered event:", event.title);
     // 이벤트 강조 효과 (예: 배경색 변경)
     el.style.opacity = "0.5";
   };
@@ -79,15 +98,17 @@ const Calendar = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`/api/posts/${selectedEvent.id}`, {
-        method: "DELETE",
-      });
+      // ✅ Supabase에서 해당 ID의 이벤트 삭제
+      const { error } = await supabase
+        .from("posts")
+        .delete()
+        .eq("id", selectedEvent.id);
 
-      if (!response.ok) throw new Error("삭제 실패!");
+      if (error) throw error;
 
       alert("삭제되었습니다.");
 
-      // 삭제된 일정 제거 후 다이얼로그 닫기
+      // ✅ UI에서도 삭제된 일정 제거 후 다이얼로그 닫기
       setSchedules((prev) =>
         prev.filter((event) => event.id !== selectedEvent.id)
       );
