@@ -13,7 +13,7 @@ type Props = {
 type NewsData = {
   id: number;
   title: string;
-  type: "video" | "image" | "text";
+  type: string;
   content: string | null; // 실제 내용 (영상 url, 이미지 url, 텍스트 등)
   description: string | null; // 부가설명 내용
 };
