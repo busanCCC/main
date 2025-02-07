@@ -6,6 +6,7 @@ import CustomAnnouncement from "./announcement/CustomAnnouncement";
 import { Button } from "./ui/button";
 import { SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { supabase } from "@/api/supabase";
 
 type Props = {
   content?: string;
@@ -15,12 +16,17 @@ type Props = {
 type AnnouncementData = {
   id: number;
   title: string;
-  content?: string;
-  subContent?: string;
-  callToAction?: {
-    text: string;
-    url?: string;
-  }[];
+  post_id: number | null;
+  content: string | null;
+  subContent: string | null;
+};
+
+type CallToAction = {
+  id: number;
+  announcement_id: number | null; // foreign key
+  news_id: number | null;
+  text: string;
+  url: string | null;
 };
 
 export default function AnnouncementSection({ content, id }: Props) {
@@ -30,24 +36,53 @@ export default function AnnouncementSection({ content, id }: Props) {
   const [announcements, setAnnouncements] = useState<AnnouncementData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [callToActions, setCallToActions] = useState<CallToAction[]>([]);
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const response = await fetch(`/api/posts/${id}`); // API URL
-        if (!response.ok) {
-          throw new Error("Failed to fetch announcements");
+        const { data: announcementsData, error: announcementsError } =
+          await supabase
+            .from("announcements")
+            .select("*")
+            .eq("post_id", parseInt(id));
+
+        if (announcementsError) {
+          throw error;
         }
-        const data = await response.json();
-        setAnnouncements(data.announcements || []); // 받은 데이터를 상태에 저장
-      } catch (error: any) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+
+        setAnnouncements(announcementsData); // 데이터 받아오면 상태 업데이트
+
+        const { data: callToActionData, error: callToActionError } =
+          await supabase
+            .from("calltoaction")
+            .select("*")
+            .in(
+              "announcement_id",
+              announcementsData.map((announcement) => announcement.id)
+            );
+
+        if (callToActionError) {
+          throw callToActionError;
+        }
+
+        setCallToActions(callToActionData); // callToAction 상태 업데이트
+
+        setLoading(false); // 로딩 상태 종료
+      } catch (err: any) {
+        setError(err.message); // 에러 처리
+        setLoading(false); // 로딩 상태 종료
       }
     };
     fetchAnnouncements();
-  }, [id]);
+  }, [id]); // id가 변경될 때마다 새로 호출
+
+  if (loading) {
+    return <div>Loading...</div>; // 로딩 중일 때 표시
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>; // 에러 발생 시 표시
+  }
 
   const toggleAccordion = (index: string) => {
     setActiveIndexes((prevIndexes) => {
@@ -84,37 +119,43 @@ export default function AnnouncementSection({ content, id }: Props) {
         >
           {/* 광고 */}
           {announcements.length > 0 ? (
-            announcements.map((announcement) => (
-              <CustomAnnouncement
-                key={announcement.id}
-                index={announcement.id}
-                title={announcement.title}
-                className="my-12"
-              >
-                <div style={{ whiteSpace: "pre-wrap" }}>
-                  {announcement.content}
-                </div>
-                {announcement.subContent && (
-                  <div style={{ whiteSpace: "pre-wrap", color: "#6B7280" }}>
-                    {announcement.subContent}
-                  </div>
-                )}
+            announcements.map((announcement) => {
+              // Filter callToActions for each announcement
+              const filteredCallToActions = callToActions.filter(
+                (cta) => cta.announcement_id === announcement.id
+              );
 
-                {announcement.callToAction &&
-                  announcement.callToAction.length > 0 &&
-                  announcement.callToAction.map((cta, idx) => (
-                    <Button
-                      key={idx}
-                      className="mt-2"
-                      onClick={() => {
-                        window.open(cta.url, "_blank");
-                      }}
-                    >
-                      {cta.text}
-                    </Button>
-                  ))}
-              </CustomAnnouncement>
-            ))
+              return (
+                <CustomAnnouncement
+                  key={announcement.id}
+                  index={announcement.id}
+                  title={announcement.title}
+                  className="my-12"
+                >
+                  <div style={{ whiteSpace: "pre-wrap" }}>
+                    {announcement.content}
+                  </div>
+                  {announcement.subContent && (
+                    <div style={{ whiteSpace: "pre-wrap", color: "#6B7280" }}>
+                      {announcement.subContent}
+                    </div>
+                  )}
+
+                  {filteredCallToActions.length > 0 &&
+                    filteredCallToActions.map((cta, idx) => (
+                      <Button
+                        key={idx}
+                        className="mt-2"
+                        onClick={() => {
+                          window.open(cta.url ?? "", "_blank");
+                        }}
+                      >
+                        {cta.text}
+                      </Button>
+                    ))}
+                </CustomAnnouncement>
+              );
+            })
           ) : (
             <div>No announcements available</div>
           )}
