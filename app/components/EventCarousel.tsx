@@ -33,7 +33,10 @@ export default function EventCarousel() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const { data, error } = await supabase.from("posts").select("*");
+        const { data, error } = await supabase
+          .from("posts")
+          .select("*")
+          .order("createdAt", { ascending: false });
 
         if (error) {
           throw error;

@@ -55,24 +55,32 @@ export default function MainSection({ isAdmin }: { isAdmin: boolean }) {
   async function updateEvent(field: string, value: string) {
     if (!isAdmin || !eventIdString) return;
 
-    const data: { id: string; [key: string]: string } = { id: eventIdString };
+    try {
+      // ✅ 업데이트할 데이터 생성
+      const updatedData: { [key: string]: string } = {};
+      if (field === "title") updatedData.title = value;
+      if (field === "subTitle") updatedData.subTitle = value;
+      if (field === "place") updatedData.place = value;
+      if (field === "schedule") {
+        updatedData.schedule = new Date(value).toISOString();
+      }
+      updatedData.createdAt = new Date().toISOString();
 
-    if (field === "title") data.newTitle = value;
-    if (field === "subTitle") data.newSubTitle = value;
-    if (field === "schedule") data.newSchedule = value;
-    if (field === "place") data.newPlace = value;
-    const response = await fetch(`/api/posts/`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      console.error("업데이트 실패");
+      // ✅ Supabase에서 데이터 업데이트
+      const { error } = await supabase
+        .from("posts") // 테이블 이름
+        .update(updatedData) // 수정할 데이터
+        .eq("id", parseInt(eventIdString)); // 특정 ID의 데이터만 수정
+
+      if (error) {
+        throw error;
+      }
+
+      console.log("✅ 업데이트 성공!");
+    } catch (error) {
+      console.error("업데이트 실패:", error);
     }
   }
-
   return (
     <div
       className="w-full h-screen bg-stone-100 flex
