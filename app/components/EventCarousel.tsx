@@ -9,6 +9,12 @@ import EventCard from "./EventCard";
 import { CardDescription, CardTitle } from "./ui/card";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { supabase } from "@/api/supabase";
+
+type Props = {
+  content?: string;
+  id: string;
+};
 
 // Event 타입 정의
 type Event = {
@@ -20,17 +26,37 @@ type Event = {
 
 export default function EventCarousel() {
   const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // 클라이언트 측에서 데이터 fetch
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("/api/posts"); // 로컬 API 호출
-      const data: Event[] = await res.json();
-      setEvents(data);
+    const fetchEvents = async () => {
+      try {
+        const { data, error } = await supabase.from("posts").select("*");
+
+        if (error) {
+          throw error;
+        }
+
+        setEvents(data); // 데이터 받아오면 상태 업데이트
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message); // 에러 처리
+        setLoading(false); // 로딩 상태 종료
+      }
     };
 
-    fetchData();
+    fetchEvents();
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // 로딩 중일 때 표시
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>; // 에러 발생 시 표시
+  }
 
   return (
     <div className="w-full">
