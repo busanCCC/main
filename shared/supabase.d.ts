@@ -112,7 +112,7 @@ export type Database = {
           id: number;
           post_id: number | null;
           title: string;
-          type: string | null;
+          type: "text" | "video" | "image";
         };
         Insert: {
           content?: string | null;
@@ -120,7 +120,7 @@ export type Database = {
           id?: number;
           post_id?: number | null;
           title: string;
-          type?: string | null;
+          type: "text" | "video" | "image";
         };
         Update: {
           content?: string | null;
@@ -128,7 +128,7 @@ export type Database = {
           id?: number;
           post_id?: number | null;
           title?: string;
-          type?: string | null;
+          type: "text" | "video" | "image";
         };
         Relationships: [
           {

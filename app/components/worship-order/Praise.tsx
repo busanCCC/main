@@ -74,26 +74,3 @@ export default function Praise({ className = "", id }: PraiseProps) {
     </div>
   );
 }
-
-const praiseDummyData = [
-  {
-    title: "01. 예수 사랑합니다",
-    youtubeUrl: "https://youtu.be/4LnEHg4nFuI?si=MnMilTBxZbAokU5Q",
-  },
-  {
-    title: "02. 주를 찾는 모든 자들이",
-    youtubeUrl: "https://youtu.be/Fi2waeWY18g?si=zQAe2mRs8OC_0q_D",
-  },
-  {
-    title: "03. 주를 바라보며",
-    youtubeUrl: "https://youtu.be/GoDfGIzFIyA?si=zZgRmWt-Kz_f8zdCA",
-  },
-  {
-    title: "04. 시선",
-    youtubeUrl: "https://youtu.be/xI920TT1fRY?si=qFklGXnHZN-2Jpi6",
-  },
-  {
-    title: "05. 나 가진재물 없으나",
-    youtubeUrl: "https://youtu.be/xfMR117MG_0?si=hi-0Fd5tIXIlF4uk",
-  },
-];

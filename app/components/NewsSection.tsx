@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import NewsYoutube from "./news/NewsYoutube";
 import Image from "next/image";
-import news2Img from "@/public/news2.png";
 import { useEffect, useState } from "react";
+import { supabase } from "@/api/supabase";
 
 type Props = {
   id: string;
@@ -14,13 +14,15 @@ type NewsData = {
   id: number;
   title: string;
   type: "video" | "image" | "text";
-  content: string; // 실제 내용 (영상 url, 이미지 url, 텍스트 등)
-  callToAction?: CallToAction[];
-  description?: string; // 부가설명 내용
+  content: string | null; // 실제 내용 (영상 url, 이미지 url, 텍스트 등)
+  description: string | null; // 부가설명 내용
 };
 type CallToAction = {
+  id: number;
+  announcement_id: number | null; // foreign key
+  news_id: number | null;
   text: string;
-  url?: string;
+  url: string | null;
 };
 
 export default function NewsSection({ id }: Props) {
@@ -30,24 +32,52 @@ export default function NewsSection({ id }: Props) {
   const [news, setNews] = useState<NewsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [callToActions, setCallToActions] = useState<CallToAction[]>([]);
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch(`/api/posts/${id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch News");
+        const { data: newsData, error: newsError } = await supabase
+          .from("news")
+          .select("*")
+          .eq("post_id", parseInt(id));
+
+        if (newsError) {
+          throw error;
         }
-        const data = await response.json();
-        setNews(data.news || []);
-      } catch (error: any) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+
+        setNews(newsData); // 데이터 받아오면 상태 업데이트
+
+        const { data: callToActionData, error: callToActionError } =
+          await supabase
+            .from("calltoaction")
+            .select("*")
+            .in(
+              "announcement_id",
+              newsData.map((news) => news.id)
+            );
+
+        if (callToActionError) {
+          throw callToActionError;
+        }
+
+        setCallToActions(callToActionData); // callToAction 상태 업데이트
+
+        setLoading(false); // 로딩 상태 종료
+      } catch (err: any) {
+        setError(err.message); // 에러 처리
+        setLoading(false); // 로딩 상태 종료
       }
     };
     fetchNews();
-  }, [id]);
+  }, [id]); // id가 변경될 때마다 새로 호출
+
+  if (loading) {
+    return <div>Loading...</div>; // 로딩 중일 때 표시
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>; // 에러 발생 시 표시
+  }
 
   const toggleAccordion = (index: string) => {
     setActiveIndexes((prevIndexes) => {
@@ -97,12 +127,12 @@ export default function NewsSection({ id }: Props) {
 
                 {/* 타입에 맞는 콘텐츠 렌더링 */}
                 {newsItem.type === "video" && (
-                  <NewsYoutube youtubeId={newsItem.content} />
+                  <NewsYoutube youtubeId={newsItem.content ?? ""} />
                 )}
 
                 {newsItem.type === "image" && (
                   <Image
-                    src={newsItem.content}
+                    src={newsItem.content ?? ""}
                     alt={newsItem.title}
                     priority
                     layout="intrinsic"
@@ -125,12 +155,12 @@ export default function NewsSection({ id }: Props) {
                 )}
 
                 {/* Call to Action */}
-                {newsItem.callToAction && newsItem.callToAction.length > 0 && (
+                {callToActions && callToActions.length > 0 && (
                   <div className="mt-4">
-                    {newsItem.callToAction.map((cta, idx) => (
+                    {callToActions.map((cta, idx) => (
                       <a
                         key={idx}
-                        href={cta.url}
+                        href={cta.url ?? ""}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-4 py-2 bg-blue-500 text-white rounded"
