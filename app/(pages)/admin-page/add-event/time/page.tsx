@@ -1,5 +1,6 @@
 "use client";
 
+import { supabase } from "@/api/supabase";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
@@ -21,33 +22,30 @@ export default function EventTimePage() {
       return;
     }
     const schedule = new Date(`${date}T${time}:00`).toISOString();
+
     try {
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const { data, error } = await supabase.from("posts").insert([
+        {
           title,
           subTitle,
-          schedule, // 'schedule' 값은 날짜/시간 형식이어야 합니다.
-          passage: "q", // 빈 문자열이지만, 필수 파라미터로 처리될 수 있습니다.
+          schedule, // 날짜/시간 ISO 형식
+          passage: "q", // 기본값 설정
           messenger: "q",
           word: "q",
-          content: "q", // content 필드도 빈 문자열로 보내고 있습니다.
-        }),
-      });
-      const result = await response.json();
-      if (!response.ok) {
-        const errorResult = await response.text();
-        throw new Error(`서버 오류: ${errorResult || "Unknown error"}`);
+          content: "q",
+        },
+      ]);
+
+      if (error) {
+        throw error;
       }
 
-      console.log("이벤트 추가 성공:", result);
+      console.log("이벤트 추가 성공:", data);
       router.push("/admin-page");
     } catch (error) {
       console.error("이벤트 추가 실패:", error);
     }
   }
-
   return (
     <div className="h-full flex-col m-4 space-y-10">
       <h1 className="cursor-pointer" onClick={() => router.back()}>
