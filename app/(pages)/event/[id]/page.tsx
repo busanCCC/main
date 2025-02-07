@@ -4,34 +4,22 @@ import MainSection from "../../../components/MainSection";
 import AnnouncementSection from "../../../components/AnnouncementSection";
 import NewsSection from "../../../components/NewsSection";
 import Header from "../../../components/ui/Header";
-import { PrayType } from "@/app/types/worship";
+import { supabase } from "@/api/supabase";
 
-type Post = {
-  id: number;
-  title: string;
-  subTitle?: string; // 🔹 선택 속성으로 추가
-  passage: string;
-  messenger: string;
-  word: string;
-  content?: string;
-  createdAt: string;
-  schedule: string;
-  liveUrl?: string; // youtube 생방송 URL
-  openingPrayer?: string;
-  generalPrayer?: string;
-  offeringPrayer?: string;
-  testimonyPrayer?: string;
-};
-async function fetchPostData(id: string): Promise<Post | null> {
-  const res = await fetch(`http://localhost:3000/api/posts/${id}`, {
-    cache: "no-store",
-  });
+async function fetchPostData(id: number) {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-  if (!res.ok) {
-    return null; // 이벤트가 없으면 null 반환
+  console.log("쿼리 결과 data:", data);
+  if (error) {
+    console.error("데이터를 가져오는 중 오류 발생:", error);
+    return null;
   }
-
-  return res.json();
+  console.log(id);
+  return data;
 }
 
 // ✅ Next.js에서 서버 컴포넌트에서 동적 라우팅을 위한 props
@@ -41,7 +29,8 @@ export default async function EventPage({
   params: { id: string };
 }) {
   const { id } = params;
-  const postData = await fetchPostData(id);
+  const numericId = parseInt(id, 10);
+  const postData = await fetchPostData(numericId);
 
   if (!postData) {
     return (
@@ -56,17 +45,20 @@ export default async function EventPage({
       <Header />
       <MainSection isAdmin={false} />
       <WorshipOrderSection
-        openingPrayer={postData.openingPrayer}
-        generalPrayer={postData.generalPrayer}
-        offeringPrayer={postData.offeringPrayer}
-        testimonyPrayer={postData.testimonyPrayer}
-        passage={postData.passage}
-        messenger={postData.messenger}
-        word={postData.word}
-        id={id}
+        openingPrayer={postData?.openingPrayer ?? ""}
+        generalPrayer={postData?.generalPrayer ?? ""}
+        offeringPrayer={postData?.offeringPrayer ?? ""}
+        testimonyPrayer={postData?.testimonyPrayer ?? ""}
+        passage={postData?.passage ?? ""}
+        messenger={postData?.messenger ?? ""}
+        word={postData?.word ?? ""}
+        id={numericId.toString()}
       />
-      <AnnouncementSection content={postData.content} id={id} />
-      <NewsSection id={id} />
+      <AnnouncementSection
+        content={postData?.content ?? ""}
+        id={numericId.toString()}
+      />
+      <NewsSection id={numericId.toString()} />
     </div>
   );
 }

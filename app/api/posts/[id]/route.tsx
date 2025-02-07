@@ -10,9 +10,6 @@ export async function GET(
   const eventId = parseInt(params.id);
   const post = posts.find((p) => p.id === eventId);
 
-  console.log("🔎 요청된 이벤트 ID:", eventId);
-  console.log("📋 posts 데이터:", post);
-
   if (!post) {
     return NextResponse.json({ message: "Post not found" }, { status: 404 });
   }
