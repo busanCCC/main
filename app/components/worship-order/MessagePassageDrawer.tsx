@@ -26,6 +26,8 @@ type MessagePassageDrawerProps = {
   words?: string;
 };
 
+
+
 export default function MessagePassageDrawer({
   children,
   passage,

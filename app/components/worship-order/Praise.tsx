@@ -1,3 +1,4 @@
+import { supabase } from "@/api/supabase";
 import { Link2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -9,7 +10,7 @@ type PraiseProps = {
 type PraiseItem = {
   title: string;
   id: number;
-  youtubeUrl: string;
+  youtubeurl: string | null;
 };
 
 export default function Praise({ className = "", id }: PraiseProps) {
@@ -21,21 +22,33 @@ export default function Praise({ className = "", id }: PraiseProps) {
     // API에서 praise 데이터를 불러오는 함수
     async function fetchPraiseData() {
       try {
-        const res = await fetch(`/api/posts/${id}`); // 동적 id 기반 API 호출
-        if (!res.ok) {
-          throw new Error("데이터를 불러오는데 실패했습니다.");
+        const { data, error } = await supabase
+          .from("praises")
+          .select("*")
+          .eq("post_id", parseInt(id));
+
+        if (error) {
+          throw error;
         }
-        const data = await res.json();
-        // praise 데이터를 데이터 구조에 맞게 추출
-        setPraiseList(data.praises || []);
-      } catch (error) {
-        setError(error as string);
-      } finally {
-        setLoading(false);
+
+        console.log("praises:", data);
+        setPraiseList(data); // 데이터 받아오면 상태 업데이트
+        setLoading(false); // 로딩 상태 종료
+      } catch (err: any) {
+        setError(err.message); // 에러 처리
+        setLoading(false); // 로딩 상태 종료
       }
     }
     fetchPraiseData();
   }, [id]); // id가 변경될 때마다 새로 호출
+
+  if (loading) {
+    return <div>Loading...</div>; // 로딩 중일 때 표시
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>; // 에러 발생 시 표시
+  }
 
   return (
     <div
@@ -43,9 +56,9 @@ export default function Praise({ className = "", id }: PraiseProps) {
     ${className}`}
     >
       <div className="font-light tracking-widest">찬양 LIST</div>
-      {praiseList.map((praise, index) => (
+      {praiseList.map((praise) => (
         <div
-          key={index}
+          key={praise.id}
           className="flex justify-center items-center gap-2 gsans-bold text-xl"
         >
           <p>
@@ -54,7 +67,7 @@ export default function Praise({ className = "", id }: PraiseProps) {
           <Link2
             size={20}
             className="cursor-pointer"
-            onClick={() => window.open(praise.youtubeUrl)}
+            onClick={() => window.open(praise.youtubeurl ?? "")}
           />
         </div>
       ))}
