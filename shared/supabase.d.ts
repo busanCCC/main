@@ -49,7 +49,7 @@ export type Database = {
           passage: string | null;
           place: string | null;
           praises: Json | null;
-          schedule: string | null;
+          schedule: string;
           subTitle: string | null;
           testimonyPrayer: string | null;
           testimonyTitle: string | null;
@@ -70,7 +70,7 @@ export type Database = {
           passage?: string | null;
           place?: string | null;
           praises?: Json | null;
-          schedule?: string | null;
+          schedule?: string;
           subTitle?: string | null;
           testimonyPrayer?: string | null;
           testimonyTitle?: string | null;
@@ -91,7 +91,7 @@ export type Database = {
           passage?: string | null;
           place?: string | null;
           praises?: Json | null;
-          schedule?: string | null;
+          schedule?: string;
           subTitle?: string | null;
           testimonyPrayer?: string | null;
           testimonyTitle?: string | null;

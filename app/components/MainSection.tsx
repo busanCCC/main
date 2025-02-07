@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { supabase } from "@/api/supabase";
 
 export default function MainSection({ isAdmin }: { isAdmin: boolean }) {
   const { id: eventId } = useParams();
@@ -22,15 +23,22 @@ export default function MainSection({ isAdmin }: { isAdmin: boolean }) {
   useEffect(() => {
     async function fetchData() {
       if (!eventIdString) return;
-      const response = await fetch(`/api/posts/${eventIdString}`);
-      if (!response.ok) throw new Error(`API 요청 실패: ${response.status}`);
 
-      const data = await response.json();
+      // Supabase에서 데이터를 가져옵니다.
+      const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("id", parseInt(eventIdString))
+        .single(); // 한 개의 데이터만 가져옵니다
+      if (error) {
+        console.error("데이터를 가져오는 중 오류 발생:", error);
+        return;
+      }
 
       setTitle(data.title);
       setSubTitle(data.subTitle);
       setPlace(data.place);
-      // 📌 UTC -> KST 변환 (UTC+9)
+
       const utcDate = new Date(data.schedule);
       const formattedSchedule = `${utcDate.getFullYear()}년 ${
         utcDate.getMonth() + 1
@@ -53,7 +61,7 @@ export default function MainSection({ isAdmin }: { isAdmin: boolean }) {
     if (field === "subTitle") data.newSubTitle = value;
     if (field === "schedule") data.newSchedule = value;
     if (field === "place") data.newPlace = value;
-    const response = await fetch(`/api/posts/${eventIdString}`, {
+    const response = await fetch(`/api/posts/`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
