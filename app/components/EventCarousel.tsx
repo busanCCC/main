@@ -64,11 +64,11 @@ export default function EventCarousel() {
   return (
     <div className="w-full">
       <Carousel className=" flex-col justify-center">
-        <CarouselContent className="w-[350px] flex-row px-5">
+        <CarouselContent className="w-[350px] flex-row">
           {events.map((event) => (
             <CarouselItem
               key={event.id}
-              className="w-[300px] px-4 transition delay-150 duration-300 ease-in-out lg:hover:translate-y-1 lg:hover:scale-110 hover:text-gray-400"
+              className="w-[300px] transition delay-150 duration-300 ease-in-out lg:hover:translate-y-1 lg:hover:scale-110 hover:text-gray-400"
             >
               <Link href={`event/${event.id}`}>
                 <EventCard

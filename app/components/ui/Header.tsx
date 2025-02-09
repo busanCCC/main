@@ -1,18 +1,13 @@
 "use client";
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-  NavigationMenuViewport,
 } from "@/app/components/ui/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import menu from "lucide-react";
 import MenuDrawer from "@/app/components/MenuDrawer";
 
 export default function Header() {
@@ -22,7 +17,7 @@ export default function Header() {
     <div className="w-full flex flex-col items-center">
       <div className="w-full flex justify-between items-center px-4 py-2">
         <NavigationMenu className="w-auto flex justify-start">
-          <span className="font-bold text-lg">title</span>
+          <span className="font-bold text-lg">부산지구 CCC</span>
         </NavigationMenu>
         <div className="lg:hidden">
           <NavigationMenu>
