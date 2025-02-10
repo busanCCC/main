@@ -10,6 +10,7 @@ import { CardDescription, CardTitle } from "./ui/card";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/api/supabase";
+import { Skeleton } from "./ui/skeleton";
 
 type Props = {
   content?: string;
@@ -54,7 +55,17 @@ export default function EventCarousel() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // 로딩 중일 때 표시
+    return (
+      <div className="w-full flex gap-2 overflow-clip">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div key={index} className="flex flex-col min-w-52 gap-1">
+            <Skeleton className="w-full h-52 rounded-2xl" />
+            <Skeleton className="w-1/2 h-3" />
+            <Skeleton className="w-full h-5" />
+          </div>
+        ))}
+      </div>
+    ); // 로딩 중일 때 표시
   }
 
   if (error) {
@@ -64,32 +75,38 @@ export default function EventCarousel() {
   return (
     <div className="w-full">
       <Carousel className=" flex-col justify-center">
-        <CarouselContent className="w-[350px] flex-row">
-          {events.map((event) => (
-            <CarouselItem
-              key={event.id}
-              className="w-[300px] transition delay-150 duration-300 ease-in-out lg:hover:translate-y-1 lg:hover:scale-110 hover:text-gray-400"
-            >
-              <Link href={`event/${event.id}`}>
-                <EventCard
-                  title={event.title}
-                  createdAt={event.createdAt}
-                  schedule={event.schedule}
-                />
-                <div className="pt-2 ">
-                  <CardTitle className="text-[18px] font-thin">
-                    {event.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm font-thin">
-                    일정 :{new Date(event.schedule).toLocaleString()}
-                  </CardDescription>
-                  <CardDescription>
-                    생성된 시간 : {new Date(event.createdAt).toLocaleString()}
-                  </CardDescription>
-                </div>
-              </Link>
-            </CarouselItem>
-          ))}
+        <CarouselContent className="w-fit flex-row">
+          {events.map((event) => {
+            const scheduleDate = new Date(event.schedule);
+            const formattedDate = scheduleDate.toLocaleDateString("ko-KR", {
+              month: "2-digit", // 두 자리 숫자로 월 표시 (ex: "02")
+              day: "2-digit", // 두 자리 숫자로 일 표시 (ex: "24")
+              weekday: "short", // 요일을 짧은 형식으로 표시 (ex: "월")
+            });
+            return (
+              <CarouselItem
+                key={event.id}
+                className="max-w-fit transition group"
+              >
+                <Link href={`event/${event.id}`}>
+                  <EventCard
+                    className="group-hover:scale-110 transform duration-300"
+                    title={event.title}
+                    createdAt={event.createdAt}
+                    schedule={event.schedule}
+                  />
+                  <div className="pt-2">
+                    <CardDescription className="text-[8px] font-thin">
+                      {formattedDate} 산성교회
+                    </CardDescription>
+                    <CardTitle className="text-md font-thin">
+                      {event.title}
+                    </CardTitle>
+                  </div>
+                </Link>
+              </CarouselItem>
+            );
+          })}
         </CarouselContent>
       </Carousel>
     </div>

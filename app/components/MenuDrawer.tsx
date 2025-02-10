@@ -16,7 +16,7 @@ import Link from "next/link";
 export default function MenuDrawer() {
   return (
     <Drawer>
-      <DrawerTrigger className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
+      <DrawerTrigger className="p-2">
         <Menu className="w-6 h-6 text-gray-800" />
       </DrawerTrigger>
       <DrawerContent>
