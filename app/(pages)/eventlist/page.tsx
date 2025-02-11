@@ -1,6 +1,6 @@
 "use client";
 
-import Footer from "@/app/components/Footer";
+import FooterSection from "@/app/components/FooterSection";
 import Header from "@/app/components/ui/Header";
 import { useEffect, useState } from "react";
 
@@ -26,7 +26,7 @@ export default function EventList() {
       <main className="w-full flex-row justify-items-center pb-10">
         <div className="text-3xl pt-32">이벤트 페이지</div>
       </main>
-      <Footer />
+      <FooterSection />
     </div>
   );
 }

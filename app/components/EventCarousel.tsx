@@ -74,8 +74,8 @@ export default function EventCarousel() {
 
   return (
     <div className="w-full">
-      <Carousel className=" flex-col justify-center">
-        <CarouselContent className="w-fit flex-row">
+      <Carousel className="flex-col justify-center">
+        <CarouselContent className="flex-row">
           {events.map((event) => {
             const scheduleDate = new Date(event.schedule);
             const formattedDate = scheduleDate.toLocaleDateString("ko-KR", {

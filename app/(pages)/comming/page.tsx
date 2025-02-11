@@ -1,5 +1,5 @@
 "use client";
-import Footer from "@/app/components/Footer";
+import Footer from "@/app/components/FooterSection";
 import Header from "@/app/components/ui/Header";
 
 export default function Comming() {

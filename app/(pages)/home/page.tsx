@@ -1,8 +1,9 @@
 "use client";
 import EventCarousel from "@/app/components/EventCarousel";
-import Footer from "@/app/components/Footer";
+import FooterSection from "@/app/components/FooterSection";
 import MainCarousel from "@/app/components/MainCarousel";
 import Header from "@/app/components/ui/Header";
+import { Cover } from "@/components/ui/cover";
 export default function Main() {
   return (
     <div className="w-full h-full flex flex-col justify-items-center max-w-8xl">
@@ -24,8 +25,15 @@ export default function Main() {
           </p>
           <EventCarousel />
         </div>
+
+        <div className="p-4 mt-20">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold max-w-7xl mx-auto text-center mt-6 relative z-20 py-6 bg-clip-text bg-gradient-to-b ">
+            미디어 팀에서 <Cover>빠른 속도로</Cover>
+            <br /> 새 컨텐츠를 추가중이에요..!
+          </h1>
+        </div>
       </main>
-      <Footer />
+      <FooterSection />
     </div>
   );
 }
