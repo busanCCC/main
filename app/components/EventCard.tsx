@@ -10,6 +10,7 @@ type EventCardProps = {
   createdAt: string;
   schedule: string;
   className?: string;
+  subTitle?: string;
 };
 
 export default function EventCard({
@@ -17,13 +18,20 @@ export default function EventCard({
   createdAt,
   schedule,
   className,
+  subTitle,
 }: EventCardProps) {
   return (
-    <Card className={`max-h-48 h-48 aspect-square flex-auto rounded-2xl`}>
-      <CardContent className={`flex flex-col justify-center items-center space-y-2 w-full h-full ${className}`}>
-        <CardDescription className="text-center line-clamp-1">{title}</CardDescription>
+    <Card
+      className={`sm:min-h-96 md:min-h-80 lg:min-h-80 h-56 aspect-square flex-auto rounded-2xl`}
+    >
+      <CardContent
+        className={`flex flex-col justify-center items-center space-y-2 w-full h-full ${className}`}
+      >
+        <CardDescription className="text-center line-clamp-1">
+          {title}
+        </CardDescription>
         <CardTitle className="text-center font-medium break-words">
-        인제대 섬김 채플
+          {subTitle}
         </CardTitle>
       </CardContent>
     </Card>

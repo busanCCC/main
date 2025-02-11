@@ -14,7 +14,7 @@ type Props = {
   passage?: string; // 🔹 메시지 관련 데이터
   messenger?: string;
   word?: string;
-  id?: string;
+  id: number;
 };
 
 export default function WorshipOrderSection({
@@ -72,7 +72,7 @@ export default function WorshipOrderSection({
             />
           )}
           {/* 찬양 */}
-          <Praise id={id as string} />
+          <Praise id={id} />
 
           {/* 대표기도 */}
           {generalPrayer && (

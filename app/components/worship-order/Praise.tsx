@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 type PraiseProps = {
   className?: string;
-  id: string;
+  id: number;
 };
 
 type PraiseItem = {
@@ -25,7 +25,7 @@ export default function Praise({ className = "", id }: PraiseProps) {
         const { data, error } = await supabase
           .from("praises")
           .select("*")
-          .eq("post_id", parseInt(id));
+          .eq("post_id", id);
 
         if (error) {
           throw error;

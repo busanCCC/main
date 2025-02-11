@@ -23,6 +23,8 @@ type Event = {
   title: string;
   createdAt: string;
   schedule: string;
+  subTitle: string | null;
+  place: string | null;
 };
 
 export default function EventCarousel() {
@@ -94,10 +96,11 @@ export default function EventCarousel() {
                     title={event.title}
                     createdAt={event.createdAt}
                     schedule={event.schedule}
+                    subTitle={event.subTitle ?? ""}
                   />
                   <div className="pt-2">
                     <CardDescription className="text-[8px] font-thin">
-                      {formattedDate} 산성교회
+                      {formattedDate} {event.place}
                     </CardDescription>
                     <CardTitle className="text-md font-thin">
                       {event.title}

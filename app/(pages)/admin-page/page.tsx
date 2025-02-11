@@ -4,6 +4,7 @@ import AdminHeader from "@/app/components/admin/AdminHeader";
 import { AdminNavigation } from "@/app/components/admin/AdminNavigation";
 import Calendar from "@/app/components/Calendar";
 import EventCarousel from "@/app/components/EventCarousel";
+import SetEventList from "@/app/components/set-event/setEventList";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -64,8 +65,8 @@ export default function AdminPage() {
           <Plus />
         </Button>
       </div>
-      <div className="sm:min-w-[400px] md:min-w-[800px] h-full py-4">
-        {handleToggle ? <Calendar /> : <EventCarousel />}
+      <div className="sm:min-w-[400px] md:min-w-[800px] h-full py-4 justify-items-center">
+        {handleToggle ? <Calendar /> : <SetEventList />}
       </div>
     </div>
   );

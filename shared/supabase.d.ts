@@ -142,19 +142,16 @@ export type Database = {
       }
       posts: {
         Row: {
-          announcements: Json | null
           content: string | null
           createdAt: string
           generalPrayer: string | null
           id: number
           liveUrl: string | null
           messenger: string | null
-          news: Json | null
           offeringPrayer: string | null
           openingPrayer: string | null
           passage: string | null
           place: string | null
-          praises: Json | null
           schedule: string
           subTitle: string | null
           testimonyPrayer: string | null
@@ -163,19 +160,16 @@ export type Database = {
           word: string | null
         }
         Insert: {
-          announcements?: Json | null
           content?: string | null
           createdAt?: string
           generalPrayer?: string | null
           id?: number
           liveUrl?: string | null
           messenger?: string | null
-          news?: Json | null
           offeringPrayer?: string | null
           openingPrayer?: string | null
           passage?: string | null
           place?: string | null
-          praises?: Json | null
           schedule: string
           subTitle?: string | null
           testimonyPrayer?: string | null
@@ -184,19 +178,16 @@ export type Database = {
           word?: string | null
         }
         Update: {
-          announcements?: Json | null
           content?: string | null
           createdAt?: string
           generalPrayer?: string | null
           id?: number
           liveUrl?: string | null
           messenger?: string | null
-          news?: Json | null
           offeringPrayer?: string | null
           openingPrayer?: string | null
           passage?: string | null
           place?: string | null
-          praises?: Json | null
           schedule?: string
           subTitle?: string | null
           testimonyPrayer?: string | null
