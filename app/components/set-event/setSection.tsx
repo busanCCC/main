@@ -7,6 +7,7 @@ import Prayer from "../worship-order/Prayer";
 import Praise from "../worship-order/Praise";
 import Message from "../worship-order/Message";
 import SetPrayerDialog from "./setPrayerDialog";
+import SetPraiseDialog from "./setPraiseDialog";
 
 type Event = {
   id: number;
@@ -26,7 +27,11 @@ type Event = {
   passage: string | null;
 };
 
-export default function SetSection({ id }: { id: number }) {
+type SetSectionProps = {
+  id: number;
+};
+
+export default function SetSection({ id }: SetSectionProps) {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +100,7 @@ export default function SetSection({ id }: { id: number }) {
           <SetPrayerDialog prayType="opening" prayer={event.openingPrayer} />
         )}
         {/* 찬양 */}
-        <Praise id={id} />
+        <SetPraiseDialog id={id} />
 
         {/* 대표기도 */}
         {event?.generalPrayer && (
@@ -122,7 +127,6 @@ export default function SetSection({ id }: { id: number }) {
           <SetPrayerDialog prayType="offering" prayer={event.offeringPrayer} />
         )}
       </motion.div>
-      
     </div>
   );
 }
