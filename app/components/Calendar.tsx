@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "./ui/dialog";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
@@ -17,13 +12,6 @@ type Schedule = {
   title: string;
   createdAt: string;
   schedule: string; // ISO 8601 형식의 날짜
-};
-
-type Event = {
-  id: number;
-  title: string;
-  createdAt: string;
-  schedule: string;
 };
 
 const Calendar = () => {

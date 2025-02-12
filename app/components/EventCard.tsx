@@ -7,16 +7,12 @@ import {
 
 type EventCardProps = {
   title: string;
-  createdAt: string;
-  schedule: string;
   className?: string;
   subTitle?: string;
 };
 
 export default function EventCard({
   title,
-  createdAt,
-  schedule,
   className,
   subTitle,
 }: EventCardProps) {

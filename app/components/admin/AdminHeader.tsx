@@ -1,25 +1,10 @@
 "use client";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-  NavigationMenuViewport,
-} from "@/app/components/ui/navigation";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import menu, { ChevronRight } from "lucide-react";
-import MenuDrawer from "@/app/components/MenuDrawer";
+import { NavigationMenu } from "@/app/components/ui/navigation";
+import { ChevronRight } from "lucide-react";
 import { AdminDropdown } from "./AdminDropdown";
 import { AdminAvatar } from "./AdminAvatar";
 
 export default function AdminHeader() {
-  const pathname = usePathname();
-  const isActive = (path: string): boolean => pathname === path;
   return (
     <div className="w-full flex flex-col items-center">
       <div className="w-full flex justify-between items-center px-4 py-4">

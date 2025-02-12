@@ -1,15 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Announcement from "./announcement/Announcement";
 import CustomAnnouncement from "./announcement/CustomAnnouncement";
 import { Button } from "./ui/button";
-import { SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/api/supabase";
 
 type Props = {
-  content?: string;
   id: string;
 };
 
@@ -29,7 +26,7 @@ type CallToAction = {
   url: string | null;
 };
 
-export default function AnnouncementSection({ content, id }: Props) {
+export default function AnnouncementSection({ id }: Props) {
   const [activeIndexes, setActiveIndexes] = useState<Set<string>>(
     new Set(["announcement"])
   );

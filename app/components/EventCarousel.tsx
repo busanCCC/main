@@ -2,8 +2,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/app/components/ui/carousel";
 import EventCard from "./EventCard";
 import { CardDescription, CardTitle } from "./ui/card";
@@ -11,11 +9,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/api/supabase";
 import { Skeleton } from "./ui/skeleton";
-
-type Props = {
-  content?: string;
-  id: string;
-};
 
 // Event 타입 정의
 type Event = {
@@ -102,8 +95,6 @@ export default function EventCarousel() {
                       testColors[index % 3]
                     }`}
                     title={event.title}
-                    createdAt={event.createdAt}
-                    schedule={event.schedule}
                     subTitle={event.subTitle ?? ""}
                   />
                   <div className="pt-2">

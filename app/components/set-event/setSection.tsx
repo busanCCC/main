@@ -3,8 +3,6 @@
 import { supabase } from "@/api/supabase";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import Prayer from "../worship-order/Prayer";
-import Praise from "../worship-order/Praise";
 import Message from "../worship-order/Message";
 import SetPrayerDialog from "./setPrayerDialog";
 import SetPraiseDialog from "./setPraiseDialog";

@@ -7,7 +7,6 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import Praise from "../worship-order/Praise";
-import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { Link2, Plus, X } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";

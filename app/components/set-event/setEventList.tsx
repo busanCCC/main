@@ -1,12 +1,11 @@
 "use client";
 
-import { Ellipsis, Icon, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import { useEffect, useState } from "react";
 import { supabase } from "@/api/supabase";
 import { Skeleton } from "../ui/skeleton";
 import EventCard from "../EventCard";
-import { Button } from "../ui/button";
 import SetEventDropdown from "./setEventDropdown";
 import Link from "next/link";
 
@@ -87,13 +86,11 @@ export default function SetEventList() {
           weekday: "short", // 요일을 짧은 형식으로 표시 (ex: "월")
         });
         return (
-          <div>
+          <div key={event.id}>
             <Link href={`/admin-page/set-event/${event.id}`}>
               <EventCard
                 className="transition-colors duration-200 rounded-2xl hover:bg-gray-200 cursor-pointer"
                 title={event.title}
-                createdAt={event.createdAt}
-                schedule={event.schedule}
               />
               <div className="mt-3 flex justify-between ">
                 <div className="flex-col truncate w-40">
