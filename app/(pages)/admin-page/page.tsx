@@ -3,7 +3,6 @@
 import AdminHeader from "@/app/components/admin/AdminHeader";
 import { AdminNavigation } from "@/app/components/admin/AdminNavigation";
 import Calendar from "@/app/components/Calendar";
-import EventCarousel from "@/app/components/EventCarousel";
 import SetEventList from "@/app/components/set-event/setEventList";
 import { Button } from "@/app/components/ui/button";
 import {
