@@ -20,15 +20,15 @@ export default function MenuDrawer() {
       </DrawerTrigger>
       <DrawerContent className="px-4 py-4 gap-3 font-light">
         <DialogTitle />
-        <Link href="/home" legacyBehavior passHref>
+        <Link href="/" legacyBehavior passHref>
           홈
         </Link>
-        <Link href="/eventlist" legacyBehavior passHref>
+        {/* <Link href="/eventlist" legacyBehavior passHref>
           이벤트
         </Link>
         <Link href="/comming" legacyBehavior passHref>
           오시는 길
-        </Link>
+        </Link> */}
         {/* <DrawerFooter>
           <DrawerClose>
             <Button variant="outline">Cancel</Button>

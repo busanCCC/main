@@ -39,6 +39,12 @@ const MainCarousel = () => {
       description: "하나님을 바라라 : PUT YOUR HOPE IN GOD",
       link: "https://youtu.be/gc2gtxQWu8o?si=Z4WIFtYoa8h7ipaQ",
     },
+    {
+      image: "/sowon.jpg",
+      title: "24-25 부산지구 소원총단 소개",
+      description: "“소”망되신 예수님께서\n“원”하시는 꿈을 향해",
+      link: "https://www.instagram.com/p/C_fEXYjxszo/",
+    },
   ];
 
   return (
@@ -85,7 +91,7 @@ const MainCarousel = () => {
                         {slide.title}
                       </motion.h1>
                       <motion.p
-                        className="text-sm sm:text-base md:text-lg lg:text-xl"
+                        className="text-sm sm:text-base md:text-lg lg:text-xl whitespace-pre-line"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.7, delay: 0.3 }}

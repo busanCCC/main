@@ -9,15 +9,20 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MenuDrawer from "@/app/components/MenuDrawer";
+import { Button } from "./button";
 
 export default function Header() {
   const pathname = usePathname();
   const isActive = (path: string): boolean => pathname === path;
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full flex items-center min-h-16">
       <div className="w-full flex justify-between items-center px-4 py-2">
         <NavigationMenu className="w-auto flex justify-start">
-          <span className="font-bold text-lg">부산지구 CCC</span>
+          <Link href="/">
+            <Button className="font-bold text-lg" variant="ghost">
+              부산지구 CCC
+            </Button>
+          </Link>
         </NavigationMenu>
         <div className="lg:hidden">
           <NavigationMenu>
@@ -38,7 +43,7 @@ export default function Header() {
                   홈
                 </NavigationMenuLink>
               </Link>
-              <Link href="/eventlist" legacyBehavior passHref>
+              {/* <Link href="/eventlist" legacyBehavior passHref>
                 <NavigationMenuLink
                   className={`${navigationMenuTriggerStyle()} ${
                     isActive("/eventlist") ? "font-bold" : ""
@@ -46,8 +51,8 @@ export default function Header() {
                 >
                   이벤트
                 </NavigationMenuLink>
-              </Link>
-              <Link href="/comming" legacyBehavior passHref>
+              </Link> */}
+              {/* <Link href="/comming" legacyBehavior passHref>
                 <NavigationMenuLink
                   className={`${navigationMenuTriggerStyle()} ${
                     isActive("/comming") ? "font-bold" : ""
@@ -55,7 +60,7 @@ export default function Header() {
                 >
                   오시는 길
                 </NavigationMenuLink>
-              </Link>
+              </Link> */}
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>

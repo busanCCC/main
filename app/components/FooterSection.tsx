@@ -7,9 +7,9 @@ export default function FooterSection() {
         <Footer className="pt-0">
           <FooterBottom className="mt-0 flex flex-col items-center gap-4 sm:flex-col md:flex-row">
             <div>© 2025 Busan CCC Media Team. All rights reserved</div>
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <a href="#">로그인</a> | <a href="#">회원가입</a>
-            </div>
+            </div> */}
           </FooterBottom>
         </Footer>
       </div>

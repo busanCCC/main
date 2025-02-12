@@ -60,8 +60,8 @@ export default function EventCarousel() {
     return (
       <div className="w-full flex gap-2 overflow-clip">
         {Array.from({ length: 5 }).map((_, index) => (
-          <div key={index} className="flex flex-col min-w-52 gap-1">
-            <Skeleton className="w-full h-52 rounded-2xl" />
+          <div key={index} className="flex flex-col min-w-80 md:min-w-92 gap-1">
+            <Skeleton className="w-full h-80 rounded-2xl" />
             <Skeleton className="w-1/2 h-3" />
             <Skeleton className="w-full h-5" />
           </div>
@@ -74,11 +74,17 @@ export default function EventCarousel() {
     return <div>Error: {error}</div>; // 에러 발생 시 표시
   }
 
+  const testColors = [
+    "bg-gradient-to-bl from-fuchsia-100 via-gray-100 to-white",
+    "bg-gradient-to-bl from-green-100 via-gray-100 to-white",
+    "bg-gradient-to-bl from-yellow-100 via-gray-100 to-white",
+  ];
+
   return (
     <div className="w-full">
       <Carousel className="flex-col justify-center">
         <CarouselContent className="flex-row">
-          {events.map((event) => {
+          {events.map((event, index) => {
             const scheduleDate = new Date(event.schedule);
             const formattedDate = scheduleDate.toLocaleDateString("ko-KR", {
               month: "2-digit", // 두 자리 숫자로 월 표시 (ex: "02")
@@ -92,7 +98,9 @@ export default function EventCarousel() {
               >
                 <Link href={`event/${event.id}`}>
                   <EventCard
-                    className="group-hover:scale-110 transform duration-300"
+                    className={`group-hover:scale-95 transform duration-300 ${
+                      testColors[index % 3]
+                    }`}
                     title={event.title}
                     createdAt={event.createdAt}
                     schedule={event.schedule}

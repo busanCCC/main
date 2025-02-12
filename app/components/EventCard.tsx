@@ -22,10 +22,10 @@ export default function EventCard({
 }: EventCardProps) {
   return (
     <Card
-      className={`sm:min-h-96 md:min-h-80 lg:min-h-80 h-56 aspect-square flex-auto rounded-2xl`}
+      className={`sm:min-h-80 md:min-h-92 lg:min-h-92 h-80 aspect-square flex-auto rounded-2xl ${className}`}
     >
       <CardContent
-        className={`flex flex-col justify-center items-center space-y-2 w-full h-full ${className}`}
+        className={`flex flex-col justify-center items-center space-y-2 w-full h-full`}
       >
         <CardDescription className="text-center line-clamp-1">
           {title}
