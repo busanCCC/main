@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     siteName: "CCC 부산지구",
     images: [
       {
-        url: "/busanccc.png",
+        url: "https://busanccc-swart.vercel.app/busanccc.png",
         width: 400,
         height: 400,
         alt: "CCC 부산지구 이미지",
