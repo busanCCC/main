@@ -1,6 +1,7 @@
 "use client";
 
 import EventForm from "@/app/components/EventForm";
+import { Button } from "@/app/components/ui/button";
 import { useRouter } from "next/navigation";
 
 export default function AddEventPage() {
