@@ -59,13 +59,13 @@ export default function Praise({ className = "", id }: PraiseProps) {
     ${className}`}
     >
       <div className="font-light tracking-widest">찬양 LIST</div>
-      {praiseList.map((praise) => (
+      {praiseList.map((praise, index) => (
         <div
           key={praise.id}
           className="flex justify-center items-center gap-2 gsans-bold text-xl"
         >
           <p>
-            {praise.id}. {praise.title}
+            {index + 1}. {praise.title}
           </p>
           <Link2
             size={20}

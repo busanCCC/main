@@ -120,7 +120,7 @@ export default function AnnouncementSection({ id }: Props) {
         >
           {/* 광고 */}
           {announcements.length > 0 ? (
-            announcements.map((announcement) => {
+            announcements.map((announcement, index) => {
               // Filter callToActions for each announcement
               const filteredCallToActions = callToActions.filter(
                 (cta) => cta.announcement_id === announcement.id
@@ -129,7 +129,7 @@ export default function AnnouncementSection({ id }: Props) {
               return (
                 <CustomAnnouncement
                   key={announcement.id}
-                  index={announcement.id}
+                  index={index + 1}
                   title={announcement.title}
                   className="my-12"
                 >

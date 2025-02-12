@@ -120,13 +120,13 @@ export default function NewsSection({ id }: Props) {
           ) : error ? (
             <div>{error}</div>
           ) : (
-            news.map((newsItem) => (
+            news.map((newsItem, index) => (
               <div
                 key={newsItem.id}
                 className="flex flex-col justify-center items-center gap-4 my-8 text-gray-800 w-full"
               >
                 <h3 className="gsans-bold text-2xl">
-                  #{newsItem.id}. {newsItem.title}
+                  #{index + 1}. {newsItem.title}
                 </h3>
 
                 {/* 타입에 맞는 콘텐츠 렌더링 */}
