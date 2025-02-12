@@ -28,14 +28,17 @@ export default function Praise({ className = "", id }: PraiseProps) {
           .eq("post_id", id);
 
         if (error) {
-          throw error;
+          throw new Error(error.message);
         }
 
-        console.log("praises:", data);
         setPraiseList(data); // 데이터 받아오면 상태 업데이트
         setLoading(false); // 로딩 상태 종료
-      } catch (err: any) {
-        setError(err.message); // 에러 처리
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message); // 에러 처리
+        } else {
+          setError("unknown Error");
+        }
         setLoading(false); // 로딩 상태 종료
       }
     }

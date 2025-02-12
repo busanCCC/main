@@ -52,12 +52,9 @@ export default async function EventPage({
         passage={postData?.passage ?? ""}
         messenger={postData?.messenger ?? ""}
         word={postData?.word ?? ""}
-        id={numericId.toString()}
+        id={numericId}
       />
-      <AnnouncementSection
-        content={postData?.content ?? ""}
-        id={numericId.toString()}
-      />
+      <AnnouncementSection id={numericId.toString()} />
       <NewsSection id={numericId.toString()} />
     </div>
   );

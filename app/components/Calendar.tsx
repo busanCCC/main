@@ -6,6 +6,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/api/supabase";
+import { EventClickArg, EventHoveringArg } from "@fullcalendar/core/index.js";
 
 type Schedule = {
   id: number;
@@ -15,6 +16,7 @@ type Schedule = {
 };
 
 const Calendar = () => {
+  const router = useRouter();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Schedule | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -27,13 +29,17 @@ const Calendar = () => {
         const { data, error } = await supabase.from("posts").select("*");
 
         if (error) {
-          throw error;
+          throw new Error(error.message);
         }
 
         setSchedules(data); // 데이터 받아오면 상태 업데이트
         setLoading(false);
-      } catch (err: any) {
-        setError(err.message); // 에러 처리
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message); // 에러 처리
+        } else {
+          setError("unknown Error");
+        }
         setLoading(false); // 로딩 상태 종료
       }
     };
@@ -56,28 +62,26 @@ const Calendar = () => {
     extendedProps: schedule,
   }));
 
-  const handleEventMouseClick = (mouseClickinfo: any) => {
+  const handleEventMouseClick = (mouseClickinfo: EventClickArg) => {
     const { event } = mouseClickinfo;
-    const clickedEvent = event.extendedProps;
-    setSelectedEvent(clickedEvent);
+    setSelectedEvent(event.extendedProps as Schedule);
     setIsDialogOpen(true);
   };
 
   // eventMouseEnter 핸들러
-  const handleEventMouseEnter = (mouseEnterInfo: any) => {
-    const { event, el } = mouseEnterInfo;
+  const handleEventMouseEnter = (mouseEnterInfo: EventHoveringArg) => {
+    const { el } = mouseEnterInfo;
     // 이벤트 강조 효과 (예: 배경색 변경)
     el.style.opacity = "0.5";
   };
 
   // eventMouseLeave 핸들러 (추가로 강조 해제 처리)
-  const handleEventMouseLeave = (mouseLeaveInfo: any) => {
+  const handleEventMouseLeave = (mouseLeaveInfo: EventHoveringArg) => {
     const { el } = mouseLeaveInfo;
 
     // 강조 효과 제거
     el.style.opacity = "1";
   };
-  const router = useRouter();
 
   const handleDelete = async () => {
     if (!selectedEvent) return;

@@ -20,7 +20,6 @@ type Event = {
 export default function SetEventList() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -31,13 +30,13 @@ export default function SetEventList() {
           .order("createdAt", { ascending: false });
 
         if (error) {
-          throw error;
+          throw new Error(error.message);
         }
 
         setEvents(data);
         setLoading(false);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        console.log("오류 발생:", err);
         setLoading(false);
       }
     };

@@ -60,12 +60,16 @@ export default function SetSection({ id }: SetSectionProps) {
           .eq("id", id)
           .single();
 
-        if (error) throw error;
+        if (error) throw new Error(error.message);
 
         setEvent(data); // 바로 객체를 저장
         setLoading(false);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("unknown Error");
+        }
         setLoading(false);
       }
     };
@@ -76,6 +80,8 @@ export default function SetSection({ id }: SetSectionProps) {
   return (
     <div className="w-full">
       <div>섹션별 입력</div>
+      {loading && <div>로딩 중 ...</div>}
+      {error && <div>오류 발생: {error}</div>}
       <div
         onClick={() => toggleAccordion("order")}
         className="cursor-pointer px-4 py-8 sticky top-0 z-10 flex justify-between bg-stone-200 bg-texture"
