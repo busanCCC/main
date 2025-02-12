@@ -16,11 +16,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import dynamic from "next/dynamic";
 
-const EventTimePage = dynamic(() => import("./add-event/time/page"), {
-  ssr: false,
-});
 export default function AdminPage() {
   const [handleToggle, setToggle] = useState(false);
   const router = useRouter();
@@ -70,7 +66,6 @@ export default function AdminPage() {
       </div>
       <div className="sm:min-w-[400px] md:min-w-[800px] h-full py-4 justify-items-center">
         {handleToggle ? <Calendar /> : <SetEventList />}
-        <EventTimePage />
       </div>
     </div>
   );
