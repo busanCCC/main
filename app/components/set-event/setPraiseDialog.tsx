@@ -35,7 +35,7 @@ export default function SetPraiseDialog({ id }: { id: number }) {
         i === index
           ? item.link
             ? { text: item.text } // link 속성을 삭제
-            : { ...item, link: "" } // link 속성 추가
+            : { ...item, link: item.link ? undefined : "" } // link 속성 추가
           : item
       )
     );
@@ -74,13 +74,13 @@ export default function SetPraiseDialog({ id }: { id: number }) {
                     </Button>
                   )}
                   {/* 링크 입력란 (필요할 때만 표시) */}
-                  {inputs.link !== undefined && (
+                  {/* {inputs.link !== undefined && (
                     <input
                       type="text"
                       className="border p-2 rounded-md w-full"
                       placeholder="링크 입력"
                     />
-                  )}
+                  )} */}
                 </div>
               ))}
               <Button
