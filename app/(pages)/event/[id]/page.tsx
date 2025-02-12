@@ -6,6 +6,8 @@ import NewsSection from "../../../components/NewsSection";
 import Header from "../../../components/ui/Header";
 import { supabase } from "@/api/supabase";
 
+
+
 async function fetchPostData(id: number) {
   const { data, error } = await supabase
     .from("posts")

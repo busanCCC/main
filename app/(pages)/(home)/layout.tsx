@@ -8,8 +8,24 @@ import type { Metadata } from "next";
 // });
 
 export const metadata: Metadata = {
-  title: "11/14 목요채플 순서",
-  description: "부산지구 CCC 목요채플 순서입니다.",
+  title: "부산지구 CCC 온라인 주보",
+  description:
+    "부산지구 CCC 온라인 주보 사이트. 채플 정보와 부산지구의 다양한 소식을 함께 나눠요.",
+  openGraph: {
+    title: "부산지구 CCC 온라인 주보",
+    description:
+      "부산지구 CCC 온라인 주보 사이트. 채플 정보와 부산지구의 다양한 소식을 함께 나눠요.",
+    url: "https://busanccc-swart.vercel.app",
+    siteName: "CCC 부산지구",
+    images: [
+      {
+        url: "/busanccc.png",
+        width: 400,
+        height: 400,
+        alt: "CCC 부산지구 이미지",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
