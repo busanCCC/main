@@ -35,24 +35,24 @@ export default function MessagePassageDrawer({
   const isDesktop = useIsDesktop();
   const [scrollY, setScrollY] = useState(0);
 
-  // ✅ 모달 열릴 때 현재 스크롤 위치 저장
-  const handleOpen = (value: boolean) => {
-    if (value) {
-      setScrollY(window.scrollY); // 현재 스크롤 위치 저장
-    } else {
-      window.scrollTo(0, scrollY); // 모달 닫을 때 원래 위치로 복원
-    }
-    setOpen(value);
-  };
-
-  // ✅ 스크롤 방지 처리 (모달이 열릴 때만)
+  // ✅ 모달이 열릴 때 스크롤 위치 저장 및 body 고정
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = "hidden"; // 스크롤 방지
+      setScrollY(window.scrollY); // 현재 스크롤 위치 저장
+      document.body.style.position = "fixed"; // ✅ 스크롤 멈추기
+      document.body.style.top = `-${window.scrollY}px`; // 현재 스크롤 위치 유지
+      document.body.style.width = "100%";
     } else {
-      document.body.style.overflow = "auto"; // 원래대로 복구
+      document.body.style.position = ""; // 원래대로 복구
+      document.body.style.top = "";
+      document.body.style.width = "";
+      window.scrollTo(0, scrollY); // ✅ 원래 위치로 복구
     }
   }, [open]);
+  // ✅ 상태 변경 함수 (모바일 & 데스크톱 모두 대응)
+  const handleOpen = (value: boolean) => {
+    setOpen(value);
+  };
 
   if (isDesktop) {
     return (
