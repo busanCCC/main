@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "https://busanccc-swart.vercel.app/busanccc.png",
-        width: 400,
-        height: 400,
+        width: 300,
+        height: 300,
         alt: "CCC 부산지구 이미지",
       },
     ],
