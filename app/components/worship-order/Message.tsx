@@ -9,6 +9,7 @@ import {
 } from "@/app/components/ui/hover-card";
 import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useState } from "react";
 
 type MessageProps = {
   title: string;
@@ -27,6 +28,7 @@ export default function Message({
   messengerInfo,
   className = "",
 }: MessageProps) {
+  const [isOpen, setIsOpen] = useState(false); // ✅ 상태 관리 추가
   return (
     <div
       className={`flex flex-col justify-center items-center text-gray-800
@@ -40,12 +42,12 @@ export default function Message({
       <div className="font-extralight">
         <p className="flex gap-1 items-center">
           {messenger}
-          <HoverCard>
+          <HoverCard open={isOpen} onOpenChange={setIsOpen}>
             <HoverCardTrigger asChild>
               <Button
                 variant="link"
                 size="icon"
-                onClick={() => console.log("clicked")}
+                onClick={() => setIsOpen((prev) => !prev)}
               >
                 <UserSearch />
               </Button>
