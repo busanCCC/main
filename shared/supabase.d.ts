@@ -147,11 +147,13 @@ export type Database = {
           generalPrayer: string | null
           id: number
           liveUrl: string | null
+          messageTitle: string | null
           messenger: string | null
           offeringPrayer: string | null
           openingPrayer: string | null
           passage: string | null
           place: string | null
+          placeUrl: string | null
           schedule: string
           subTitle: string | null
           testimonyPrayer: string | null
@@ -165,11 +167,13 @@ export type Database = {
           generalPrayer?: string | null
           id?: number
           liveUrl?: string | null
+          messageTitle?: string | null
           messenger?: string | null
           offeringPrayer?: string | null
           openingPrayer?: string | null
           passage?: string | null
           place?: string | null
+          placeUrl?: string | null
           schedule: string
           subTitle?: string | null
           testimonyPrayer?: string | null
@@ -183,11 +187,13 @@ export type Database = {
           generalPrayer?: string | null
           id?: number
           liveUrl?: string | null
+          messageTitle?: string | null
           messenger?: string | null
           offeringPrayer?: string | null
           openingPrayer?: string | null
           passage?: string | null
           place?: string | null
+          placeUrl?: string | null
           schedule?: string
           subTitle?: string | null
           testimonyPrayer?: string | null
@@ -225,6 +231,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      staff_info: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+          role: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+          role?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+          role?: string | null
+        }
+        Relationships: []
       }
       userinfo: {
         Row: {

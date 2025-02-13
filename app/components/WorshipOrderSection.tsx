@@ -13,6 +13,8 @@ type Props = {
   testimonyTitle?: string; // 간증 제목
   passage?: string; // 🔹 메시지 관련 데이터
   messenger?: string;
+  messageTitle?: string;
+  messengerInfo?: string;
   word?: string;
   id: number;
 };
@@ -24,6 +26,8 @@ export default function WorshipOrderSection({
   testimonyPrayer,
   passage,
   messenger,
+  messageTitle,
+  messengerInfo,
   word,
   id,
 }: Props) {
@@ -85,9 +89,10 @@ export default function WorshipOrderSection({
 
           {/* 메시지 */}
           <Message
-            title="한 밤중에 일어난 역사"
+            title={messageTitle as string}
             passage={passage}
             messenger={messenger}
+            messengerInfo={messengerInfo}
             words={word}
           />
 

@@ -14,6 +14,7 @@ type MessageProps = {
   title: string;
   passage?: string;
   messenger?: string;
+  messengerInfo?: string;
   words?: string;
   className?: string;
 };
@@ -23,6 +24,7 @@ export default function Message({
   passage,
   messenger,
   words,
+  messengerInfo,
   className = "",
 }: MessageProps) {
   return (
@@ -58,8 +60,8 @@ export default function Message({
                   <AvatarFallback>VC</AvatarFallback>
                 </Avatar>
                 <div className="space-y-1">
-                  <h4 className="text-sm font-semibold">정선원 간사</h4>
-                  <p className="text-sm">CCC 부산지구 대표간사</p>
+                  <h4 className="text-sm font-semibold">{messenger}</h4>
+                  <p className="text-sm">{messengerInfo}</p>
                 </div>
               </div>
             </HoverCardContent>
