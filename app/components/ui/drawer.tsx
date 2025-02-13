@@ -7,35 +7,13 @@ import { cn } from "@/lib/utils";
 
 const Drawer = ({
   shouldScaleBackground = true,
-  open,
-  onOpenChange,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) => {
-  const [scrollY, setScrollY] = React.useState(0);
-
-  React.useEffect(() => {
-    if (open) {
-      setScrollY(window.scrollY); // ✅ 현재 스크롤 위치 저장
-      document.body.style.position = "fixed"; // ✅ 스크롤 멈추기
-      document.body.style.top = `-${scrollY}px`; // ✅ 현재 위치 유지
-      document.body.style.width = "100%";
-    } else {
-      document.body.style.position = ""; // 원래대로 복구
-      document.body.style.top = "";
-      document.body.style.width = "";
-      window.scrollTo(0, scrollY); // ✅ 기존 위치로 이동
-    }
-  }, [open]);
-
-  return (
-    <DrawerPrimitive.Root
-      shouldScaleBackground={shouldScaleBackground}
-      open={open}
-      onOpenChange={onOpenChange}
-      {...props}
-    />
-  );
-};
+}: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
+  <DrawerPrimitive.Root
+    shouldScaleBackground={shouldScaleBackground}
+    {...props}
+  />
+);
 Drawer.displayName = "Drawer";
 
 const DrawerTrigger = DrawerPrimitive.Trigger;
