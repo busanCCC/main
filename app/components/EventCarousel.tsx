@@ -5,7 +5,7 @@ import {
 } from "@/app/components/ui/carousel";
 import EventCard from "./EventCard";
 import { CardDescription, CardTitle } from "./ui/card";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/api/supabase";
 import { Skeleton } from "./ui/skeleton";
@@ -25,49 +25,19 @@ export default function EventCarousel() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const [isDesktop, setIsDesktop] = useState<boolean>(true);
 
-  // 마우스 드래그 이벤트 핸들러
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!scrollAreaRef.current) return;
-    isDragging.current = true;
-    startX.current = e.pageX - scrollAreaRef.current.offsetLeft;
-    scrollLeft.current = scrollAreaRef.current.scrollLeft;
-  };
+  // 화면 크기 감지 (데스크톱 여부 체크)
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current || !scrollAreaRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollAreaRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1.5; // 스크롤 속도 조절
-    scrollAreaRef.current.scrollLeft = scrollLeft.current - walk;
-  };
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
 
-  const handleMouseUpOrLeave = () => {
-    isDragging.current = false;
-  };
-
-  // 터치 이벤트 핸들러 (모바일 지원)
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!scrollAreaRef.current) return;
-    isDragging.current = true;
-    startX.current = e.touches[0].clientX - scrollAreaRef.current.offsetLeft;
-    scrollLeft.current = scrollAreaRef.current.scrollLeft;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging.current || !scrollAreaRef.current) return;
-    const x = e.touches[0].clientX - scrollAreaRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1.5;
-    scrollAreaRef.current.scrollLeft = scrollLeft.current - walk;
-  };
-
-  const handleTouchEnd = () => {
-    isDragging.current = false;
-  };
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   // 클라이언트 측에서 데이터 fetch
   useEffect(() => {
@@ -123,55 +93,88 @@ export default function EventCarousel() {
 
   return (
     <div className="w-full">
-      <ScrollArea
-        ref={scrollAreaRef}
-        className="w-full whitespace-nowrap overflow-x-auto cursor-grab active:cursor-grabbing"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUpOrLeave}
-        onMouseLeave={handleMouseUpOrLeave}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <Carousel className="pl-1 flex-col justify-center">
-          <CarouselContent className="flex-row sm:justify-start">
-            {events.map((event, index) => {
-              const scheduleDate = new Date(event.schedule);
-              const formattedDate = scheduleDate.toLocaleDateString("ko-KR", {
-                month: "2-digit", // 두 자리 숫자로 월 표시 (ex: "02")
-                day: "2-digit", // 두 자리 숫자로 일 표시 (ex: "24")
-                weekday: "short", // 요일을 짧은 형식으로 표시 (ex: "월")
-              });
-              return (
-                <CarouselItem
-                  key={event.id}
-                  className="max-w-fit transition group"
-                >
-                  <Link href={`event/${event.id}`} passHref prefetch={true}>
-                    <EventCard
-                      className={`group-hover:scale-95 transform duration-300 ${
-                        testColors[index % 3]
-                      }`}
-                      title={event.title}
-                      subTitle={event.subTitle ?? ""}
-                    />
-                    <div className="pt-2">
-                      <CardDescription className="text-[8px] font-thin">
-                        {formattedDate} {event.place}
-                      </CardDescription>
-                      <CardTitle className="text-md font-thin">
-                        {event.title}
-                      </CardTitle>
-                    </div>
-                  </Link>
-                </CarouselItem>
-              );
-            })}
-          </CarouselContent>
-        </Carousel>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      {isDesktop ? (
+        /** 🖥️ 데스크톱일 때 ScrollArea 적용 */
+        <ScrollArea className="w-full whitespace-nowrap">
+          <Carousel className="pl-1 flex-col justify-center">
+            <CarouselContent className="flex-row sm:justify-start">
+              {events.map((event, index) => {
+                const scheduleDate = new Date(event.schedule);
+                const formattedDate = scheduleDate.toLocaleDateString("ko-KR", {
+                  month: "2-digit", // 두 자리 숫자로 월 표시 (ex: "02")
+                  day: "2-digit", // 두 자리 숫자로 일 표시 (ex: "24")
+                  weekday: "short", // 요일을 짧은 형식으로 표시 (ex: "월")
+                });
+                return (
+                  <CarouselItem
+                    key={event.id}
+                    className="max-w-fit transition group"
+                  >
+                    <Link href={`event/${event.id}`} passHref prefetch={true}>
+                      <EventCard
+                        className={`group-hover:scale-95 transform duration-300 ${
+                          testColors[index % 3]
+                        }`}
+                        title={event.title}
+                        subTitle={event.subTitle ?? ""}
+                      />
+                      <div className="pt-2">
+                        <CardDescription className="text-[8px] font-thin">
+                          {formattedDate} {event.place}
+                        </CardDescription>
+                        <CardTitle className="text-md font-thin">
+                          {event.title}
+                        </CardTitle>
+                      </div>
+                    </Link>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+          </Carousel>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      ) : (
+        /** 📱 모바일일 때 일반 div로 처리 */
+        <div className="w-full overflow-x-auto whitespace-nowrap">
+          <Carousel className="pl-1 flex-col justify-center">
+            <CarouselContent className="flex-row sm:justify-start">
+              {events.map((event, index) => {
+                const scheduleDate = new Date(event.schedule);
+                const formattedDate = scheduleDate.toLocaleDateString("ko-KR", {
+                  month: "2-digit",
+                  day: "2-digit",
+                  weekday: "short",
+                });
+                return (
+                  <CarouselItem
+                    key={event.id}
+                    className="max-w-fit transition group"
+                  >
+                    <Link href={`event/${event.id}`} passHref prefetch={true}>
+                      <EventCard
+                        className={`group-hover:scale-95 transform duration-300 ${
+                          testColors[index % 3]
+                        }`}
+                        title={event.title}
+                        subTitle={event.subTitle ?? ""}
+                      />
+                      <div className="pt-2">
+                        <CardDescription className="text-[8px] font-thin">
+                          {formattedDate} {event.place}
+                        </CardDescription>
+                        <CardTitle className="text-md font-thin">
+                          {event.title}
+                        </CardTitle>
+                      </div>
+                    </Link>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+          </Carousel>
+        </div>
+      )}
     </div>
   );
 }
