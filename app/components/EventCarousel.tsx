@@ -64,7 +64,7 @@ export default function EventCarousel() {
           </div>
         ))}
       </div>
-    ); // 로딩 중일 때 표시
+    ); 
   }
 
   if (error) {
