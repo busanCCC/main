@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 
 export default function CopyAccountButton() {
@@ -6,7 +7,7 @@ export default function CopyAccountButton() {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(accountNumber);
-      alert("복사완료!");
+      toast("복사 완료!");
     } catch (error) {
       console.error("복사 실패:", error);
     }
