@@ -4,6 +4,7 @@ import Message from "./worship-order/Message";
 import Praise from "./worship-order/Praise";
 import Prayer from "./worship-order/Prayer";
 import { motion } from "framer-motion";
+import CopyAccountButton from "./worship-order/copyAccountButton";
 
 type Props = {
   openingPrayer?: string; // 🔹 시작 기도
@@ -65,7 +66,7 @@ export default function WorshipOrderSection({
             opacity: activeIndexes.has("order") ? 1 : 0,
           }}
           transition={{ duration: 0.3 }}
-          className="flex flex-col gap-28 justify-center items-center px-4 overflow-hidden"
+          className="flex flex-col gap-24 justify-center items-center px-4 overflow-hidden"
         >
           {/* 시작기도 */}
           {openingPrayer && (
@@ -101,9 +102,10 @@ export default function WorshipOrderSection({
             <Prayer
               prayType="offering"
               prayer={offeringPrayer}
-              className="mb-24"
+              className="mb-2"
             />
           )}
+          <CopyAccountButton />
         </motion.div>
       </div>
     </div>
