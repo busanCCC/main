@@ -80,7 +80,7 @@ export default function EventCarousel() {
   return (
     <div className="w-full">
       <Carousel className="pl-1 flex-col justify-center">
-        <CarouselContent className="flex-row justify-center">
+        <CarouselContent className="flex-row md:justify-center sm:justify-start">
           {events.map((event, index) => {
             const scheduleDate = new Date(event.schedule);
             const formattedDate = scheduleDate.toLocaleDateString("ko-KR", {
