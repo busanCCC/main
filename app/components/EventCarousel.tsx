@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/api/supabase";
 import { Skeleton } from "./ui/skeleton";
+import { ScrollArea, ScrollBar } from "./ui/scrollArea";
 
 // Event 타입 정의
 type Event = {
@@ -79,42 +80,45 @@ export default function EventCarousel() {
 
   return (
     <div className="w-full">
-      <Carousel className="pl-1 flex-col justify-center">
-        <CarouselContent className="flex-row md:justify-center sm:justify-start">
-          {events.map((event, index) => {
-            const scheduleDate = new Date(event.schedule);
-            const formattedDate = scheduleDate.toLocaleDateString("ko-KR", {
-              month: "2-digit", // 두 자리 숫자로 월 표시 (ex: "02")
-              day: "2-digit", // 두 자리 숫자로 일 표시 (ex: "24")
-              weekday: "short", // 요일을 짧은 형식으로 표시 (ex: "월")
-            });
-            return (
-              <CarouselItem
-                key={event.id}
-                className="max-w-fit transition group"
-              >
-                <Link href={`event/${event.id}`} passHref prefetch={true}>
-                  <EventCard
-                    className={`group-hover:scale-95 transform duration-300 ${
-                      testColors[index % 3]
-                    }`}
-                    title={event.title}
-                    subTitle={event.subTitle ?? ""}
-                  />
-                  <div className="pt-2">
-                    <CardDescription className="text-[8px] font-thin">
-                      {formattedDate} {event.place}
-                    </CardDescription>
-                    <CardTitle className="text-md font-thin">
-                      {event.title}
-                    </CardTitle>
-                  </div>
-                </Link>
-              </CarouselItem>
-            );
-          })}
-        </CarouselContent>
-      </Carousel>
+      <ScrollArea className="w-full whitespace-nowrap">
+        <Carousel className="pl-1 flex-col justify-center">
+          <CarouselContent className="flex-row sm:justify-start">
+            {events.map((event, index) => {
+              const scheduleDate = new Date(event.schedule);
+              const formattedDate = scheduleDate.toLocaleDateString("ko-KR", {
+                month: "2-digit", // 두 자리 숫자로 월 표시 (ex: "02")
+                day: "2-digit", // 두 자리 숫자로 일 표시 (ex: "24")
+                weekday: "short", // 요일을 짧은 형식으로 표시 (ex: "월")
+              });
+              return (
+                <CarouselItem
+                  key={event.id}
+                  className="max-w-fit transition group"
+                >
+                  <Link href={`event/${event.id}`} passHref prefetch={true}>
+                    <EventCard
+                      className={`group-hover:scale-95 transform duration-300 ${
+                        testColors[index % 3]
+                      }`}
+                      title={event.title}
+                      subTitle={event.subTitle ?? ""}
+                    />
+                    <div className="pt-2">
+                      <CardDescription className="text-[8px] font-thin">
+                        {formattedDate} {event.place}
+                      </CardDescription>
+                      <CardTitle className="text-md font-thin">
+                        {event.title}
+                      </CardTitle>
+                    </div>
+                  </Link>
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+        </Carousel>
+        <ScrollBar orientation="horizontal"  />
+      </ScrollArea>
     </div>
   );
 }
