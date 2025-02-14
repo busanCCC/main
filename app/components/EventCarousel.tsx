@@ -74,7 +74,7 @@ export default function EventCarousel() {
   const testColors = [
     "bg-gradient-to-bl from-fuchsia-100 via-gray-100 to-white",
     "bg-gradient-to-bl from-green-100 via-gray-100 to-white",
-
+    "bg-gradient-to-bl from-yellow-100 via-gray-100 to-white",
   ];
 
   return (
