@@ -57,14 +57,14 @@ export default function EventCarousel() {
     return (
       <div className="w-full flex gap-2 overflow-clip">
         {Array.from({ length: 5 }).map((_, index) => (
-          <div key={index} className="flex flex-col min-w-80 md:min-w-92 gap-1">
+          <div key={index} className="flex flex-col min-w-60 md:min-w-92 gap-1">
             <Skeleton className="w-full h-80 rounded-2xl" />
             <Skeleton className="w-1/2 h-3" />
             <Skeleton className="w-full h-5" />
           </div>
         ))}
       </div>
-    ); 
+    );
   }
 
   if (error) {
@@ -79,7 +79,7 @@ export default function EventCarousel() {
 
   return (
     <div className="w-full">
-      <Carousel className="flex-col justify-center">
+      <Carousel className="pl-1 flex-col justify-center">
         <CarouselContent className="flex-row">
           {events.map((event, index) => {
             const scheduleDate = new Date(event.schedule);
