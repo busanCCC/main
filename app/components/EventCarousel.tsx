@@ -93,7 +93,7 @@ export default function EventCarousel() {
                 key={event.id}
                 className="max-w-fit transition group"
               >
-                <Link href={`event/${event.id}`}>
+                <Link href={`event/${event.id}`} passHref prefetch={true}>
                   <EventCard
                     className={`group-hover:scale-95 transform duration-300 ${
                       testColors[index % 3]
