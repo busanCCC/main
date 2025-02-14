@@ -68,7 +68,7 @@ export default function EventCarousel() {
   }
 
   if (error) {
-    return <div>Error: {error}</div>; // 에러 발생 시 표시
+    return <div>Error: {error}</div>; 
   }
 
   const testColors = [
