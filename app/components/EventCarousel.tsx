@@ -116,7 +116,7 @@ export default function EventCarousel() {
                           testColors[index % 3]
                         }`}
                         title={event.title}
-                        subTitle={event.subtitle ?? ""}
+                        subtitle={event.subtitle ?? ""}
                       />
                       <div className="pt-2">
                         <CardDescription className="text-[8px] font-thin">
@@ -157,7 +157,7 @@ export default function EventCarousel() {
                           testColors[index % 3]
                         }`}
                         title={event.title}
-                        subTitle={event.subtitle ?? ""}
+                        subtitle={event.subtitle ?? ""}
                       />
                       <div className="pt-2">
                         <CardDescription className="text-[8px] font-thin">

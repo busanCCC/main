@@ -8,13 +8,13 @@ import {
 type EventCardProps = {
   title: string;
   className?: string;
-  subTitle?: string;
+  subtitle?: string;
 };
 
 export default function EventCard({
   title,
   className,
-  subTitle,
+  subtitle,
 }: EventCardProps) {
   return (
     <Card
@@ -27,7 +27,7 @@ export default function EventCard({
           {title}
         </CardDescription>
         <CardTitle className="text-center font-medium break-words">
-          {subTitle}
+          {subtitle}
         </CardTitle>
       </CardContent>
     </Card>

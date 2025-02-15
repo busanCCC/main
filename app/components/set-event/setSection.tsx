@@ -49,33 +49,34 @@ export default function SetSection({ id }: SetSectionProps) {
     });
   };
 
-  useEffect(() => {
-    if (!id) return; // id가 없으면 실행 안 함
+  // ✅ Supabase에서 데이터를 다시 불러오는 함수
+  const refreshEvent = async () => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("id", id)
+        .single();
 
-    const fetchEvent = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("posts")
-          .select("*")
-          .eq("id", id)
-          .single();
+      if (error) throw new Error(error.message);
 
-        if (error) throw new Error(error.message);
-
-        setEvent(data); // 바로 객체를 저장
-        setLoading(false);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("unknown Error");
-        }
-        setLoading(false);
+      setEvent(data);
+      setLoading(false);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("unknown Error");
       }
-    };
+      setLoading(false);
+    }
+  };
 
-    fetchEvent();
-  }, [id]); // id가 변경될 때마다 실행
+  useEffect(() => {
+    refreshEvent();
+  }, [id]);
 
   return (
     <div className="w-full">
@@ -101,20 +102,44 @@ export default function SetSection({ id }: SetSectionProps) {
       >
         {/* 시작기도 */}
         {event?.openingprayer && (
-          <SetPrayerDialog prayType="opening" prayer={event.openingprayer} />
+          <SetPrayerDialog
+            id={id}
+            prayType="opening"
+            displaytext={event.openingprayer}
+            openingprayer={event.openingprayer ?? ""}
+            generalprayer={event.generalprayer ?? ""}
+            testimonyprayer={event.testimonyprayer ?? ""}
+            offeringprayer={event.offeringprayer ?? ""}
+            refreshEvent = {refreshEvent}
+          />
         )}
         {/* 찬양 */}
         <SetPraiseDialog id={id} />
 
         {/* 대표기도 */}
         {event?.generalprayer && (
-          <SetPrayerDialog prayType="general" prayer={event.generalprayer} />
+          <SetPrayerDialog
+            id={id}
+            prayType="general"
+            displaytext={event.generalprayer}
+            openingprayer={event.openingprayer ?? ""}
+            generalprayer={event.generalprayer ?? ""}
+            testimonyprayer={event.testimonyprayer ?? ""}
+            offeringprayer={event.offeringprayer ?? ""}
+            refreshEvent = {refreshEvent}
+          />
         )}
         {/* 간증 */}
         {event?.testimonyprayer && (
           <SetPrayerDialog
+            id={id}
             prayType="testimony"
-            prayer={event.testimonyprayer}
+            displaytext={event.testimonyprayer}
+            openingprayer={event.openingprayer ?? ""}
+            generalprayer={event.generalprayer ?? ""}
+            testimonyprayer={event.testimonyprayer ?? ""}
+            offeringprayer={event.offeringprayer ?? ""}
+            refreshEvent = {refreshEvent}
           />
         )}
 
@@ -128,7 +153,16 @@ export default function SetSection({ id }: SetSectionProps) {
 
         {/* 헌금기도 */}
         {event?.offeringprayer && (
-          <SetPrayerDialog prayType="offering" prayer={event.offeringprayer} />
+          <SetPrayerDialog
+            id={id}
+            prayType="offering"
+            displaytext={event.offeringprayer}
+            openingprayer={event.openingprayer ?? ""}
+            generalprayer={event.generalprayer ?? ""}
+            testimonyprayer={event.testimonyprayer ?? ""}
+            offeringprayer={event.offeringprayer ?? ""}
+            refreshEvent = {refreshEvent}
+          />
         )}
       </motion.div>
     </div>

@@ -8,18 +8,69 @@ import {
 } from "../ui/dialog";
 import Prayer from "@/app/components/worship-order/Prayer";
 import { PrayType } from "@/app/types/worship";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { supabase } from "@/api/supabase";
 
 type prop = {
+  id: number;
   prayType: string;
-  prayer: string;
+  openingprayer?: string;
+  generalprayer?: string;
+  offeringprayer?: string;
+  testimonyprayer?: string;
+  displaytext?: string;
+  refreshEvent: () => void;
 };
 
-export default function SetPrayerDialog({ prayType, prayer }: prop) {
+export default function SetPrayerDialog({
+  id,
+  prayType,
+  openingprayer,
+  generalprayer,
+  offeringprayer,
+  testimonyprayer,
+  displaytext,
+  refreshEvent,
+}: prop) {
   const [open, setOpen] = useState(false);
+  const [opening, setOpening] = useState(openingprayer);
+  const [general, setGeneral] = useState(generalprayer);
+  const [offering, setOffering] = useState(offeringprayer);
+  const [testimony, setTestimony] = useState(testimonyprayer);
+
+  useEffect(() => {
+    if (open) {
+      setOpening(openingprayer ?? "");
+      setGeneral(generalprayer ?? "");
+      setOffering(offeringprayer ?? "");
+      setTestimony(testimonyprayer ?? "");
+    }
+  }, [open, openingprayer, generalprayer, offeringprayer, testimonyprayer]);
+
+  // Supabase 업데이트 함수
+  const handleUpdate = async () => {
+    const { error } = await supabase
+      .from("posts") // 업데이트할 테이블 이름
+      .update({
+        openingprayer: opening,
+        generalprayer: general,
+        offeringprayer: offering,
+        testimonyprayer: testimony,
+      })
+      .eq("id", id); // 특정 ID에 해당하는 데이터를 업데이트
+
+    if (error) {
+      console.error("업데이트 실패:", error);
+      alert("업데이트에 실패했습니다.");
+    } else {
+      alert("업데이트 성공!");
+      refreshEvent();
+      setOpen(false); // 다이얼로그 닫기
+    }
+  };
   return (
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -27,7 +78,7 @@ export default function SetPrayerDialog({ prayType, prayer }: prop) {
           <div className="cursor-pointer" onClick={() => setOpen(true)}>
             <Prayer
               prayType={prayType as PrayType}
-              prayer={prayer}
+              prayer={displaytext || ""}
               className="mt-24"
             />
           </div>
@@ -42,7 +93,8 @@ export default function SetPrayerDialog({ prayType, prayer }: prop) {
               <Input
                 id="openingPrayer"
                 type="text"
-                placeholder="이름을 입력하세요"
+                onChange={(e) => setOpening(e.target.value)}
+                placeholder={openingprayer || "이름을 입력하세요"}
               />
             </div>
             <div className="flex-col space-y-1">
@@ -50,7 +102,8 @@ export default function SetPrayerDialog({ prayType, prayer }: prop) {
               <Input
                 id="generalPrayer"
                 type="text"
-                placeholder="이름을 입력하세요"
+                onChange={(e) => setGeneral(e.target.value)}
+                placeholder={generalprayer || "이름을 입력하세요"}
               />
             </div>
             <div className="flex-col space-y-1">
@@ -58,7 +111,8 @@ export default function SetPrayerDialog({ prayType, prayer }: prop) {
               <Input
                 id="offeringPrayer"
                 type="text"
-                placeholder="이름을 입력하세요"
+                onChange={(e) => setOffering(e.target.value)}
+                placeholder={offeringprayer || "이름을 입력하세요"}
               />
             </div>
             <div className="flex-col space-y-1">
@@ -66,14 +120,15 @@ export default function SetPrayerDialog({ prayType, prayer }: prop) {
               <Input
                 id="testimonyPrayer"
                 type="text"
-                placeholder="이름을 입력하세요"
+                onChange={(e) => setTestimony(e.target.value)}
+                placeholder={testimonyprayer || "이름을 입력하세요"}
               />
             </div>
             <div className="flex justify-between">
               <DialogClose asChild>
                 <Button variant="outline">취소</Button>
               </DialogClose>
-              <Button>수정</Button>
+              <Button onClick={handleUpdate}>수정</Button>
             </div>
           </div>
         </DialogContent>
