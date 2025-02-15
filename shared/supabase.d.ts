@@ -234,26 +234,26 @@ export type Database = {
       }
       user_info: {
         Row: {
+          admin: boolean | null
           avatar_url: string | null
-          createdat: string | null
           email: string | null
-          id: number
+          id: string
           role: string | null
           username: string | null
         }
         Insert: {
+          admin?: boolean | null
           avatar_url?: string | null
-          createdat?: string | null
           email?: string | null
-          id?: number
+          id: string
           role?: string | null
           username?: string | null
         }
         Update: {
+          admin?: boolean | null
           avatar_url?: string | null
-          createdat?: string | null
           email?: string | null
-          id?: number
+          id?: string
           role?: string | null
           username?: string | null
         }

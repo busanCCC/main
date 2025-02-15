@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [inputemail, setEmail] = useState("");
+  const [inputpassword, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -15,8 +15,14 @@ export default function RegisterPage() {
     setError(null);
 
     const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: inputemail,
+      password: inputpassword,
+      options: {
+        data: {
+          username: name,
+          avatar_url: null,
+        },
+      },
     });
 
     if (error) {
@@ -26,11 +32,9 @@ export default function RegisterPage() {
     if (data.user) {
       const { error: userInfoError } = await supabase.from("user_info").upsert([
         {
-          id: parseInt(data.user.id),
+          id: data.user.id,
           email: data.user.email ?? "",
           username: name,
-          role: "user",
-          createdat: new Date().toISOString(),
         },
       ]);
       if (userInfoError) {
@@ -56,14 +60,14 @@ export default function RegisterPage() {
         type="email"
         placeholder="이메일"
         className="border p-2 mb-2 w-80"
-        value={email}
+        value={inputemail}
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
         type="password"
         placeholder="비밀번호"
         className="border p-2 mb-2 w-80"
-        value={password}
+        value={inputpassword}
         onChange={(e) => setPassword(e.target.value)}
       />
       <button
