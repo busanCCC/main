@@ -2,7 +2,7 @@
 
 import { supabase } from "@/api/supabase";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Message from "../worship-order/Message";
 import SetPrayerDialog from "./setPrayerDialog";
 import SetPraiseDialog from "./setPraiseDialog";
@@ -50,7 +50,7 @@ export default function SetSection({ id }: SetSectionProps) {
   };
 
   // ✅ Supabase에서 데이터를 다시 불러오는 함수
-  const refreshEvent = async () => {
+  const refreshEvent = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     try {
@@ -72,11 +72,11 @@ export default function SetSection({ id }: SetSectionProps) {
       }
       setLoading(false);
     }
-  };
+  }, [id]); // `id`가 변경될 때만 재생성됨
 
   useEffect(() => {
     refreshEvent();
-  }, [id]);
+  }, [refreshEvent]); // 이제 안전하게 의존성 배열에 추가 가능
 
   return (
     <div className="w-full">
@@ -110,7 +110,7 @@ export default function SetSection({ id }: SetSectionProps) {
             generalprayer={event.generalprayer ?? ""}
             testimonyprayer={event.testimonyprayer ?? ""}
             offeringprayer={event.offeringprayer ?? ""}
-            refreshEvent = {refreshEvent}
+            refreshEvent={refreshEvent}
           />
         )}
         {/* 찬양 */}
@@ -126,7 +126,7 @@ export default function SetSection({ id }: SetSectionProps) {
             generalprayer={event.generalprayer ?? ""}
             testimonyprayer={event.testimonyprayer ?? ""}
             offeringprayer={event.offeringprayer ?? ""}
-            refreshEvent = {refreshEvent}
+            refreshEvent={refreshEvent}
           />
         )}
         {/* 간증 */}
@@ -139,7 +139,7 @@ export default function SetSection({ id }: SetSectionProps) {
             generalprayer={event.generalprayer ?? ""}
             testimonyprayer={event.testimonyprayer ?? ""}
             offeringprayer={event.offeringprayer ?? ""}
-            refreshEvent = {refreshEvent}
+            refreshEvent={refreshEvent}
           />
         )}
 
@@ -161,7 +161,7 @@ export default function SetSection({ id }: SetSectionProps) {
             generalprayer={event.generalprayer ?? ""}
             testimonyprayer={event.testimonyprayer ?? ""}
             offeringprayer={event.offeringprayer ?? ""}
-            refreshEvent = {refreshEvent}
+            refreshEvent={refreshEvent}
           />
         )}
       </motion.div>
