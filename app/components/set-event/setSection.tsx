@@ -10,17 +10,17 @@ import SetPraiseDialog from "./setPraiseDialog";
 type Event = {
   id: number;
   title: string;
-  createdAt: string;
+  createdat: string | null;
   schedule: string;
   place: string | null;
   // 추가된 필드들도 여기 포함해야 할 경우 추가
   content: string | null;
-  generalPrayer: string | null;
-  liveUrl: string | null;
+  generalprayer: string | null;
+  liveurl: string | null;
   messenger: string | null;
-  openingPrayer: string | null;
-  offeringPrayer: string | null;
-  testimonyPrayer: string | null;
+  openingprayer: string | null;
+  offeringprayer: string | null;
+  testimonyprayer: string | null;
   word: string | null;
   passage: string | null;
 };
@@ -100,21 +100,21 @@ export default function SetSection({ id }: SetSectionProps) {
         className="flex flex-col gap-28 justify-center items-center px-4 overflow-hidden"
       >
         {/* 시작기도 */}
-        {event?.openingPrayer && (
-          <SetPrayerDialog prayType="opening" prayer={event.openingPrayer} />
+        {event?.openingprayer && (
+          <SetPrayerDialog prayType="opening" prayer={event.openingprayer} />
         )}
         {/* 찬양 */}
         <SetPraiseDialog id={id} />
 
         {/* 대표기도 */}
-        {event?.generalPrayer && (
-          <SetPrayerDialog prayType="general" prayer={event.generalPrayer} />
+        {event?.generalprayer && (
+          <SetPrayerDialog prayType="general" prayer={event.generalprayer} />
         )}
         {/* 간증 */}
-        {event?.testimonyPrayer && (
+        {event?.testimonyprayer && (
           <SetPrayerDialog
             prayType="testimony"
-            prayer={event.testimonyPrayer}
+            prayer={event.testimonyprayer}
           />
         )}
 
@@ -127,8 +127,8 @@ export default function SetSection({ id }: SetSectionProps) {
         />
 
         {/* 헌금기도 */}
-        {event?.offeringPrayer && (
-          <SetPrayerDialog prayType="offering" prayer={event.offeringPrayer} />
+        {event?.offeringprayer && (
+          <SetPrayerDialog prayType="offering" prayer={event.offeringprayer} />
         )}
       </motion.div>
     </div>

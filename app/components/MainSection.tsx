@@ -36,7 +36,7 @@ export default function MainSection({ isAdmin }: { isAdmin: boolean }) {
       }
 
       setTitle(data.title);
-      setSubTitle(data.subTitle);
+      setSubTitle(data.subtitle);
       setPlace(data.place);
 
       const utcDate = new Date(data.schedule);

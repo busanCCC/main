@@ -24,13 +24,13 @@ export default function RegisterPage() {
       return;
     }
     if (data.user) {
-      const { error: userInfoError } = await supabase.from("userinfo").upsert([
+      const { error: userInfoError } = await supabase.from("user_info").upsert([
         {
-          id: data.user.id,
+          id: parseInt(data.user.id),
           email: data.user.email ?? "",
           username: name,
           role: "user",
-          created_at: new Date().toISOString(),
+          createdat: new Date().toISOString(),
         },
       ]);
       if (userInfoError) {

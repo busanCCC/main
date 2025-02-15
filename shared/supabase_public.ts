@@ -36,33 +36,24 @@ export type Database = {
     Tables: {
       announcements: {
         Row: {
-          actiontext: string | null
-          actionUrl: string | null
-          calltoAction: boolean | null
           content: string | null
           id: number
           post_id: number | null
-          subcontent: string | null
+          subContent: string | null
           title: string
         }
         Insert: {
-          actiontext?: string | null
-          actionUrl?: string | null
-          calltoAction?: boolean | null
           content?: string | null
           id?: number
           post_id?: number | null
-          subcontent?: string | null
+          subContent?: string | null
           title: string
         }
         Update: {
-          actiontext?: string | null
-          actionUrl?: string | null
-          calltoAction?: boolean | null
           content?: string | null
           id?: number
           post_id?: number | null
-          subcontent?: string | null
+          subContent?: string | null
           title?: string
         }
         Relationships: [
@@ -75,11 +66,47 @@ export type Database = {
           },
         ]
       }
+      calltoaction: {
+        Row: {
+          announcement_id: number | null
+          id: number
+          news_id: number | null
+          text: string
+          url: string | null
+        }
+        Insert: {
+          announcement_id?: number | null
+          id?: number
+          news_id?: number | null
+          text: string
+          url?: string | null
+        }
+        Update: {
+          announcement_id?: number | null
+          id?: number
+          news_id?: number | null
+          text?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calltoaction_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calltoaction_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       news: {
         Row: {
-          actionText: string | null
-          actionUrl: string | null
-          calltoAction: boolean | null
           content: string | null
           description: string | null
           id: number
@@ -88,9 +115,6 @@ export type Database = {
           type: string
         }
         Insert: {
-          actionText?: string | null
-          actionUrl?: string | null
-          calltoAction?: boolean | null
           content?: string | null
           description?: string | null
           id?: number
@@ -99,9 +123,6 @@ export type Database = {
           type: string
         }
         Update: {
-          actionText?: string | null
-          actionUrl?: string | null
-          calltoAction?: boolean | null
           content?: string | null
           description?: string | null
           id?: number
@@ -122,61 +143,61 @@ export type Database = {
       posts: {
         Row: {
           content: string | null
-          createdat: string | null
-          generalprayer: string | null
+          createdAt: string
+          generalPrayer: string | null
           id: number
-          liveurl: string | null
-          messagetitle: string | null
+          liveUrl: string | null
+          messageTitle: string | null
           messenger: string | null
-          offeringprayer: string | null
-          openingprayer: string | null
+          offeringPrayer: string | null
+          openingPrayer: string | null
           passage: string | null
           place: string | null
-          placeurl: string | null
+          placeUrl: string | null
           schedule: string
-          subtitle: string | null
-          testimonyprayer: string | null
-          testimonytitle: string | null
+          subTitle: string | null
+          testimonyPrayer: string | null
+          testimonyTitle: string | null
           title: string
           word: string | null
         }
         Insert: {
           content?: string | null
-          createdat?: string | null
-          generalprayer?: string | null
+          createdAt?: string
+          generalPrayer?: string | null
           id?: number
-          liveurl?: string | null
-          messagetitle?: string | null
+          liveUrl?: string | null
+          messageTitle?: string | null
           messenger?: string | null
-          offeringprayer?: string | null
-          openingprayer?: string | null
+          offeringPrayer?: string | null
+          openingPrayer?: string | null
           passage?: string | null
           place?: string | null
-          placeurl?: string | null
+          placeUrl?: string | null
           schedule: string
-          subtitle?: string | null
-          testimonyprayer?: string | null
-          testimonytitle?: string | null
+          subTitle?: string | null
+          testimonyPrayer?: string | null
+          testimonyTitle?: string | null
           title: string
           word?: string | null
         }
         Update: {
           content?: string | null
-          createdat?: string | null
-          generalprayer?: string | null
+          createdAt?: string
+          generalPrayer?: string | null
           id?: number
-          liveurl?: string | null
-          messagetitle?: string | null
+          liveUrl?: string | null
+          messageTitle?: string | null
           messenger?: string | null
-          offeringprayer?: string | null
-          openingprayer?: string | null
+          offeringPrayer?: string | null
+          openingPrayer?: string | null
           passage?: string | null
           place?: string | null
-          placeurl?: string | null
+          placeUrl?: string | null
           schedule?: string
-          subtitle?: string | null
-          testimonyprayer?: string | null
-          testimonytitle?: string | null
+          subTitle?: string | null
+          testimonyPrayer?: string | null
+          testimonyTitle?: string | null
           title?: string
           word?: string | null
         }
@@ -203,7 +224,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "praises_post_id_fkey"
+            foreignKeyName: "fk_post"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts"
@@ -213,47 +234,47 @@ export type Database = {
       }
       staff_info: {
         Row: {
-          createdat: string
+          created_at: string
           id: number
           name: string
           role: string | null
         }
         Insert: {
-          createdat?: string
+          created_at?: string
           id?: number
           name: string
           role?: string | null
         }
         Update: {
-          createdat?: string
+          created_at?: string
           id?: number
           name?: string
           role?: string | null
         }
         Relationships: []
       }
-      user_info: {
+      userinfo: {
         Row: {
           avatar_url: string | null
-          createdat: string | null
-          email: string | null
-          id: number
+          created_at: string | null
+          email: string
+          id: string
           role: string | null
           username: string | null
         }
         Insert: {
           avatar_url?: string | null
-          createdat?: string | null
-          email?: string | null
-          id?: number
+          created_at?: string | null
+          email: string
+          id?: string
           role?: string | null
           username?: string | null
         }
         Update: {
           avatar_url?: string | null
-          createdat?: string | null
-          email?: string | null
-          id?: number
+          created_at?: string | null
+          email?: string
+          id?: string
           role?: string | null
           username?: string | null
         }

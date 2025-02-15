@@ -12,7 +12,7 @@ import Link from "next/link";
 type Event = {
   id: number;
   title: string;
-  createdAt: string;
+  createdat: string | null;
   schedule: string;
   place: string | null;
 };
