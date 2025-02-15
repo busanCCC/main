@@ -123,7 +123,7 @@ export default function AnnouncementSection({ id }: Props) {
                         window.open(announcement.actionUrl ?? "", "_blank");
                       }}
                     >
-                      {announcement.actionUrl}
+                      {announcement.actiontext}
                     </Button>
                   )}
                 </CustomAnnouncement>
