@@ -20,7 +20,6 @@ export default function RegisterPage() {
       options: {
         data: {
           username: name,
-          avatar_url: null,
         },
       },
     });
@@ -29,20 +28,9 @@ export default function RegisterPage() {
       setError(error.message);
       return;
     }
-    if (data.user) {
-      const { error: userInfoError } = await supabase.from("user_info").upsert([
-        {
-          id: data.user.id,
-          email: data.user.email ?? "",
-          username: name,
-        },
-      ]);
-      if (userInfoError) {
-        console.error("userinfo upsert 실패:", userInfoError.message);
-        // 필요하다면 에러를 무시하거나 별도 처리
-      }
+    if (data) {
+      console.log("register success!");
     }
-
     router.push("/");
   };
 
