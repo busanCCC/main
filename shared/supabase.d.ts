@@ -37,9 +37,10 @@ export type Database = {
       announcements: {
         Row: {
           actiontext: string | null
-          actionUrl: string | null
-          calltoAction: boolean | null
+          actionurl: string | null
+          calltoaction: boolean | null
           content: string | null
+          contenttype: string | null
           id: number
           post_id: number | null
           subcontent: string | null
@@ -47,9 +48,10 @@ export type Database = {
         }
         Insert: {
           actiontext?: string | null
-          actionUrl?: string | null
-          calltoAction?: boolean | null
+          actionurl?: string | null
+          calltoaction?: boolean | null
           content?: string | null
+          contenttype?: string | null
           id?: number
           post_id?: number | null
           subcontent?: string | null
@@ -57,9 +59,10 @@ export type Database = {
         }
         Update: {
           actiontext?: string | null
-          actionUrl?: string | null
-          calltoAction?: boolean | null
+          actionurl?: string | null
+          calltoaction?: boolean | null
           content?: string | null
+          contenttype?: string | null
           id?: number
           post_id?: number | null
           subcontent?: string | null
@@ -77,9 +80,9 @@ export type Database = {
       }
       news: {
         Row: {
-          actionText: string | null
-          actionUrl: string | null
-          calltoAction: boolean | null
+          actiontext: string | null
+          actionurl: string | null
+          calltoaction: boolean | null
           content: string | null
           description: string | null
           id: number
@@ -88,9 +91,9 @@ export type Database = {
           type: string
         }
         Insert: {
-          actionText?: string | null
-          actionUrl?: string | null
-          calltoAction?: boolean | null
+          actiontext?: string | null
+          actionurl?: string | null
+          calltoaction?: boolean | null
           content?: string | null
           description?: string | null
           id?: number
@@ -99,9 +102,9 @@ export type Database = {
           type: string
         }
         Update: {
-          actionText?: string | null
-          actionUrl?: string | null
-          calltoAction?: boolean | null
+          actiontext?: string | null
+          actionurl?: string | null
+          calltoaction?: boolean | null
           content?: string | null
           description?: string | null
           id?: number
@@ -122,6 +125,7 @@ export type Database = {
       posts: {
         Row: {
           content: string | null
+          contenttype: string | null
           createdat: string | null
           generalprayer: string | null
           id: number
@@ -142,6 +146,7 @@ export type Database = {
         }
         Insert: {
           content?: string | null
+          contenttype?: string | null
           createdat?: string | null
           generalprayer?: string | null
           id?: number
@@ -162,6 +167,7 @@ export type Database = {
         }
         Update: {
           content?: string | null
+          contenttype?: string | null
           createdat?: string | null
           generalprayer?: string | null
           id?: number
@@ -213,49 +219,22 @@ export type Database = {
       }
       staff_info: {
         Row: {
-          createdat: string
+          createdat: string | null
           id: number
           name: string
           role: string | null
         }
         Insert: {
-          createdat?: string
+          createdat?: string | null
           id?: number
           name: string
           role?: string | null
         }
         Update: {
-          createdat?: string
+          createdat?: string | null
           id?: number
           name?: string
           role?: string | null
-        }
-        Relationships: []
-      }
-      user_info: {
-        Row: {
-          admin: boolean | null
-          avatar_url: string | null
-          email: string | null
-          id: string
-          role: string | null
-          username: string | null
-        }
-        Insert: {
-          admin?: boolean | null
-          avatar_url?: string | null
-          email?: string | null
-          id: string
-          role?: string | null
-          username?: string | null
-        }
-        Update: {
-          admin?: boolean | null
-          avatar_url?: string | null
-          email?: string | null
-          id?: string
-          role?: string | null
-          username?: string | null
         }
         Relationships: []
       }

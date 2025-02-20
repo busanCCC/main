@@ -16,8 +16,8 @@ type AnnouncementData = {
   post_id: number | null;
   content: string | null;
   subcontent: string | null;
-  calltoAction: boolean | null;
-  actionUrl: string | null;
+  calltoaction: boolean | null;
+  actionurl: string | null;
   actiontext: string | null;
 };
 
@@ -116,11 +116,11 @@ export default function AnnouncementSection({ id }: Props) {
                     </div>
                   )}
 
-                  {announcement.calltoAction && (
+                  {announcement.calltoaction && (
                     <Button
                       className="mt-2"
                       onClick={() => {
-                        window.open(announcement.actionUrl ?? "", "_blank");
+                        window.open(announcement.actionurl ?? "", "_blank");
                       }}
                     >
                       {announcement.actiontext}

@@ -16,9 +16,9 @@ type NewsData = {
   type: string;
   content: string | null; // 실제 내용 (영상 url, 이미지 url, 텍스트 등)
   description: string | null; // 부가설명 내용
-  calltoAction: boolean | null;
-  actionUrl: string |null;
-  actionText: string | null;
+  calltoaction: boolean | null;
+  actionurl: string | null;
+  actiontext: string | null;
 };
 export default function NewsSection({ id }: Props) {
   const [activeIndexes, setActiveIndexes] = useState<Set<string>>(
@@ -139,20 +139,21 @@ export default function NewsSection({ id }: Props) {
                 )}
 
                 {/* Call to Action */}
-                {newsItem.calltoAction && (
+                {newsItem.calltoaction && (
                   <div className="mt-4">
-                      <a
-                        href={newsItem.actionUrl ?? ""}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 text-white rounded"
-                      >
-                        {newsItem.actionText}
-                      </a>
+                    <a
+                      href={newsItem.actionurl ?? ""}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 text-white rounded"
+                    >
+                      {newsItem.actiontext}
+                    </a>
                   </div>
-                    )}
+                )}
               </div>
-                )))}
+            ))
+          )}
         </motion.div>
       </div>
     </div>
