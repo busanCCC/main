@@ -37,7 +37,7 @@ export default function NewsSection({ id }: Props) {
           .eq("post_id", parseInt(id));
 
         if (newsError) {
-          throw error;
+          throw newsError;
         }
 
         setNews(newsData); // 데이터 받아오면 상태 업데이트
@@ -53,7 +53,7 @@ export default function NewsSection({ id }: Props) {
       }
     };
     fetchNews();
-  }, [id, error]); // id가 변경될 때마다 새로 호출
+  }, [id]); // id가 변경될 때마다 새로 호출
 
   if (loading) {
     return <div>Loading...</div>; // 로딩 중일 때 표시
