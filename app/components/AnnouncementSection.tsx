@@ -15,15 +15,10 @@ type AnnouncementData = {
   title: string;
   post_id: number | null;
   content: string | null;
-  subContent: string | null;
-};
-
-type CallToAction = {
-  id: number;
-  announcement_id: number | null; // foreign key
-  news_id: number | null;
-  text: string;
-  url: string | null;
+  subcontent: string | null;
+  calltoaction: boolean | null;
+  actionurl: string | null;
+  actiontext: string | null;
 };
 
 export default function AnnouncementSection({ id }: Props) {
@@ -33,7 +28,6 @@ export default function AnnouncementSection({ id }: Props) {
   const [announcements, setAnnouncements] = useState<AnnouncementData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [callToActions, setCallToActions] = useState<CallToAction[]>([]);
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
@@ -48,21 +42,6 @@ export default function AnnouncementSection({ id }: Props) {
         }
 
         setAnnouncements(announcementsData); // 데이터 받아오면 상태 업데이트
-
-        const { data: callToActionData, error: callToActionError } =
-          await supabase
-            .from("calltoaction")
-            .select("*")
-            .in(
-              "announcement_id",
-              announcementsData.map((announcement) => announcement.id)
-            );
-
-        if (callToActionError) {
-          throw new Error(callToActionError.message);
-        }
-
-        setCallToActions(callToActionData); // callToAction 상태 업데이트
 
         setLoading(false); // 로딩 상태 종료
       } catch (err) {
@@ -121,11 +100,6 @@ export default function AnnouncementSection({ id }: Props) {
           {/* 광고 */}
           {announcements.length > 0 ? (
             announcements.map((announcement, index) => {
-              // Filter callToActions for each announcement
-              const filteredCallToActions = callToActions.filter(
-                (cta) => cta.announcement_id === announcement.id
-              );
-
               return (
                 <CustomAnnouncement
                   key={announcement.id}
@@ -136,24 +110,22 @@ export default function AnnouncementSection({ id }: Props) {
                   <div style={{ whiteSpace: "pre-wrap" }}>
                     {announcement.content}
                   </div>
-                  {announcement.subContent && (
+                  {announcement.subcontent && (
                     <div style={{ whiteSpace: "pre-wrap", color: "#6B7280" }}>
-                      {announcement.subContent}
+                      {announcement.subcontent}
                     </div>
                   )}
 
-                  {filteredCallToActions.length > 0 &&
-                    filteredCallToActions.map((cta, idx) => (
-                      <Button
-                        key={idx}
-                        className="mt-2"
-                        onClick={() => {
-                          window.open(cta.url ?? "", "_blank");
-                        }}
-                      >
-                        {cta.text}
-                      </Button>
-                    ))}
+                  {announcement.calltoaction && (
+                    <Button
+                      className="mt-2"
+                      onClick={() => {
+                        window.open(announcement.actionurl ?? "", "_blank");
+                      }}
+                    >
+                      {announcement.actiontext}
+                    </Button>
+                  )}
                 </CustomAnnouncement>
               );
             })

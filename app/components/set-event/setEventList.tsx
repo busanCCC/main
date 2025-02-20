@@ -12,9 +12,10 @@ import Link from "next/link";
 type Event = {
   id: number;
   title: string;
-  createdAt: string;
+  createdat: string | null;
   schedule: string;
   place: string | null;
+  subtitle: string | null;
 };
 
 export default function SetEventList() {
@@ -27,7 +28,7 @@ export default function SetEventList() {
         const { data, error } = await supabase
           .from("posts")
           .select("*")
-          .order("createdAt", { ascending: false });
+          .order("createdat", { ascending: false });
 
         if (error) {
           throw new Error(error.message);
@@ -63,9 +64,9 @@ export default function SetEventList() {
 
   return (
     <div className="flex flex-wrap gap-5 justify-center">
-      <Link href={"/admin-page/add-event"}>
+      <Link href={"/admin-page/add-event"} passHref prefetch={true}>
         <Card
-          className="sm:min-h-96 md:min-h-80 rounded-2xl lg:min-h-80 h-56 aspect-square content-center transition-colors ease-linear duration-200 border-dashed border hover:cursor-pointer hover:bg-gray-100"
+          className="sm:min-h-96 md:min-h-80 lg:min-h-80 h-60 rounded-2xl aspect-square content-center transition-colors ease-linear duration-200 border-dashed border hover:cursor-pointer hover:bg-gray-100"
           style={{ borderWidth: "3px" }}
         >
           <CardContent className="flex-col justify-center text-center my-3">
@@ -86,10 +87,15 @@ export default function SetEventList() {
         });
         return (
           <div key={event.id}>
-            <Link href={`/admin-page/set-event/${event.id}`}>
+            <Link
+              href={`/admin-page/set-event/${event.id}`}
+              passHref
+              prefetch={true}
+            >
               <EventCard
                 className="transition-colors duration-200 rounded-2xl hover:bg-gray-200 cursor-pointer"
                 title={event.title}
+                subtitle={event.subtitle ?? ""}
               />
               <div className="mt-3 flex justify-between ">
                 <div className="flex-col truncate w-40">

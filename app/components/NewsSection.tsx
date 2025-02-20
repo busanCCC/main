@@ -16,15 +16,10 @@ type NewsData = {
   type: string;
   content: string | null; // 실제 내용 (영상 url, 이미지 url, 텍스트 등)
   description: string | null; // 부가설명 내용
+  calltoaction: boolean | null;
+  actionurl: string | null;
+  actiontext: string | null;
 };
-type CallToAction = {
-  id: number;
-  announcement_id: number | null; // foreign key
-  news_id: number | null;
-  text: string;
-  url: string | null;
-};
-
 export default function NewsSection({ id }: Props) {
   const [activeIndexes, setActiveIndexes] = useState<Set<string>>(
     new Set(["news"])
@@ -32,7 +27,7 @@ export default function NewsSection({ id }: Props) {
   const [news, setNews] = useState<NewsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [callToActions, setCallToActions] = useState<CallToAction[]>([]);
+
   useEffect(() => {
     const fetchNews = async () => {
       try {
@@ -42,25 +37,10 @@ export default function NewsSection({ id }: Props) {
           .eq("post_id", parseInt(id));
 
         if (newsError) {
-          throw error;
+          throw newsError;
         }
 
         setNews(newsData); // 데이터 받아오면 상태 업데이트
-
-        const { data: callToActionData, error: callToActionError } =
-          await supabase
-            .from("calltoaction")
-            .select("*")
-            .in(
-              "announcement_id",
-              newsData.map((news) => news.id)
-            );
-
-        if (callToActionError) {
-          throw new Error(callToActionError.message);
-        }
-
-        setCallToActions(callToActionData); // callToAction 상태 업데이트
 
         setLoading(false); // 로딩 상태 종료
       } catch (err) {
@@ -73,7 +53,7 @@ export default function NewsSection({ id }: Props) {
       }
     };
     fetchNews();
-  }, [id, error]); // id가 변경될 때마다 새로 호출
+  }, [id]); // id가 변경될 때마다 새로 호출
 
   if (loading) {
     return <div>Loading...</div>; // 로딩 중일 때 표시
@@ -159,19 +139,16 @@ export default function NewsSection({ id }: Props) {
                 )}
 
                 {/* Call to Action */}
-                {callToActions && callToActions.length > 0 && (
+                {newsItem.calltoaction && (
                   <div className="mt-4">
-                    {callToActions.map((cta, idx) => (
-                      <a
-                        key={idx}
-                        href={cta.url ?? ""}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
-                      >
-                        {cta.text}
-                      </a>
-                    ))}
+                    <a
+                      href={newsItem.actionurl ?? ""}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 text-white rounded"
+                    >
+                      {newsItem.actiontext}
+                    </a>
                   </div>
                 )}
               </div>

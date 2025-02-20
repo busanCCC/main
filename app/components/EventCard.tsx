@@ -8,17 +8,17 @@ import {
 type EventCardProps = {
   title: string;
   className?: string;
-  subTitle?: string;
+  subtitle?: string;
 };
 
 export default function EventCard({
   title,
   className,
-  subTitle,
+  subtitle,
 }: EventCardProps) {
   return (
     <Card
-      className={`sm:min-h-80 md:min-h-92 lg:min-h-92 h-60 aspect-square flex-auto rounded-2xl ${className}`}
+      className={`sm:min-h-80 md:min-h-92 lg:min-h-92 h-80 aspect-square flex-auto rounded-2xl ${className}`}
     >
       <CardContent
         className={`flex flex-col justify-center items-center space-y-2 w-full h-full`}
@@ -27,7 +27,7 @@ export default function EventCard({
           {title}
         </CardDescription>
         <CardTitle className="text-center font-medium break-words">
-          {subTitle}
+          {subtitle}
         </CardTitle>
       </CardContent>
     </Card>

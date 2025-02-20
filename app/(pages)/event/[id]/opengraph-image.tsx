@@ -85,7 +85,7 @@ export default async function og({ params: { id } }: Props) {
                 backgroundColor: "rgba(0 0 0, 0.3)",
               }}
             >
-              {postData?.subTitle || "부산지구 ccc 온라인 주보"}
+              {postData?.subtitle || "부산지구 ccc 온라인 주보"}
             </p>
           </div>
         </div>

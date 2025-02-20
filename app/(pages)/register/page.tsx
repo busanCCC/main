@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [inputemail, setEmail] = useState("");
+  const [inputpassword, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -15,30 +15,22 @@ export default function RegisterPage() {
     setError(null);
 
     const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: inputemail,
+      password: inputpassword,
+      options: {
+        data: {
+          username: name,
+        },
+      },
     });
 
     if (error) {
       setError(error.message);
       return;
     }
-    if (data.user) {
-      const { error: userInfoError } = await supabase.from("userinfo").upsert([
-        {
-          id: data.user.id,
-          email: data.user.email ?? "",
-          username: name,
-          role: "user",
-          created_at: new Date().toISOString(),
-        },
-      ]);
-      if (userInfoError) {
-        console.error("userinfo upsert 실패:", userInfoError.message);
-        // 필요하다면 에러를 무시하거나 별도 처리
-      }
+    if (data) {
+      console.log("register success!");
     }
-
     router.push("/");
   };
 
@@ -56,14 +48,14 @@ export default function RegisterPage() {
         type="email"
         placeholder="이메일"
         className="border p-2 mb-2 w-80"
-        value={email}
+        value={inputemail}
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
         type="password"
         placeholder="비밀번호"
         className="border p-2 mb-2 w-80"
-        value={password}
+        value={inputpassword}
         onChange={(e) => setPassword(e.target.value)}
       />
       <button

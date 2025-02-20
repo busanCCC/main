@@ -11,7 +11,7 @@ import { EventClickArg, EventHoveringArg } from "@fullcalendar/core/index.js";
 type Schedule = {
   id: number;
   title: string;
-  createdAt: string;
+  createdat: string | null;
   schedule: string; // ISO 8601 형식의 날짜
 };
 
@@ -133,7 +133,9 @@ const Calendar = () => {
               </p>
               <p>
                 생성된 시간:
-                {new Date(selectedEvent.createdAt).toLocaleString("ko-KR")}
+                {new Date(selectedEvent.createdat ?? "").toLocaleString(
+                  "ko-KR"
+                )}
               </p>
               <p className="flex justify-center mt-4 gap-4">
                 <Button

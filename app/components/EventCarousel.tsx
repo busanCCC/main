@@ -15,9 +15,9 @@ import { ScrollArea, ScrollBar } from "./ui/scrollArea";
 type Event = {
   id: number;
   title: string;
-  createdAt: string;
+  createdat: string | null;
   schedule: string;
-  subTitle: string | null;
+  subtitle: string | null;
   place: string | null;
 };
 
@@ -46,7 +46,7 @@ export default function EventCarousel() {
         const { data, error } = await supabase
           .from("posts")
           .select("*")
-          .order("createdAt", { ascending: false });
+          .order("createdat", { ascending: false });
 
         if (error) {
           throw new Error(error.message);
@@ -116,7 +116,7 @@ export default function EventCarousel() {
                           testColors[index % 3]
                         }`}
                         title={event.title}
-                        subTitle={event.subTitle ?? ""}
+                        subtitle={event.subtitle ?? ""}
                       />
                       <div className="pt-2">
                         <CardDescription className="text-[8px] font-thin">
@@ -157,7 +157,7 @@ export default function EventCarousel() {
                           testColors[index % 3]
                         }`}
                         title={event.title}
-                        subTitle={event.subTitle ?? ""}
+                        subtitle={event.subtitle ?? ""}
                       />
                       <div className="pt-2">
                         <CardDescription className="text-[8px] font-thin">

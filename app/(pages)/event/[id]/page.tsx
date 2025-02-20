@@ -63,13 +63,13 @@ export default async function EventPage({
       <Header />
       <MainSection isAdmin={false} />
       <WorshipOrderSection
-        openingPrayer={postData?.openingPrayer ?? ""}
-        generalPrayer={postData?.generalPrayer ?? ""}
-        offeringPrayer={postData?.offeringPrayer ?? ""}
-        testimonyPrayer={postData?.testimonyPrayer ?? ""}
+        openingPrayer={postData?.openingprayer ?? ""}
+        generalPrayer={postData?.generalprayer ?? ""}
+        offeringPrayer={postData?.offeringprayer ?? ""}
+        testimonyPrayer={postData?.testimonyprayer ?? ""}
         passage={postData?.passage ?? ""}
         messenger={postData?.messenger ?? ""}
-        messageTitle={postData?.messageTitle ?? ""}
+        messageTitle={postData?.messagetitle ?? ""}
         messengerInfo={staffData?.role ??""}
         word={postData?.word ?? ""}
         id={numericId}
