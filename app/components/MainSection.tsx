@@ -54,7 +54,7 @@ export default function MainSection() {
         {schedule}
         <span>{place}</span>
       </div>
-      <div className="font-extrabold text-4xl text-center responsive-text">
+      <div className="font-extrabold text-4xl text-center responsive-text ">
         {title}
       </div>
       <div className="font-medium text-xl text-center">{subTitle}</div>
