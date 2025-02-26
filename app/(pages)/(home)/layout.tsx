@@ -1,5 +1,6 @@
 import { Toaster } from "@/app/components/ui/sonner";
 import type { Metadata } from "next";
+import SessionProvider from "@/components/SessionProvider";
 
 // 폰트 다음같이 사용하기
 // const geistMono = localFont({
@@ -36,7 +37,9 @@ export default function RootLayout({
 }>) {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      <div className="w-full h-full max-w-7xl">{children}</div>
+      <SessionProvider>
+        <div className="w-full h-full max-w-7xl">{children}</div>
+      </SessionProvider>
       <Toaster />
     </div>
   );
