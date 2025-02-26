@@ -1,9 +1,12 @@
 "use client";
-import { createClient } from "@supabase/supabase-js";
 
-export function createClient_s() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
+import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
+import { useState } from "react";
+
+export const createClient = () => {
+  return createPagesBrowserClient();
+};
+
+// 클라이언트에서 싱글톤 패턴을 적용하여 재사용
+const browserClient = createClient();
+export default browserClient;

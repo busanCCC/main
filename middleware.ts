@@ -12,15 +12,28 @@ export async function middleware(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // ✅ 인증이 필요한 페이지 보호 (예: `/dashboard` 접근 제한)
-  if (!user && req.nextUrl.pathname.startsWith("/admin-page")) {
+  const { pathname } = req.nextUrl;
+
+  // 🔹 인증이 필요한 페이지 보호 (비로그인 사용자는 `/admin-page` 접근 불가)
+  if (
+    !user &&
+    (pathname.startsWith("/admin-page") || pathname.startsWith("/register")) // 임시로 register 페이지 접근 제한
+  ) {
     return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  // 🔹 로그인한 사용자가 `/login` 또는 `/register` 페이지에 접근하면 `/admin-page`로 리디렉션
+  if (
+    user &&
+    (pathname.startsWith("/login") || pathname.startsWith("/register"))
+  ) {
+    return NextResponse.redirect(new URL("/admin-page", req.url));
   }
 
   return res;
 }
 
-// ✅ `matcher`를 사용하여 특정 경로에만 미들웨어 적용 가능
+// ✅ `matcher`를 사용하여 특정 경로에서만 미들웨어 실행
 export const config = {
-  matcher: ["/admin-page/:path*"], // `/admin-page` 이하 모든 경로에서 적용
+  matcher: ["/admin-page/:path*", "/register", "/login"],
 };
