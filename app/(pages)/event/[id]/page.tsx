@@ -61,7 +61,7 @@ export default async function EventPage({
   return (
     <div className="w-full h-full overflow-y-auto">
       <Header />
-      <MainSection isAdmin={false} />
+      <MainSection />
       <WorshipOrderSection
         openingPrayer={postData?.openingprayer ?? ""}
         generalPrayer={postData?.generalprayer ?? ""}
