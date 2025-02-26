@@ -123,3 +123,7 @@ body {
     @apply bg-background text-foreground;
   }
 }
+.responsive-text {
+  font-size: clamp(12px, 5vw, 36px);
+  white-space: nowrap; /* 줄바꿈 방지 */
+}
