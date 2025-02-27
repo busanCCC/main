@@ -105,7 +105,7 @@ export default function NewsSection({ id }: Props) {
                 key={newsItem.id}
                 className="flex flex-col justify-center items-center gap-4 my-8 text-gray-800 w-full"
               >
-                <h3 className="gsans-bold text-2xl">
+                <h3 className="gsans-bold text-2xl responsive-announce-text">
                   #{index + 1}. {newsItem.title}
                 </h3>
 
