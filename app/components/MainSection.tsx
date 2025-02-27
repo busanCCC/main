@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/api/supabase";
+import { Button } from "./ui/button";
+import { MapPinned } from "lucide-react";
 
 export default function MainSection() {
   const { id: eventId } = useParams();
@@ -13,6 +15,7 @@ export default function MainSection() {
   const [title, setTitle] = useState<string | null>(null);
   const [subTitle, setSubTitle] = useState<string | null>(null);
   const [place, setPlace] = useState<string | null>(null);
+  const [placeurl, setPlaceurl] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -32,6 +35,7 @@ export default function MainSection() {
       setTitle(data.title);
       setSubTitle(data.subtitle);
       setPlace(data.place);
+      setPlaceurl(data.placeurl);
 
       const utcDate = new Date(data.schedule);
       const formattedSchedule = `${utcDate.getFullYear()}년 ${
@@ -52,7 +56,20 @@ export default function MainSection() {
     >
       <div className="font-thin text-center">
         {schedule}
-        <span>{place}</span>
+        <span className="flex-auto">
+          {place}
+          {placeurl && (
+            <Button
+              variant="link"
+              size="icon"
+              onClick={() => {
+                window.open(placeurl, "_blank");
+              }}
+            >
+              <MapPinned />
+            </Button>
+          )}
+        </span>
       </div>
       <div className="font-extrabold text-4xl text-center responsive-text ">
         {title}
