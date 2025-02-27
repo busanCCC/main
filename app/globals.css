@@ -129,6 +129,6 @@ body {
 }
 
 .responsive-announce-text {
-  font-size: clamp(12px, calc(8vw - 0.5rem), 32px);
+  font-size: clamp(12px, calc(8vw - 0.7rem), 32px);
   white-space: nowrap; /* 줄바꿈 방지 */
 }
