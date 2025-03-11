@@ -10,7 +10,7 @@ import { Button } from "../ui/button";
 type prop = {
   id: number;
   messenger: string;
-  title: string;
+  messagetitle: string;
   passage: string;
   words: string;
   messengerinfo: string;
@@ -20,7 +20,7 @@ type prop = {
 export default function SetMessageDialog({
   id,
   messenger,
-  title,
+  messagetitle,
   passage,
   words,
   messengerinfo,
@@ -30,18 +30,18 @@ export default function SetMessageDialog({
   const [inputMessenger, setMessenger] = useState(messenger);
   const [inputPassage, setPassage] = useState(passage);
   const [inputWords, setWords] = useState(words);
-  const [inputTitle, setTitle] = useState(title);
+  const [inputMessagetitle, setMessagetitle] = useState(messagetitle);
   const [inputMessengerinfo, setMessengerinfo] = useState(messengerinfo);
 
   useEffect(() => {
     if (open) {
       setMessenger(messenger ?? "");
-      setTitle(title ?? "");
+      setMessagetitle(messagetitle ?? "");
       setPassage(passage ?? "");
       setWords(words ?? "");
       setMessengerinfo(messengerinfo ?? "");
     }
-  }, [open, messenger, passage, words, messengerinfo, title]);
+  }, [open, messenger, passage, words, messengerinfo, messagetitle]);
 
   const handleUpdate = async () => {
     const { error } = await supabase
@@ -51,7 +51,7 @@ export default function SetMessageDialog({
         passage: inputPassage,
         words: inputWords,
         messengerinfo: inputMessengerinfo,
-        title: inputTitle,
+        messagetitle: inputMessagetitle,
       })
       .eq("id", id);
 
@@ -71,7 +71,7 @@ export default function SetMessageDialog({
         <DialogTrigger asChild>
           <div className="cursor-pointer" onClick={() => setOpen(true)}>
             <Message
-              title={title}
+              title={messagetitle}
               passage={passage}
               messenger={messenger}
               words={words}
@@ -88,10 +88,10 @@ export default function SetMessageDialog({
             <div className="flex-col space-y-1">
               <Label>말씀 주제</Label>
               <Input
-                id="title"
+                id="messagetitle"
                 type="text"
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder={title || "주제를 입력하세요"}
+                onChange={(e) => setMessagetitle(e.target.value)}
+                placeholder={messagetitle || "주제를 입력하세요"}
               />
             </div>
             <div className="flex-col space-y-1">

@@ -23,6 +23,7 @@ type Event = {
   testimonyprayer: string | null;
   word: string | null;
   passage: string | null;
+  messagetitle: string | null;
 };
 
 type SetSectionProps = {
@@ -147,7 +148,7 @@ export default function SetSection({ id }: SetSectionProps) {
         <SetMessageDialog
           id={id}
           messenger={event?.messenger ?? ""}
-          title={event?.title ?? ""}
+          messagetitle={event?.messagetitle ?? ""}
           passage={event?.passage ?? ""}
           words={event?.word ?? ""}
           messengerinfo={event?.content ?? ""}
