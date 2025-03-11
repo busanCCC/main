@@ -8,7 +8,7 @@ import {
 } from "../ui/dialog";
 import Praise from "../worship-order/Praise";
 import { Button } from "../ui/button";
-import { Link2, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
 
 export default function SetPraiseDialog({ id }: { id: number }) {
@@ -27,18 +27,6 @@ export default function SetPraiseDialog({ id }: { id: number }) {
     setInputs(inputs.filter((_, i) => i !== index));
   };
 
-  // 링크 입력칸 추가/삭제
-  const toggleLinkInput = (index: number) => {
-    setInputs((prev) =>
-      prev.map((item, i) =>
-        i === index
-          ? item.link
-            ? { text: item.text } // link 속성을 삭제
-            : { ...item, link: item.link ? undefined : "" } // link 속성 추가
-          : item
-      )
-    );
-  };
   return (
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -60,9 +48,11 @@ export default function SetPraiseDialog({ id }: { id: number }) {
                     className="border p-2 rounded-md w-full"
                     placeholder={`입력 ${index + 1}`}
                   />
-                  <Button onClick={() => toggleLinkInput(index)}>
-                    <Link2 />
-                  </Button>
+                  <input
+                    type="text"
+                    className="border p-2 rounded-md w-full"
+                    placeholder={`링크 ${index + 1}`}
+                  />
                   {inputs.length > 1 && (
                     <Button
                       variant="ghost"
@@ -72,14 +62,6 @@ export default function SetPraiseDialog({ id }: { id: number }) {
                       <X className="w-5 h-5 text-red-500" />
                     </Button>
                   )}
-                  {/* 링크 입력란 (필요할 때만 표시) */}
-                  {/* {inputs.link !== undefined && (
-                    <input
-                      type="text"
-                      className="border p-2 rounded-md w-full"
-                      placeholder="링크 입력"
-                    />
-                  )} */}
                 </div>
               ))}
               <Button

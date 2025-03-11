@@ -1,7 +1,6 @@
 "use client";
 
 import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
-import { useState } from "react";
 
 export const createClient = () => {
   return createPagesBrowserClient();

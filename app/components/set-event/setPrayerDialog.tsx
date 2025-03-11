@@ -85,7 +85,7 @@ export default function SetPrayerDialog({
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>내용 수정</DialogTitle>
+            <DialogTitle>기도자 수정</DialogTitle>
           </DialogHeader>
           <div className="flex-col space-y-4">
             <div className="flex-col space-y-1">
