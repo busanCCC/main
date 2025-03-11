@@ -13,7 +13,7 @@ type prop = {
   messagetitle: string;
   passage: string;
   words: string;
-  messengerinfo: string;
+  role: string;
   refreshEvent: () => void;
 };
 
@@ -23,7 +23,7 @@ export default function SetMessageDialog({
   messagetitle,
   passage,
   words,
-  messengerinfo,
+  role,
   refreshEvent,
 }: prop) {
   const [open, setOpen] = useState(false);
@@ -31,7 +31,7 @@ export default function SetMessageDialog({
   const [inputPassage, setPassage] = useState(passage);
   const [inputWords, setWords] = useState(words);
   const [inputMessagetitle, setMessagetitle] = useState(messagetitle);
-  const [inputMessengerinfo, setMessengerinfo] = useState(messengerinfo);
+  const [inputMessengerinfo, setMessengerinfo] = useState(role);
 
   useEffect(() => {
     if (open) {
@@ -39,29 +39,43 @@ export default function SetMessageDialog({
       setMessagetitle(messagetitle ?? "");
       setPassage(passage ?? "");
       setWords(words ?? "");
-      setMessengerinfo(messengerinfo ?? "");
+      setMessengerinfo(role ?? "");
     }
-  }, [open, messenger, passage, words, messengerinfo, messagetitle]);
+  }, [open, messenger, passage, words, role, messagetitle]);
 
   const handleUpdate = async () => {
-    const { error } = await supabase
-      .from("posts")
-      .update({
-        messenger: inputMessenger,
-        passage: inputPassage,
-        words: inputWords,
-        messengerinfo: inputMessengerinfo,
-        messagetitle: inputMessagetitle,
-      })
-      .eq("id", id);
+    try {
+      // ✅ `posts` 테이블 업데이트 (설교 메시지 관련 데이터)
+      const { error: postError } = await supabase
+        .from("posts")
+        .update({
+          messenger: inputMessenger,
+          passage: inputPassage,
+          words: inputWords,
+          messagetitle: inputMessagetitle, // ⚠ 컬럼명 일치 확인
+        })
+        .eq("id", id);
 
-    if (error) {
-      console.error("업데이트 실패:", error);
-      alert("업데이트에 실패했습니다.");
-    } else {
+      if (postError)
+        throw new Error(`Posts 업데이트 실패: ${postError.message}`);
+
+      // ✅ `staff_info` 테이블 업데이트 (설교자 정보)
+      const { error: staffError } = await supabase
+        .from("staff_info")
+        .update({
+          role: inputMessengerinfo,
+        })
+        .eq("messenger", inputMessenger); // ⚠ `messenger`를 기준으로 업데이트
+
+      if (staffError)
+        throw new Error(`Staff 정보 업데이트 실패: ${staffError.message}`);
+
       alert("업데이트 성공!");
       refreshEvent();
       setOpen(false); // 다이얼로그 닫기
+    } catch (err) {
+      console.error("업데이트 실패:", err);
+      alert("업데이트에 실패했습니다.");
     }
   };
 
@@ -75,7 +89,7 @@ export default function SetMessageDialog({
               passage={passage}
               messenger={messenger}
               words={words}
-              messengerInfo={messengerinfo}
+              messengerInfo={role}
               disableDrawer={true}
             />
           </div>
@@ -109,7 +123,7 @@ export default function SetMessageDialog({
                 id="messengerinfo"
                 type="text"
                 onChange={(e) => setMessengerinfo(e.target.value)}
-                placeholder={messengerinfo || "메신저 정보를 입력하세요"}
+                placeholder={role || "메신저 정보를 입력하세요"}
               />
             </div>
             <div className="flex-col space-y-1">
