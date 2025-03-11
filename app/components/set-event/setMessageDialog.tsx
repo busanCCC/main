@@ -76,6 +76,7 @@ export default function SetMessageDialog({
               messenger={messenger}
               words={words}
               messengerInfo={messengerinfo}
+              disableDrawer={true}
             />
           </div>
         </DialogTrigger>

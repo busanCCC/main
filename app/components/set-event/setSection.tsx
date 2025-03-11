@@ -3,9 +3,9 @@
 import { supabase } from "@/api/supabase";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
-import Message from "../worship-order/Message";
 import SetPrayerDialog from "./setPrayerDialog";
 import SetPraiseDialog from "./setPraiseDialog";
+import SetMessageDialog from "./setMessageDialog";
 
 type Event = {
   id: number;
@@ -144,11 +144,14 @@ export default function SetSection({ id }: SetSectionProps) {
         )}
 
         {/* 메시지 */}
-        <Message
-          title="한 밤중에 일어난 역사"
-          passage={event?.passage ?? ""}
+        <SetMessageDialog
+          id={id}
           messenger={event?.messenger ?? ""}
+          title={event?.title ?? ""}
+          passage={event?.passage ?? ""}
           words={event?.word ?? ""}
+          messengerinfo={event?.content ?? ""}
+          refreshEvent={refreshEvent}
         />
 
         {/* 헌금기도 */}
