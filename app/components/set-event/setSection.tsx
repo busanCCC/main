@@ -3,9 +3,9 @@
 import { supabase } from "@/api/supabase";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
-import Message from "../worship-order/Message";
 import SetPrayerDialog from "./setPrayerDialog";
 import SetPraiseDialog from "./setPraiseDialog";
+import SetMessageDialog from "./setMessageDialog";
 
 type Event = {
   id: number;
@@ -23,6 +23,7 @@ type Event = {
   testimonyprayer: string | null;
   word: string | null;
   passage: string | null;
+  messagetitle: string | null;
 };
 
 type SetSectionProps = {
@@ -32,6 +33,9 @@ type SetSectionProps = {
 export default function SetSection({ id }: SetSectionProps) {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
+  const [messengerInfoData, setMessengerInfoData] = useState<string | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
   const [activeIndexes, setActiveIndexes] = useState<Set<string>>(
     new Set(["order"])
@@ -54,15 +58,32 @@ export default function SetSection({ id }: SetSectionProps) {
     if (!id) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      // `posts` 테이블에서 이벤트 정보 가져오기
+      const { data: postData, error: postError } = await supabase
         .from("posts")
         .select("*")
         .eq("id", id)
         .single();
 
-      if (error) throw new Error(error.message);
+      if (postError) throw new Error(postError.message);
+      setEvent(postData);
 
-      setEvent(data);
+      // `staff_info` 테이블에서 messenger 정보 가져오기
+      if (postData?.messenger) {
+        const { data: staffData, error: staffError } = await supabase
+          .from("staff_info")
+          .select("role")
+          .eq("name", postData.messenger)
+          .single();
+
+        if (staffError) {
+          console.error("설교자 정보 가져오기 실패:", staffError);
+          setMessengerInfoData(null);
+        } else {
+          setMessengerInfoData(staffData?.role ?? null);
+        }
+      }
+
       setLoading(false);
     } catch (err) {
       if (err instanceof Error) {
@@ -73,7 +94,6 @@ export default function SetSection({ id }: SetSectionProps) {
       setLoading(false);
     }
   }, [id]); // `id`가 변경될 때만 재생성됨
-
   useEffect(() => {
     refreshEvent();
   }, [refreshEvent]); // 이제 안전하게 의존성 배열에 추가 가능
@@ -144,11 +164,14 @@ export default function SetSection({ id }: SetSectionProps) {
         )}
 
         {/* 메시지 */}
-        <Message
-          title="한 밤중에 일어난 역사"
-          passage={event?.passage ?? ""}
+        <SetMessageDialog
+          id={id}
           messenger={event?.messenger ?? ""}
+          messagetitle={event?.messagetitle ?? ""}
+          passage={event?.passage ?? ""}
           words={event?.word ?? ""}
+          role={messengerInfoData ?? ""}
+          refreshEvent={refreshEvent}
         />
 
         {/* 헌금기도 */}

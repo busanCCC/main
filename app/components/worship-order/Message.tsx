@@ -17,6 +17,7 @@ type MessageProps = {
   messenger?: string;
   messengerInfo?: string;
   words?: string;
+  disableDrawer?: boolean;
   className?: string;
 };
 
@@ -26,6 +27,7 @@ export default function Message({
   messenger,
   words,
   messengerInfo,
+  disableDrawer = false, // 기본값 false - 활성화
   className = "",
 }: MessageProps) {
   const [isOpen, setIsOpen] = useState(false); // ✅ 상태 관리 추가
@@ -36,9 +38,13 @@ export default function Message({
     >
       <div className="font-light tracking-widest">메세지</div>
       <h3 className="gsans-bold text-2xl mt-2">{title}</h3>
-      <MessagePassageDrawer passage={passage} words={words}>
-        <div className="font-light underline cursor-pointer">{passage}</div>
-      </MessagePassageDrawer>
+      {!disableDrawer ? (
+        <MessagePassageDrawer passage={passage} words={words}>
+          <div className="font-light underline cursor-pointer">{passage}</div>
+        </MessagePassageDrawer>
+      ) : (
+        <div className="font-light">{passage}</div>
+      )}
       <div className="font-extralight">
         <p className="flex gap-1 items-center">
           {messenger}
