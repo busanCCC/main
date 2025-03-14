@@ -45,34 +45,48 @@ export default function SetMessageDialog({
 
   const handleUpdate = async () => {
     try {
-      // ✅ `posts` 테이블 업데이트 (설교 메시지 관련 데이터)
-      const { error: postError } = await supabase
+      const { data: updatedPost, error: postError } = await supabase
         .from("posts")
         .update({
           messenger: inputMessenger,
           passage: inputPassage,
-          words: inputWords,
-          messagetitle: inputMessagetitle, // ⚠ 컬럼명 일치 확인
+          word: inputWords,
+          messagetitle: inputMessagetitle,
         })
-        .eq("id", id);
+        .eq("id", id)
+        .select(); // ✅ 업데이트된 데이터 반환
 
-      if (postError)
+      console.log("updatedPost:", updatedPost);
+
+      if (postError) {
         throw new Error(`Posts 업데이트 실패: ${postError.message}`);
+      }
+      if (!updatedPost || updatedPost.length === 0) {
+        console.warn("경고: 업데이트된 데이터가 없음");
+      }
 
-      // ✅ `staff_info` 테이블 업데이트 (설교자 정보)
-      const { error: staffError } = await supabase
+      const { data: updatedStaff, error: staffError } = await supabase
         .from("staff_info")
-        .update({
-          role: inputMessengerinfo,
-        })
-        .eq("messenger", inputMessenger); // ⚠ `messenger`를 기준으로 업데이트
+        .upsert(
+          [
+            {
+              name: inputMessenger,
+              role: inputMessengerinfo,
+            },
+          ],
+          { onConflict: "name" }
+        )
+        .select(); // ✅ 업데이트된 데이터 반환
 
-      if (staffError)
+      console.log("updatedStaff:", updatedStaff);
+
+      if (staffError) {
         throw new Error(`Staff 정보 업데이트 실패: ${staffError.message}`);
+      }
 
       alert("업데이트 성공!");
       refreshEvent();
-      setOpen(false); // 다이얼로그 닫기
+      setOpen(false);
     } catch (err) {
       console.error("업데이트 실패:", err);
       alert("업데이트에 실패했습니다.");
