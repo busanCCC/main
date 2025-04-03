@@ -34,10 +34,10 @@ export default function Header() {
         <NavigationMenu>
           <NavigationMenuList className="hidden lg:flex space-x-4">
             <NavigationMenuItem>
-              <Link href="/home" legacyBehavior passHref>
+              <Link href="/" legacyBehavior passHref>
                 <NavigationMenuLink
                   className={`${navigationMenuTriggerStyle()} ${
-                    isActive("/home") ? "font-bold" : ""
+                    isActive("/") ? "font-bold" : ""
                   }`}
                 >
                   홈
