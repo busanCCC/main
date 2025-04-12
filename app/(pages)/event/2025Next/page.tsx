@@ -381,7 +381,7 @@ export default function Next_page() {
           </div>
           <div className="bg-blue-300 p-4 rounded-md">
             <div className="text-xl">4월</div>
-            <div>
+            <div className="pl-1">
               <li>공동체로의 접붙임</li>
               <li>중간고사 이후 LTC 교육 진행</li>
               <li>전도의 능동적인 참여</li>
@@ -389,20 +389,20 @@ export default function Next_page() {
           </div>
           <div className="bg-blue-300 p-4 rounded-md">
             <div className="text-xl">5월</div>
-            <div>
+            <div className="pl-1">
               <li>전도하는 순장의 삶을 통해 전도하는 순원 육성</li>
             </div>
           </div>
           <div className="bg-blue-300 p-4 rounded-md">
             <div className="text-xl">6월</div>
-            <div>
+            <div className="pl-1">
               <li>모든 순장, 순원이 함께 나아가는 여름 수련회</li>
               <li>새 친구 목표 : 80명 (2024년 : 36명)</li>
             </div>
           </div>
           <div className="bg-blue-300 p-4 rounded-md">
             <div className="text-xl">여름수련회</div>
-            <div>
+            <div className="pl-1">
               <li>6월23일 ~ 27일</li>
               <li>목표인원 : 800명 (2024년 : 654명)</li>
             </div>
