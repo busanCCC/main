@@ -14,6 +14,7 @@ import animationMeet from "@/public/animation_meet.json";
 import FooterSection from "@/app/components/FooterSection";
 import Header from "@/app/components/ui/Header";
 import dynamic from "next/dynamic";
+import { ScrollArea, ScrollBar } from "@/app/components/ui/scrollArea";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 const chartConfig = {
@@ -118,21 +119,28 @@ export default function Next_page() {
           <p className="text-2xl">3월 신학기 사역 현황</p>
           <p>접촉 4919명 전도 1248명</p>
         </div>
-        <ChartContainer config={chartConfig} className="h-[200px] w-full pt-4">
-          <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="campus"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Bar dataKey="contact" fill="var(--color-contact)" radius={4} />
-            <Bar dataKey="welcome" fill="var(--color-welcome)" radius={4} />
-          </BarChart>
-        </ChartContainer>
+        <ScrollArea className="w-full">
+          <ChartContainer
+            config={chartConfig}
+            className="h-[200px] w-[800px] md:w-full pt-4"
+          >
+            <BarChart accessibilityLayer data={chartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="campus"
+                tickLine={false}
+                interval={0}
+                tickMargin={10}
+                axisLine={false}
+                tickFormatter={(value) => value.slice(0, 3)}
+              />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar dataKey="contact" fill="var(--color-contact)" radius={4} />
+              <Bar dataKey="welcome" fill="var(--color-welcome)" radius={4} />
+            </BarChart>
+          </ChartContainer>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </motion.div>
       <motion.div
         className="m-2"
