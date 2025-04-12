@@ -389,7 +389,7 @@ export default function Next_page() {
             </div>
           </motion.div>
         </div>
-        <div className="p-2 flex-col justify-center w-full space-y-4 ">
+        <div className="flex-col justify-center w-full space-y-4 ">
           <motion.div
             className="flex items-end space-x-2 justify-center"
             initial={{ opacity: 0, y: 20 }}
