@@ -48,7 +48,7 @@ const chartData = [
 
 export default function Next_page() {
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full overflow-x-hidden">
       <Header />
       <motion.div
         initial={{ opacity: 0, y: 50 }}
