@@ -243,13 +243,14 @@ export default function Next_page() {
       <div>
         <motion.div
           className="w-full flex-col"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{
             duration: 0.8,
-            delay: 1.4,
+            delay: 0.6,
             ease: [0.25, 0.1, 0.25, 1],
           }}
+          viewport={{ once: true, amount: 0.2 }}
         >
           <div className="w-full h-32 flex justify-center">
             <Lottie
@@ -283,12 +284,13 @@ export default function Next_page() {
           <motion.p
             className="bg-blue-300 w-full mx-auto p-2 rounded-md text-white"
             initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{
               duration: 0.8,
-              delay: 1.4,
+              delay: 0.4,
               ease: [0.25, 0.1, 0.25, 1],
             }}
+            viewport={{ once: true, amount: 0.2 }}
           >
             1 단계 <br />
             관계전도를 함께할 동역자 3명이상의 팀을 만든다
@@ -296,12 +298,13 @@ export default function Next_page() {
           <motion.p
             className="bg-blue-400 w-full mx-auto p-2 rounded-md text-white"
             initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{
               duration: 0.8,
-              delay: 1.6,
+              delay: 0.6,
               ease: [0.25, 0.1, 0.25, 1],
             }}
+            viewport={{ once: true, amount: 0.2 }}
           >
             2 단계 <br />
             관계전도 아이디어 보고서를 제출한다
@@ -309,36 +312,47 @@ export default function Next_page() {
           <motion.p
             className="bg-blue-600 w-full mx-auto p-2 rounded-md text-white"
             initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{
               duration: 0.8,
-              delay: 1.8,
+              delay: 0.8,
               ease: [0.25, 0.1, 0.25, 1],
             }}
+            viewport={{ once: true, amount: 0.2 }}
           >
             3 단계 <br />
             제출 후 심사를 기다린다
           </motion.p>
         </div>
         <div>
-          <div className="flex justify-center pt-2">
+          <motion.div
+            className="flex-col flex items-center pt-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.8,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <Lottie
               animationData={animationPrize}
               loop={false}
               className="w-32"
             />
-          </div>
-          <div className="flex-col text-center">
-            <p className="text-2xl">랜덤전도</p>
-            <p className="text-xl">콘테스트</p>
-          </div>
-          <div className="flex justify-center">
-            <Lottie
-              animationData={animationMeet}
-              loop={true}
-              className="w-64"
-            />
-          </div>
+            <div className="flex-col text-center">
+              <p className="text-2xl">랜덤전도</p>
+              <p className="text-xl">콘테스트</p>
+            </div>
+            <div className="flex justify-center">
+              <Lottie
+                animationData={animationMeet}
+                loop={true}
+                className="w-64"
+              />
+            </div>
+          </motion.div>
           <div className="pt-4 flex justify-center">
             <p>
               부산지구에서 가장 열심히 전도하는 <br />
@@ -347,12 +361,13 @@ export default function Next_page() {
           </div>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.8,
-              delay: 1.8,
+              delay: 0.8,
               ease: [0.25, 0.1, 0.25, 1],
             }}
+            viewport={{ once: true, amount: 0.2 }}
           >
             <div className="space-y-2 pt-2">
               <p className="bg-blue-300  w-full mx-auto p-2 rounded-md text-white text-center">
@@ -375,38 +390,88 @@ export default function Next_page() {
           </motion.div>
         </div>
         <div className="px-2 flex-col justify-center py-4 space-y-4 ">
-          <div className="flex items-end space-x-2 justify-center">
+          <motion.div
+            className="flex items-end space-x-2 justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.8,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <p className="text-2xl">우리의 기대</p>
             <p>feat 소원총단</p>
-          </div>
-          <div className="bg-blue-300 p-4 rounded-md">
+          </motion.div>
+          <motion.div
+            className="bg-blue-300 p-4 rounded-md"
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.6,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <div className="text-xl">4월</div>
             <div className="pl-1">
               <li>공동체로의 접붙임</li>
               <li>중간고사 이후 LTC 교육 진행</li>
               <li>전도의 능동적인 참여</li>
             </div>
-          </div>
-          <div className="bg-blue-300 p-4 rounded-md">
+          </motion.div>
+          <motion.div
+            className="bg-blue-300 p-4 rounded-md"
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.6,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <div className="text-xl">5월</div>
             <div className="pl-1">
               <li>전도하는 순장의 삶을 통해 전도하는 순원 육성</li>
             </div>
-          </div>
-          <div className="bg-blue-300 p-4 rounded-md">
+          </motion.div>
+          <motion.div
+            className="bg-blue-300 p-4 rounded-md"
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.6,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <div className="text-xl">6월</div>
             <div className="pl-1">
               <li>모든 순장, 순원이 함께 나아가는 여름 수련회</li>
               <li>새 친구 목표 : 80명 (2024년 : 36명)</li>
             </div>
-          </div>
-          <div className="bg-blue-300 p-4 rounded-md">
+          </motion.div>
+          <motion.div
+            className="bg-blue-300 p-4 rounded-md"
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.6,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <div className="text-xl">여름수련회</div>
             <div className="pl-1">
               <li>6월23일 ~ 27일</li>
               <li>목표인원 : 800명 (2024년 : 654명)</li>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
       <FooterSection />
