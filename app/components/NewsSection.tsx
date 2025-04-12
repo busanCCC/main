@@ -5,6 +5,7 @@ import NewsYoutube from "./news/NewsYoutube";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/api/supabase";
+import { Button } from "./ui/button";
 
 type Props = {
   id: string;
@@ -140,16 +141,14 @@ export default function NewsSection({ id }: Props) {
 
                 {/* Call to Action */}
                 {newsItem.calltoaction && (
-                  <div className="mt-4">
-                    <a
-                      href={newsItem.actionurl ?? ""}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 text-white rounded"
-                    >
-                      {newsItem.actiontext}
-                    </a>
-                  </div>
+                  <Button
+                    className="mt-2"
+                    onClick={() => {
+                      window.open(newsItem.actionurl ?? "", "_blank");
+                    }}
+                  >
+                    {newsItem.actiontext}
+                  </Button>
                 )}
               </div>
             ))

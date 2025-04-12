@@ -28,6 +28,13 @@ const MainCarousel = () => {
 
   const slides = [
     {
+      image: "/2025Next.png",
+      title: "N E X T",
+      description: "New Evangelism X Truth",
+      link: "/event/2025Next",
+    },
+
+    {
       image: "/tst.png",
       title: "2025 TST 리뷰 영상",
       description: "말씀 앞에서 : STAND BEFORE THE WORD",
