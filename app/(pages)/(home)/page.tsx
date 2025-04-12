@@ -1,4 +1,5 @@
 "use client";
+import CampusStory from "@/app/components/CampusStory";
 import EventCarousel from "@/app/components/EventCarousel";
 import FooterSection from "@/app/components/FooterSection";
 import MainCarousel from "@/app/components/MainCarousel";
@@ -25,9 +26,7 @@ export default function Main() {
           <p className="text-xs font-light text-gray-600 pb-2 px-4">
             부산지구 캠퍼스의 소식들
           </p>
-          <div className="w-full h-36 flex flex-col text-3xl bg-gray-300 rounded-lg p-5 items-center justify-center">
-            Comming soooooon!
-          </div>
+          <CampusStory />
         </div>
 
         <div className="p-4 mt-20">
