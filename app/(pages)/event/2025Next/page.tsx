@@ -352,13 +352,13 @@ export default function Next_page() {
                 className="w-64"
               />
             </div>
+            <div className="pt-4 flex justify-center">
+              <p>
+                부산지구에서 가장 열심히 전도하는 <br />
+                7개 캠퍼스에게 상금이 주어집니다!
+              </p>
+            </div>
           </motion.div>
-          <div className="pt-4 flex justify-center">
-            <p>
-              부산지구에서 가장 열심히 전도하는 <br />
-              7개 캠퍼스에게 상금이 주어집니다!
-            </p>
-          </div>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -389,7 +389,7 @@ export default function Next_page() {
             </div>
           </motion.div>
         </div>
-        <div className="px-2 flex-col justify-center py-4 space-y-4 ">
+        <div className="p-2 flex-col justify-center w-full space-y-4 ">
           <motion.div
             className="flex items-end space-x-2 justify-center"
             initial={{ opacity: 0, y: 20 }}
@@ -405,7 +405,7 @@ export default function Next_page() {
             <p>feat 소원총단</p>
           </motion.div>
           <motion.div
-            className="bg-blue-300 p-4 rounded-md"
+            className="bg-blue-300 rounded-md w-full mx-auto p-4"
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{
@@ -416,14 +416,14 @@ export default function Next_page() {
             viewport={{ once: true, amount: 0.2 }}
           >
             <div className="text-xl">4월</div>
-            <div className="pl-1">
+            <ul className="pl-4 list-disc">
               <li>공동체로의 접붙임</li>
               <li>중간고사 이후 LTC 교육 진행</li>
               <li>전도의 능동적인 참여</li>
-            </div>
+            </ul>
           </motion.div>
           <motion.div
-            className="bg-blue-300 p-4 rounded-md"
+            className="bg-blue-300 rounded-md w-full mx-auto p-4"
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{
@@ -434,12 +434,12 @@ export default function Next_page() {
             viewport={{ once: true, amount: 0.2 }}
           >
             <div className="text-xl">5월</div>
-            <div className="pl-1">
+            <ul className="pl-4 list-disc">
               <li>전도하는 순장의 삶을 통해 전도하는 순원 육성</li>
-            </div>
+            </ul>
           </motion.div>
           <motion.div
-            className="bg-blue-300 p-4 rounded-md"
+            className="bg-blue-300 rounded-md w-full mx-auto p-4"
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{
@@ -450,13 +450,13 @@ export default function Next_page() {
             viewport={{ once: true, amount: 0.2 }}
           >
             <div className="text-xl">6월</div>
-            <div className="pl-1">
+            <ul className="pl-4 list-disc">
               <li>모든 순장, 순원이 함께 나아가는 여름 수련회</li>
               <li>새 친구 목표 : 80명 (2024년 : 36명)</li>
-            </div>
+            </ul>
           </motion.div>
           <motion.div
-            className="bg-blue-300 p-4 rounded-md"
+            className="bg-blue-300 rounded-md w-full mx-auto p-4"
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{
@@ -467,10 +467,10 @@ export default function Next_page() {
             viewport={{ once: true, amount: 0.2 }}
           >
             <div className="text-xl">여름수련회</div>
-            <div className="pl-1">
+            <ul className="pl-4 list-disc">
               <li>6월23일 ~ 27일</li>
               <li>목표인원 : 800명 (2024년 : 654명)</li>
-            </div>
+            </ul>
           </motion.div>
         </div>
       </div>
