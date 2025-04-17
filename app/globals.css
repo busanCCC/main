@@ -132,3 +132,8 @@ body {
   font-size: clamp(17px, calc(8vw - 0.9rem), 32px);
   white-space: nowrap; /* 줄바꿈 방지 */
 }
+
+.responsive-title-text {
+  font-size: clamp(17px, calc(8vw - 0.8rem), 32px);
+  white-space: nowrap;
+}
