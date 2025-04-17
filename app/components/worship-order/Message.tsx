@@ -37,7 +37,7 @@ export default function Message({
     ${className}`}
     >
       <div className="font-light tracking-widest">메세지</div>
-      <h3 className="gsans-bold text-2xl responsive-text">{title}</h3>
+      <h3 className="gsans-bold text-2xl responsive-title-text">{title}</h3>
       {!disableDrawer ? (
         <MessagePassageDrawer passage={passage} words={words}>
           <div className="font-light underline cursor-pointer">{passage}</div>
