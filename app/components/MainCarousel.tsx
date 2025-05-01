@@ -28,6 +28,12 @@ const MainCarousel = () => {
 
   const slides = [
     {
+      image: "/2025_scposter.jpg",
+      title: "2025 CCC 여름수련회",
+      description: "Seize your Season (전도서 12:1)",
+      link: "https://www.kccc.org/?p=sc",
+    },
+    {
       image: "/2025Next.png",
       title: "N E X T",
       description: "New Evangelism X Truth",

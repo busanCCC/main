@@ -2,6 +2,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -24,7 +25,7 @@ export default function MessagePassageDrawer({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] flex flex-col items-center">
         <DialogHeader>
           <DialogTitle>{passage}</DialogTitle>
           {/* 개행 지키기 */}
@@ -32,6 +33,9 @@ export default function MessagePassageDrawer({
             {words}
           </DialogDescription>
         </DialogHeader>
+        <DialogFooter className="text-sm text-stone-400">
+          출처.대한성서공회
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

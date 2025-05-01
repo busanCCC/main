@@ -6,6 +6,7 @@ import NewsSection from "../../../components/NewsSection";
 import Header from "../../../components/ui/Header";
 import { supabase } from "@/api/supabase";
 import { unstable_noStore as noStore } from "next/cache"; // Next.js 14 기준
+import FooterSection from "@/app/components/FooterSection";
 
 async function fetchPostData(id: number) {
   noStore(); // ✅ 캐싱 방지
@@ -70,12 +71,13 @@ export default async function EventPage({
         passage={postData?.passage ?? ""}
         messenger={postData?.messenger ?? ""}
         messageTitle={postData?.messagetitle ?? ""}
-        messengerInfo={staffData?.role ??""}
+        messengerInfo={staffData?.role ?? ""}
         word={postData?.word ?? ""}
         id={numericId}
       />
       <AnnouncementSection id={numericId.toString()} />
       <NewsSection id={numericId.toString()} />
+      <FooterSection />
     </div>
   );
 }
