@@ -35,7 +35,8 @@ export default function AnnouncementSection({ id }: Props) {
           await supabase
             .from("announcements")
             .select("*")
-            .eq("post_id", parseInt(id));
+            .eq("post_id", parseInt(id))
+            .order("id", { ascending: true });
 
         if (announcementsError) {
           throw error;
