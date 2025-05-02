@@ -62,7 +62,9 @@ export default function CampusStory() {
               <NewsYoutube youtubeId={story.youtube_url} />
             </div>
           )}
-          <p className="text-sm pt-4 w-10/12 mx-auto">{story.description}</p>
+          <p className="text-[0.7rem] pt-4 w-10/12 mx-auto">
+            {story.description}
+          </p>
         </div>
       ))}
     </div>
