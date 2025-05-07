@@ -24,20 +24,23 @@ export default function PrayerChainSection({ data }: PrayerChainSectionProps) {
   return (
     <section className="w-full bg-white/80 rounded-2xl shadow-md p-6 flex flex-col gap-2 mt-10">
       <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-500 to-blue-400 bg-clip-text text-transparent">
-        여름수련회 기도체인
+        부산지구 기도제목
       </h1>
       <p className="text-xs font-light text-gray-600 pb-2">
-        매일 각 캠퍼스에서 올라온 기도제목을 다시 볼 수 있어요
+        각 캠퍼스의 기도제목을 확인하고 함께 기도해요
       </p>
       <div className="relative w-full flex items-center justify-center">
         <Carousel
-          className="pl-1 flex-col justify-center w-full"
+          className="pl-1 flex-col justify-center w-full items-center"
           opts={{ align: "center" }}
         >
           <CarouselPrevious />
-          <CarouselContent className="flex-row sm:justify-start">
+          <CarouselContent className="flex-row sm:justify-center items-center">
             {data.map((item, idx) => (
-              <CarouselItem key={idx} className="max-w-fit transition group">
+              <CarouselItem
+                key={idx}
+                className="max-w-fit transition group flex justify-center items-center mx-auto"
+              >
                 <div className="mx-2">
                   <PrayerChainCard {...item} />
                 </div>
