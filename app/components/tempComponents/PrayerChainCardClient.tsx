@@ -38,9 +38,14 @@ export default function PrayerChainCardClient({
       setLoading(false);
       // 세션 내 중복 클릭 방지
       if (data && typeof window !== "undefined") {
-        if (sessionStorage.getItem(`prayerChainPrayed_${data.id}`)) {
-          setDisabled(true);
-          setMessage("동역해주셔서 감사합니다");
+        const prayedAt = localStorage.getItem(`prayerChainPrayed_${data.id}`);
+        if (prayedAt) {
+          const prayedDate = new Date(prayedAt).toDateString();
+          const today = new Date().toDateString();
+          if (prayedDate === today) {
+            setDisabled(true);
+            setMessage("기도로 동역해주셔서 감사합니다");
+          }
         }
       }
     }
@@ -57,9 +62,12 @@ export default function PrayerChainCardClient({
     if (!error) {
       setPrayingCount(prayingCount + 1);
       setDisabled(true);
-      setMessage("동역해주셔서 감사합니다");
+      setMessage("기도로 동역해주셔서 감사합니다");
       if (typeof window !== "undefined") {
-        sessionStorage.setItem(`prayerChainPrayed_${data.id}`, "true");
+        localStorage.setItem(
+          `prayerChainPrayed_${data.id}`,
+          new Date().toISOString()
+        );
       }
     } else {
       alert("오류가 발생했습니다.");

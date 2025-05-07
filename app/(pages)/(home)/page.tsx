@@ -3,9 +3,9 @@ import CampusStory from "@/app/components/CampusStory";
 import EventCarousel from "@/app/components/EventCarousel";
 import FooterSection from "@/app/components/FooterSection";
 import MainCarousel from "@/app/components/MainCarousel";
+import PrayerChainSection from "@/app/components/PrayerChainSection";
 import Header from "@/app/components/ui/Header";
 import { Cover } from "@/components/ui/cover";
-import PrayerChainSectionServer from "@/app/components/tempComponents/PrayerChainSectionServer";
 export default function Main() {
   return (
     <>
@@ -18,7 +18,7 @@ export default function Main() {
         </div>
         <main className="w-full max-w-4xl flex flex-col items-center gap-10 py-2 px-2 md:px-0">
           {/* 기도체인 섹션 */}
-          <PrayerChainSectionServer />
+          <PrayerChainSection />
           {/* 목요채플 섹션 */}
           <section className="w-full bg-white/80 rounded-2xl shadow-md p-6 flex flex-col gap-2">
             <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent">

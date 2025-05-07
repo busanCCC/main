@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -7,6 +8,7 @@ import {
   CarouselNext,
 } from "@/app/components/ui/carousel";
 import PrayerChainCardClient from "./tempComponents/PrayerChainCardClient";
+import supabase from "@/utils/supabase/client";
 
 interface PrayerChainItem {
   id: number;
@@ -17,11 +19,21 @@ interface PrayerChainItem {
   prayingCount: number;
 }
 
-interface PrayerChainSectionProps {
-  data: PrayerChainItem[];
-}
+export default function PrayerChainSection() {
+  const [data, setData] = useState<PrayerChainItem[]>([]);
 
-export default function PrayerChainSection({ data }: PrayerChainSectionProps) {
+  useEffect(() => {
+    // supabase에서 데이터 fetch
+    async function fetchData() {
+      const { data } = await supabase
+        .from("prayer_chain")
+        .select("*")
+        .order("date", { ascending: false });
+      setData(data ?? []);
+    }
+    fetchData();
+  }, []);
+
   return (
     <section className="w-full bg-white/80 rounded-2xl shadow-md p-6 flex flex-col gap-2 mt-10">
       <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-500 to-blue-400 bg-clip-text text-transparent">
