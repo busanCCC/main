@@ -13,13 +13,15 @@ interface PrayerChainRow {
 }
 
 export default function PrayerChainCardClient({
-  onPray,
+  initialData,
 }: {
-  onPray: () => void;
+  initialData: PrayerChainRow;
 }) {
-  const [data, setData] = useState<PrayerChainRow | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [prayingCount, setPrayingCount] = useState<number>(0);
+  const [data, setData] = useState<PrayerChainRow | null>(initialData);
+  const [loading, setLoading] = useState(false);
+  const [prayingCount, setPrayingCount] = useState<number>(
+    initialData.praying_count ?? 0
+  );
   const [disabled, setDisabled] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -38,7 +40,7 @@ export default function PrayerChainCardClient({
       if (data && typeof window !== "undefined") {
         if (sessionStorage.getItem(`prayerChainPrayed_${data.id}`)) {
           setDisabled(true);
-          setMessage("이미 기도하셨습니다.");
+          setMessage("동역해주셔서 감사합니다");
         }
       }
     }
@@ -55,11 +57,10 @@ export default function PrayerChainCardClient({
     if (!error) {
       setPrayingCount(prayingCount + 1);
       setDisabled(true);
-      setMessage("이미 기도하셨습니다.");
+      setMessage("동역해주셔서 감사합니다");
       if (typeof window !== "undefined") {
         sessionStorage.setItem(`prayerChainPrayed_${data.id}`, "true");
       }
-      if (onPray) onPray();
     } else {
       alert("오류가 발생했습니다.");
     }

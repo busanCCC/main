@@ -1,5 +1,4 @@
 "use client";
-import PrayerChainCard from "./PrayerChainCard";
 import {
   Carousel,
   CarouselContent,
@@ -7,8 +6,10 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/app/components/ui/carousel";
+import PrayerChainCardClient from "./tempComponents/PrayerChainCardClient";
 
 interface PrayerChainItem {
+  id: number;
   date: string;
   day: string;
   campus: string;
@@ -42,7 +43,15 @@ export default function PrayerChainSection({ data }: PrayerChainSectionProps) {
                 className="max-w-fit transition group flex justify-center items-center mx-auto"
               >
                 <div className="mx-2">
-                  <PrayerChainCard {...item} />
+                  <PrayerChainCardClient
+                    initialData={{
+                      id: item.id,
+                      date: item.date,
+                      campus: item.campus,
+                      prayers: item.prayers,
+                      praying_count: item.prayingCount,
+                    }}
+                  />
                 </div>
               </CarouselItem>
             ))}

@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 interface PrayerChainCardProps {
   date: string; // 예: '2024.06.13'
@@ -39,13 +40,16 @@ export default function PrayerChainCard({
           ))}
         </div>
       </div>
-      <button
+      <motion.button
         className="w-full h-14 bg-[#2176ff] hover:bg-[#1761c6] transition rounded-xl shadow-[0_4px_16px_rgba(30,60,120,0.18)] flex items-center justify-center text-white text-lg font-bold mb-1 disabled:bg-gray-300 disabled:cursor-not-allowed"
         onClick={onPray}
         disabled={disabled}
+        whileTap={{ scale: 0.92 }}
+        whileHover={{ scale: 1.04 }}
+        transition={{ duration: 0.1, ease: "easeInOut" }}
       >
         🙏 기도할게요
-      </button>
+      </motion.button>
       <div className="text-[13px] text-[#4a5a7a] text-center mt-1">
         현재 <span className="font-semibold">{prayingCount}명</span>이 함께
         기도중이에요! 🙏
