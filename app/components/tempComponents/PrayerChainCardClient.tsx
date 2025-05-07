@@ -55,12 +55,27 @@ export default function PrayerChainCardClient({
   const handlePray = async () => {
     if (!data) return;
     if (disabled) return;
+
+    // 1. 최신 praying_count fetch
+    const { data: latest, error: fetchError } = await supabase
+      .from("prayer_chain")
+      .select("praying_count")
+      .eq("id", data.id)
+      .single();
+
+    if (fetchError || !latest) {
+      alert("최신 데이터를 불러오지 못했습니다.");
+      return;
+    }
+
+    // 2. 최신값에 +1 해서 업데이트
     const { error } = await supabase
       .from("prayer_chain")
-      .update({ praying_count: prayingCount + 1 })
+      .update({ praying_count: latest.praying_count + 1 })
       .eq("id", data.id);
+
     if (!error) {
-      setPrayingCount(prayingCount + 1);
+      setPrayingCount(latest.praying_count + 1);
       setDisabled(true);
       setMessage("기도로 동역해주셔서 감사합니다");
       if (typeof window !== "undefined") {
@@ -73,7 +88,6 @@ export default function PrayerChainCardClient({
       alert("오류가 발생했습니다.");
     }
   };
-
   if (loading) return <div>로딩중...</div>;
   if (!data) return <div>데이터 없음</div>;
 
