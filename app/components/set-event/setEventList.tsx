@@ -36,8 +36,7 @@ export default function SetEventList() {
 
         setEvents(data);
         setLoading(false);
-      } catch (err) {
-        console.log("오류 발생:", err);
+      } catch {
         setLoading(false);
       }
     };

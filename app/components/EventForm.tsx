@@ -43,7 +43,7 @@ export default function EventForm() {
     const schedule = new Date(`${date}T${time}:00`).toISOString();
 
     try {
-      const { data, error } = await supabase.from("posts").insert([
+      const { error } = await supabase.from("posts").insert([
         {
           title,
           subTitle,
@@ -54,8 +54,6 @@ export default function EventForm() {
       if (error) {
         throw error;
       }
-
-      console.log("이벤트 추가 성공:", data);
       router.push("/admin-page");
     } catch (error) {
       console.error("이벤트 추가 실패:", error);

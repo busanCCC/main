@@ -56,8 +56,6 @@ export default function SetMessageDialog({
         .eq("id", id)
         .select(); // ✅ 업데이트된 데이터 반환
 
-      console.log("updatedPost:", updatedPost);
-
       if (postError) {
         throw new Error(`Posts 업데이트 실패: ${postError.message}`);
       }
@@ -65,7 +63,7 @@ export default function SetMessageDialog({
         console.warn("경고: 업데이트된 데이터가 없음");
       }
 
-      const { data: updatedStaff, error: staffError } = await supabase
+      const { error: staffError } = await supabase
         .from("staff_info")
         .upsert(
           [
@@ -76,9 +74,7 @@ export default function SetMessageDialog({
           ],
           { onConflict: "name" }
         )
-        .select(); // ✅ 업데이트된 데이터 반환
-
-      console.log("updatedStaff:", updatedStaff);
+        .select();
 
       if (staffError) {
         throw new Error(`Staff 정보 업데이트 실패: ${staffError.message}`);
