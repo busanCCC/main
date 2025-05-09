@@ -21,11 +21,10 @@ export const updateSession = async (request: NextRequest) => {
     );
 
     // ✅ `supabase.auth.getUser()` 호출하여 사용
-    const { data: user, error } = await supabase.auth.getUser();
+    const { error } = await supabase.auth.getUser();
     if (error) {
       console.error("Error fetching user:", error);
     } else {
-      console.log("Authenticated user:", user); // ✅ `user` 사용하여 ESLint 경고 해결
     }
   } catch (error) {
     console.error("Error updating session:", error);

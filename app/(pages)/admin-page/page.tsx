@@ -15,11 +15,42 @@ import { Separator } from "@/app/components/ui/separator";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import supabase from "@/utils/supabase/client";
 
 export default function AdminPage() {
   const [handleToggle, setToggle] = useState(false);
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    async function checkAdmin() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
+      const { data, error } = await supabase
+        .from("user_info")
+        .select("is_admin")
+        .eq("id", user.id)
+        .single();
+      if (error || !data || !data.is_admin) {
+        router.replace("/");
+        return;
+      }
+      setIsAdmin(true);
+      setLoading(false);
+    }
+    checkAdmin();
+  }, [router]);
+
+  if (loading) return <div>로딩중...</div>;
+  if (!isAdmin) return null;
+
   return (
     <div className="h-full w-full justify-items-center">
       <div className="w-full">

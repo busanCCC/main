@@ -16,12 +16,10 @@ async function fetchPostData(id: number) {
     .eq("id", id)
     .single();
 
-  console.log("쿼리 결과 data:", data);
   if (error) {
     console.error("데이터를 가져오는 중 오류 발생:", error);
     return null;
   }
-  console.log(id);
   return data;
 }
 
