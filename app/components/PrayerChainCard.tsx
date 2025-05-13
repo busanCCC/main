@@ -87,7 +87,6 @@ export default function PrayerChainCard({
         {/* 잘릴 때만 그라데이션 & 더보기 버튼 */}
         {!expanded && isClamped && (
           <>
-            {/* 그라데이션 */}
             <div
               className="pointer-events-none absolute left-0 right-0 bottom-0 h-12 z-0"
               style={{
@@ -95,7 +94,6 @@ export default function PrayerChainCard({
                   "linear-gradient(to bottom, rgba(248,251,255,0) 0%, rgba(248,251,255,0.95) 90%)",
               }}
             />
-            {/* 더보기 버튼 (z-10로 위에 오게) */}
             <button
               className="absolute left-1/2 -translate-x-1/2 bottom-2 z-10 bg-white/80 text-blue-500 text-xs font-semibold px-3 py-1 rounded-full shadow border border-blue-100 hover:bg-blue-50 transition"
               onClick={handleExpand}
@@ -105,17 +103,17 @@ export default function PrayerChainCard({
             </button>
           </>
         )}
-        {/* 펼쳐진 상태에서 접기 버튼 */}
-        {expanded && (
-          <button
-            className="absolute left-1/2 -translate-x-1/2 bottom-0 z-10 bg-white/80 text-blue-500 text-xs font-semibold px-3 py-1 rounded-full shadow border border-blue-100 hover:bg-blue-50 transition"
-            onClick={handleCollapse}
-            type="button"
-          >
-            접기
-          </button>
-        )}
       </div>
+      {/* 펼쳐진 상태에서 접기 버튼(absolute X, 일반 flow) */}
+      {expanded && (
+        <button
+          className="mx-auto mb-2 bg-white/80 text-blue-500 text-xs font-semibold px-3 py-1 rounded-full shadow border border-blue-100 hover:bg-blue-50 transition"
+          onClick={handleCollapse}
+          type="button"
+        >
+          접기
+        </button>
+      )}
       {/* 기도할게요 버튼 */}
       <div className="flex flex-col gap-2 mb-2">
         <motion.button
