@@ -48,7 +48,7 @@ export default function PrayerChainSection() {
           opts={{ align: "center" }}
         >
           <CarouselPrevious />
-          <CarouselContent className="flex-row sm:justify-center items-center overflow-visible">
+          <CarouselContent className="flex-row items-center overflow-visible">
             {data.map((item) => (
               <CarouselItem
                 key={item.id}
