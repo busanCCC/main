@@ -34,6 +34,12 @@ const MainCarousel = () => {
       link: "https://www.kccc.org/?p=sc",
     },
     {
+      image: "/sowon.jpg",
+      title: "24-25 부산지구 소원총단 소개",
+      description: "“소”망되신 예수님께서\n“원”하시는 꿈을 향해",
+      link: "https://www.instagram.com/p/C_fEXYjxszo/",
+    },
+    {
       image: "/2025Next.png",
       title: "N E X T",
       description: "New Evangelism X Truth",
@@ -51,12 +57,6 @@ const MainCarousel = () => {
       title: "2024 금식수련회 리뷰 영상",
       description: "하나님을 바라라 : PUT YOUR HOPE IN GOD",
       link: "https://youtu.be/gc2gtxQWu8o?si=Z4WIFtYoa8h7ipaQ",
-    },
-    {
-      image: "/sowon.jpg",
-      title: "24-25 부산지구 소원총단 소개",
-      description: "“소”망되신 예수님께서\n“원”하시는 꿈을 향해",
-      link: "https://www.instagram.com/p/C_fEXYjxszo/",
     },
   ];
 

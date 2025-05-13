@@ -42,7 +42,7 @@ export default function Main() {
           </section>
 
           {/* 미디어팀 안내 섹션 */}
-          <section className="w-full bg-gradient-to-r from-yellow-100 via-pink-100 to-blue-100 rounded-2xl shadow-inner p-8 flex flex-col items-center mb-10">
+          <section className="w-full bg-gradient-to-r from-yellow-100 via-pink-100 to-blue-100 rounded-2xl shadow-md p-8 flex flex-col items-center mb-10">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-center">
               미디어 팀에서 <Cover>빠른 속도로</Cover>
               <br /> 새 컨텐츠를 추가중이에요..!

@@ -26,12 +26,23 @@ export default function PrayerChainCardClient({
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    async function fetchPrayingCount() {
+      const { data } = await supabase
+        .from("prayer_chain")
+        .select("praying_count")
+        .eq("id", initialData.id)
+        .single();
+      setPrayingCount(data?.praying_count ?? 0);
+    }
+    fetchPrayingCount();
+  }, [initialData.id]);
+
+  useEffect(() => {
     async function fetchData() {
       const { data } = await supabase
         .from("prayer_chain")
         .select("*")
-        .order("date", { ascending: false })
-        .limit(1)
+        .eq("id", initialData.id)
         .single();
       setData(data);
       setPrayingCount(data?.praying_count ?? 0);
@@ -50,7 +61,7 @@ export default function PrayerChainCardClient({
       }
     }
     fetchData();
-  }, []);
+  }, [initialData.id]);
 
   const handlePray = async () => {
     if (!data) return;
