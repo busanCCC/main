@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import supabase from "@/utils/supabase/client";
 import PrayerChainCard from "@/app/components/PrayerChainCard";
+import { Skeleton } from "../ui/skeleton";
 
 interface PrayerChainRow {
   id: number;
@@ -99,7 +100,18 @@ export default function PrayerChainCardClient({
       alert("오류가 발생했습니다.");
     }
   };
-  if (loading) return <div>로딩중...</div>;
+  if (loading)
+    return (
+      <div className="w-full flex gap-2 overflow-clip">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div key={index} className="flex flex-col min-w-80 md:min-w-92 gap-1">
+            <Skeleton className="sm:min-h-80 md:min-h-92 lg:min-h-92 h-80 aspect-square flex-auto rounded-2xl" />
+            <Skeleton className="w-1/2 h-3" />
+            <Skeleton className="w-full h-5" />
+          </div>
+        ))}
+      </div>
+    );
   if (!data) return <div>데이터 없음</div>;
 
   const day = ["일", "월", "화", "수", "목", "금", "토"][
