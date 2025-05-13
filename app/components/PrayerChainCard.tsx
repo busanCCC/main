@@ -72,7 +72,7 @@ export default function PrayerChainCard({
       </div>
       {/* 기도제목 내용 */}
       <div
-        className={`mt-2 mb-3 relative ${!showAll ? "line-clamp-3" : ""}`}
+        className={`mt-2 mb-3 relative ${!showAll ? "line-clamp-5" : ""}`}
         ref={contentRef}
         style={{ minHeight: "3.5em" }}
       >
