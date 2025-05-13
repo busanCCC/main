@@ -36,7 +36,7 @@ export default function PrayerChainSection() {
   }, []);
 
   return (
-    <section className="w-full bg-white/80 rounded-2xl shadow-md p-6 flex flex-col gap-2 mt-10">
+    <section className="w-full h-full bg-white/80 rounded-2xl shadow-md p-6 flex flex-col gap-2 mt-10">
       <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-500 to-blue-400 bg-clip-text text-transparent">
         부산지구 기도제목
       </h1>
