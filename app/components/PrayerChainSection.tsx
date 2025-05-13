@@ -29,7 +29,6 @@ export default function PrayerChainSection() {
         .from("prayer_chain")
         .select("*")
         .order("date", { ascending: false });
-      console.log("패칭된 데이터:", data);
       setData(data ?? []);
     }
     fetchData();
@@ -49,7 +48,7 @@ export default function PrayerChainSection() {
           opts={{ align: "center" }}
         >
           <CarouselPrevious />
-          <CarouselContent className="flex-row sm:justify-center items-center">
+          <CarouselContent className="flex-row sm:justify-center items-center overflow-visible">
             {data.map((item) => (
               <CarouselItem
                 key={item.id}
