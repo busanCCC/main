@@ -28,7 +28,8 @@ export default function PrayerChainSection() {
       const { data } = await supabase
         .from("prayer_chain")
         .select("*")
-        .order("date", { ascending: false });
+        .order("date", { ascending: false })
+        .order("id", { ascending: false });
       setData(data ?? []);
     }
     fetchData();
