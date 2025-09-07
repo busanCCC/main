@@ -1,10 +1,22 @@
 "use client"; // ✅ 클라이언트 컴포넌트에서만 사용
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Message from "./worship-order/Message";
 import Praise from "./worship-order/Praise";
 import { motion } from "framer-motion";
 import CopyAccountButton from "./worship-order/copyAccountButton";
 import CustomEvent from "./worship-order/CustomEvent";
+import { supabase } from "@/api/supabase";
+
+type CustomEvent = {
+  id: number;
+  eventname: string;
+  description: string | null;
+  post_id: number | null;
+  index: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+  subdescription: string | null;
+};
 
 type Props = {
   // openingPrayer?: string; // 🔹 시작 기도
@@ -19,37 +31,6 @@ type Props = {
   word?: string;
   id: number;
 };
-
-const customEvents = [
-  {
-    eventId: "opening-prayer",
-    index: 1,
-    eventName: "대표기도",
-    name: "김영희 순장",
-    description: "",
-  },
-  {
-    eventId: "praise-time",
-    index: 2,
-    eventName: "찬양",
-    name: "박민수",
-    description: "주일찬양",
-  },
-  {
-    eventId: "message-time",
-    index: 3,
-    eventName: "말씀",
-    name: "최성호 목사",
-    description: "주일설교",
-  },
-  {
-    eventId: "closing-prayer",
-    index: 4,
-    eventName: "기도",
-    name: "이지은",
-    description: "마무리기도",
-  },
-];
 
 export default function WorshipOrderSection({
   // openingPrayer,
@@ -66,6 +47,35 @@ export default function WorshipOrderSection({
   const [activeIndexes, setActiveIndexes] = useState<Set<string>>(
     new Set(["order"])
   );
+  const [customEvents, setCustomEvents] = useState<CustomEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCustomEvents = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("customevent")
+          .select("*")
+          .eq("post_id", id)
+          .order("index", { ascending: true });
+
+        if (error) {
+          console.error("Error fetching custom events:", error);
+          setCustomEvents([]);
+        } else {
+          setCustomEvents(data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching custom events:", error);
+        setCustomEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCustomEvents();
+  }, [id]);
 
   const toggleAccordion = (index: string) => {
     setActiveIndexes((prevIndexes) => {
@@ -99,37 +109,23 @@ export default function WorshipOrderSection({
           transition={{ duration: 0.3 }}
           className="flex flex-col gap-24 justify-center items-center px-4 overflow-hidden"
         >
-          {customEvents.map((event) => (
-            <CustomEvent
-              key={event.eventId}
-              postId={id}
-              eventId={event.eventId}
-              index={event.index}
-              eventName={event.eventName}
-              name={event.name}
-              description={event.description}
-            />
-          ))}
-
-          {/* 시작기도
-          {openingPrayer && (
-            <Prayer
-              prayType="opening"
-              prayer={openingPrayer}
-              className="mt-24"
-            />
-          )} */}
           {/* 찬양 */}
           <Praise id={id} />
-
-          {/* 대표기도
-          {generalPrayer && (
-            <Prayer prayType="general" prayer={generalPrayer} />
-          )} */}
-
-          {/* {testimonyPrayer && (
-            <Prayer prayType="testimony" prayer={testimonyPrayer} />
-          )} */}
+          {loading ? (
+            <div className="text-center py-8">로딩 중...</div>
+          ) : (
+            customEvents.map((event) => (
+              <CustomEvent
+                key={event.id}
+                postId={id}
+                eventId={`event-${event.id}`}
+                index={event.index || 0}
+                eventName={event.eventname}
+                description={event.description || undefined}
+                subdescription={event.subdescription || undefined}
+              />
+            ))
+          )}
 
           {/* 메시지 */}
           <Message
@@ -139,15 +135,6 @@ export default function WorshipOrderSection({
             messengerInfo={messengerInfo}
             words={word}
           />
-
-          {/* 헌금기도
-          {offeringPrayer && (
-            <Prayer
-              prayType="offering"
-              prayer={offeringPrayer}
-              className="mb-2"
-            />
-          )} */}
           <CopyAccountButton />
         </motion.div>
       </div>
