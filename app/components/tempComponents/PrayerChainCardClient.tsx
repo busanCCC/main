@@ -11,6 +11,7 @@ interface PrayerChainRow {
   campus: string;
   prayers: string[];
   praying_count: number;
+  resetKey: number;
 }
 
 export default function PrayerChainCardClient({

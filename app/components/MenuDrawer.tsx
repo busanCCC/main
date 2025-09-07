@@ -7,6 +7,7 @@ import {
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { DialogTitle } from "./ui/dialog";
+import Image from "next/image";
 
 export default function MenuDrawer() {
   return (
@@ -16,20 +17,32 @@ export default function MenuDrawer() {
       </DrawerTrigger>
       <DrawerContent className="px-4 py-4 gap-3 font-light">
         <DialogTitle />
-        <Link href="/" legacyBehavior passHref>
-          홈
+        <Link
+          href="https://www.youtube.com/channel/UCLjWO6QuypERBL5FDtnUNGQ"
+          className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded"
+        >
+          <Image
+            src="/Youtube.png"
+            alt="Youtube"
+            width={24}
+            height={24}
+            className="w-6 h-6 object-contain"
+          />
+          유튜브
         </Link>
-        {/* <Link href="/eventlist" legacyBehavior passHref>
-          이벤트
+        <Link
+          href="https://www.instagram.com/busan_ccc/"
+          className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded"
+        >
+          <Image
+            src="/Instagram.png"
+            alt="Instagram"
+            width={24}
+            height={24}
+            className="w-6 h-6 p-1 object-contain"
+          />
+          인스타그램
         </Link>
-        <Link href="/comming" legacyBehavior passHref>
-          오시는 길
-        </Link> */}
-        {/* <DrawerFooter>
-          <DrawerClose>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
-        </DrawerFooter> */}
       </DrawerContent>
     </Drawer>
   );

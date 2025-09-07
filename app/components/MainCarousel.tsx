@@ -28,35 +28,10 @@ const MainCarousel = () => {
 
   const slides = [
     {
-      image: "/2025_scposter.jpg",
-      title: "2025 CCC 여름수련회",
-      description: "Seize your Season (전도서 12:1)",
-      link: "https://www.kccc.org/?p=sc",
-    },
-    {
-      image: "/sowon.jpg",
-      title: "24-25 부산지구 소원총단 소개",
-      description: "“소”망되신 예수님께서\n“원”하시는 꿈을 향해",
-      link: "https://www.instagram.com/p/C_fEXYjxszo/",
-    },
-    {
-      image: "/2025Next.png",
-      title: "N E X T",
-      description: "New Evangelism X Truth",
-      link: "/event/2025Next",
-    },
-
-    {
-      image: "/tst.png",
-      title: "2025 TST 리뷰 영상",
-      description: "말씀 앞에서 : STAND BEFORE THE WORD",
-      link: "https://youtu.be/PPRH9a98LCc?si=fmqz0Oqj2O1HuT75",
-    },
-    {
-      image: "/guemsik.png",
-      title: "2024 금식수련회 리뷰 영상",
-      description: "하나님을 바라라 : PUT YOUR HOPE IN GOD",
-      link: "https://youtu.be/gc2gtxQWu8o?si=Z4WIFtYoa8h7ipaQ",
+      image: "/IMG_2015 2.jpg",
+      title: "25-26 부산지구 채움총단 소개",
+      description: "부산지구, 부산땅에 예수님으로 가득 채워지길 소망합니다✨",
+      link: "https://www.instagram.com/p/DOKY7XBkix9/?igsh=MTFnbDM1ejZ4em5scQ==",
     },
   ];
 

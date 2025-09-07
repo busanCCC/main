@@ -37,3 +37,13 @@ next-env.d.ts
 
 shared/supabase.d.ts
 /supabase.ts
+*storybook.log
+storybook-static
+
+# Storybook files
+*.stories.tsx
+*.stories.ts
+*.stories.js
+*.stories.jsx
+.storybook/
+stories/

@@ -7,6 +7,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/app/components/ui/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import MenuDrawer from "@/app/components/MenuDrawer";
 import { Button } from "./button";
@@ -32,35 +33,46 @@ export default function Header() {
       </div>
       <div className="flex justify-center items-center">
         <NavigationMenu>
-          <NavigationMenuList className="hidden lg:flex space-x-4">
+          <NavigationMenuList className="hidden lg:flex space-x-2">
             <NavigationMenuItem>
-              <Link href="/" legacyBehavior passHref>
+              <Link
+                href="https://www.youtube.com/channel/UCLjWO6QuypERBL5FDtnUNGQ"
+                legacyBehavior
+                passHref
+              >
                 <NavigationMenuLink
                   className={`${navigationMenuTriggerStyle()} ${
                     isActive("/") ? "font-bold" : ""
                   }`}
                 >
-                  홈
+                  <Button variant="ghost" size="icon">
+                    <Image
+                      src="/Youtube.png"
+                      alt="Youtube"
+                      width={28}
+                      height={28}
+                    />
+                  </Button>
                 </NavigationMenuLink>
               </Link>
-              {/* <Link href="/eventlist" legacyBehavior passHref>
-                <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} ${
-                    isActive("/eventlist") ? "font-bold" : ""
-                  }`}
-                >
-                  이벤트
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link
+                href="https://www.instagram.com/busan_ccc/"
+                legacyBehavior
+                passHref
+              >
+                <NavigationMenuLink>
+                  <Button variant="ghost" size="icon" className="p-2">
+                    <Image
+                      src="/Instagram.png"
+                      alt="Instagram"
+                      width={24}
+                      height={24}
+                    />
+                  </Button>
                 </NavigationMenuLink>
-              </Link> */}
-              {/* <Link href="/comming" legacyBehavior passHref>
-                <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} ${
-                    isActive("/comming") ? "font-bold" : ""
-                  }`}
-                >
-                  오시는 길
-                </NavigationMenuLink>
-              </Link> */}
+              </Link>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>

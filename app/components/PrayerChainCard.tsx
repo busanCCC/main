@@ -9,6 +9,7 @@ interface PrayerChainCardProps {
   prayingCount: number; // 기도할게요 누른 사람 수
   onPray?: () => void; // 버튼 클릭 핸들러
   disabled?: boolean; // 버튼 비활성화
+  resetKey?: number;
 }
 
 export default function PrayerChainCard({
@@ -19,6 +20,7 @@ export default function PrayerChainCard({
   prayingCount,
   onPray,
   disabled,
+  resetKey,
 }: PrayerChainCardProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isClamped, setIsClamped] = useState(false);
@@ -35,6 +37,11 @@ export default function PrayerChainCard({
       }, 0);
     }
   }, [prayers, expanded]);
+
+  useEffect(() => {
+    setExpanded(false);
+    setShowAll(false);
+  }, [resetKey]);
 
   // 더보기 클릭 시: 먼저 expanded만 true로, showAll은 false
   const handleExpand = () => {
