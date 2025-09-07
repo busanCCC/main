@@ -2,16 +2,16 @@
 import { useState } from "react";
 import Message from "./worship-order/Message";
 import Praise from "./worship-order/Praise";
-import Prayer from "./worship-order/Prayer";
 import { motion } from "framer-motion";
 import CopyAccountButton from "./worship-order/copyAccountButton";
+import CustomEvent from "./worship-order/CustomEvent";
 
 type Props = {
-  openingPrayer?: string; // 🔹 시작 기도
-  generalPrayer?: string; // 🔹 대표 기도
-  offeringPrayer?: string; // 🔹 헌금 기도
-  testimonyPrayer?: string; // 간증
-  testimonyTitle?: string; // 간증 제목
+  // openingPrayer?: string; // 🔹 시작 기도
+  // generalPrayer?: string; // 🔹 대표 기도
+  // offeringPrayer?: string; // 🔹 헌금 기도
+  // testimonyPrayer?: string; // 간증
+  // testimonyTitle?: string; // 간증 제목
   passage?: string; // 🔹 메시지 관련 데이터
   messenger?: string;
   messageTitle?: string;
@@ -20,11 +20,42 @@ type Props = {
   id: number;
 };
 
+const customEvents = [
+  {
+    eventId: "opening-prayer",
+    index: 1,
+    eventName: "대표기도",
+    name: "김영희 순장",
+    description: "",
+  },
+  {
+    eventId: "praise-time",
+    index: 2,
+    eventName: "찬양",
+    name: "박민수",
+    description: "주일찬양",
+  },
+  {
+    eventId: "message-time",
+    index: 3,
+    eventName: "말씀",
+    name: "최성호 목사",
+    description: "주일설교",
+  },
+  {
+    eventId: "closing-prayer",
+    index: 4,
+    eventName: "기도",
+    name: "이지은",
+    description: "마무리기도",
+  },
+];
+
 export default function WorshipOrderSection({
-  openingPrayer,
-  generalPrayer,
-  offeringPrayer,
-  testimonyPrayer,
+  // openingPrayer,
+  // generalPrayer,
+  // offeringPrayer,
+  // testimonyPrayer,
   passage,
   messenger,
   messageTitle,
@@ -68,25 +99,37 @@ export default function WorshipOrderSection({
           transition={{ duration: 0.3 }}
           className="flex flex-col gap-24 justify-center items-center px-4 overflow-hidden"
         >
-          {/* 시작기도 */}
+          {customEvents.map((event) => (
+            <CustomEvent
+              key={event.eventId}
+              postId={id}
+              eventId={event.eventId}
+              index={event.index}
+              eventName={event.eventName}
+              name={event.name}
+              description={event.description}
+            />
+          ))}
+
+          {/* 시작기도
           {openingPrayer && (
             <Prayer
               prayType="opening"
               prayer={openingPrayer}
               className="mt-24"
             />
-          )}
+          )} */}
           {/* 찬양 */}
           <Praise id={id} />
 
-          {/* 대표기도 */}
+          {/* 대표기도
           {generalPrayer && (
             <Prayer prayType="general" prayer={generalPrayer} />
-          )}
+          )} */}
 
-          {testimonyPrayer && (
+          {/* {testimonyPrayer && (
             <Prayer prayType="testimony" prayer={testimonyPrayer} />
-          )}
+          )} */}
 
           {/* 메시지 */}
           <Message
@@ -97,14 +140,14 @@ export default function WorshipOrderSection({
             words={word}
           />
 
-          {/* 헌금기도 */}
+          {/* 헌금기도
           {offeringPrayer && (
             <Prayer
               prayType="offering"
               prayer={offeringPrayer}
               className="mb-2"
             />
-          )}
+          )} */}
           <CopyAccountButton />
         </motion.div>
       </div>
