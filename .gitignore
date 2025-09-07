@@ -37,3 +37,5 @@ next-env.d.ts
 
 shared/supabase.d.ts
 /supabase.ts
+*storybook.log
+storybook-static

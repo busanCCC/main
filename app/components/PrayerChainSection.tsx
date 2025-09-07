@@ -21,6 +21,7 @@ interface PrayerChainItem {
 
 export default function PrayerChainSection() {
   const [data, setData] = useState<PrayerChainItem[]>([]);
+  const [resetKey, setResetKey] = useState(0);
 
   useEffect(() => {
     // supabase에서 데이터 fetch
@@ -35,6 +36,13 @@ export default function PrayerChainSection() {
     fetchData();
   }, []);
 
+  const handlePrev = () => {
+    setResetKey((k) => k + 1); // resetKey를 변경해 리셋 트리거
+  };
+  const handleNext = () => {
+    setResetKey((k) => k + 1);
+  };
+
   return (
     <section className="w-full h-full bg-white/80 rounded-2xl shadow-md p-6 flex flex-col gap-2 mt-10">
       <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-500 to-blue-400 bg-clip-text text-transparent">
@@ -48,7 +56,7 @@ export default function PrayerChainSection() {
           className="pl-1 flex-col justify-center w-full items-center"
           opts={{ align: "center" }}
         >
-          <CarouselPrevious />
+          <CarouselPrevious onClick={handlePrev} />
           <CarouselContent className="flex-row items-center overflow-visible">
             {data.map((item) => (
               <CarouselItem
@@ -62,6 +70,7 @@ export default function PrayerChainSection() {
                       date: item.date,
                       campus: item.campus,
                       prayers: item.prayers,
+                      resetKey: resetKey,
                       praying_count: item.prayingCount,
                     }}
                   />
@@ -69,7 +78,7 @@ export default function PrayerChainSection() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselNext />
+          <CarouselNext onClick={handleNext} />
         </Carousel>
       </div>
     </section>
