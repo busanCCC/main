@@ -20,7 +20,7 @@ import { Label } from "./ui/label";
 
 const formSchema = z.object({
   title: z.string().min(2, { message: "이벤트 명은 2글자 이상이어야 합니다." }),
-  subTitle: z.string().optional(), // 🔹 subTitle 추가 (선택 입력)
+  subtitle: z.string().optional(), // 🔹 subTitle 추가 (선택 입력)
 });
 
 export default function EventForm() {
@@ -31,11 +31,11 @@ export default function EventForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      subTitle: "",
+      subtitle: "",
     },
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { title, subTitle } = values;
+    const { title, subtitle } = values;
     if (!date || !time) {
       alert("날짜와 시간을 모두 입력해주세요.");
       return;
@@ -46,7 +46,7 @@ export default function EventForm() {
       const { error } = await supabase.from("posts").insert([
         {
           title,
-          subTitle,
+          subtitle,
           schedule, // 날짜/시간 ISO 형식
         },
       ]);
@@ -84,7 +84,7 @@ export default function EventForm() {
         />
         <FormField
           control={form.control}
-          name="subTitle"
+          name="subtitle"
           render={({ field }) => (
             <FormItem>
               <FormLabel>부제목</FormLabel>
