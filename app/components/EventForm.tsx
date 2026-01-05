@@ -20,7 +20,7 @@ import { Label } from "./ui/label";
 
 const formSchema = z.object({
   title: z.string().min(2, { message: "이벤트 명은 2글자 이상이어야 합니다." }),
-  subTitle: z.string().optional(), // 🔹 subTitle 추가 (선택 입력)
+  subtitle: z.string().optional(),
 });
 
 export default function EventForm() {
@@ -31,11 +31,11 @@ export default function EventForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      subTitle: "",
+      subtitle: "",
     },
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { title, subTitle } = values;
+    const { title, subtitle } = values;
     if (!date || !time) {
       alert("날짜와 시간을 모두 입력해주세요.");
       return;
@@ -43,18 +43,24 @@ export default function EventForm() {
     const schedule = new Date(`${date}T${time}:00`).toISOString();
 
     try {
-      const { error } = await supabase.from("posts").insert([
-        {
-          title,
-          subTitle,
-          schedule, // 날짜/시간 ISO 형식
-        },
-      ]);
+      const { data, error } = await supabase
+        .from("posts")
+        .insert([
+          {
+            title,
+            subtitle,
+            schedule, // 날짜/시간 ISO 형식
+          },
+        ])
+        .select()
+        .single();
 
       if (error) {
         throw error;
       }
-      router.push("/admin-page");
+
+      // 새로 생성된 이벤트의 ID를 사용해서 CustomEvent 작성 페이지로 이동
+      router.push(`/admin-page/add-event/worship-order/${data.id}`);
     } catch (error) {
       console.error("이벤트 추가 실패:", error);
     }
@@ -84,7 +90,7 @@ export default function EventForm() {
         />
         <FormField
           control={form.control}
-          name="subTitle"
+          name="subtitle"
           render={({ field }) => (
             <FormItem>
               <FormLabel>부제목</FormLabel>
