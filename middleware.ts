@@ -14,11 +14,13 @@ export async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  // 🔹 인증이 필요한 페이지 보호 (비로그인 사용자는 `/admin-page` 접근 불가)
-  if (
-    !user &&
-    (pathname.startsWith("/admin-page") || pathname.startsWith("/register")) // 임시로 register 페이지 접근 제한
-  ) {
+  // 🔹 인증이 필요한 페이지 보호 (비로그인 사용자는 접근 불가)
+  const isProtectedRoute =
+    pathname.startsWith("/admin-page") ||
+    pathname.startsWith("/admin-dashboard") ||
+    pathname.startsWith("/register");
+
+  if (!user && isProtectedRoute) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
@@ -35,5 +37,5 @@ export async function middleware(req: NextRequest) {
 
 // ✅ `matcher`를 사용하여 특정 경로에서만 미들웨어 실행
 export const config = {
-  matcher: ["/admin-page/:path*", "/register", "/login"],
+  matcher: ["/admin-page/:path*", "/admin-dashboard/:path*", "/register", "/login"],
 };
