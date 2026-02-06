@@ -40,7 +40,7 @@ export async function fetchTableData(
     const res = await fetch(`/api/admin?${params.toString()}`);
     const result = await res.json();
     return result;
-  } catch (err) {
+  } catch {
     return { ok: false, reason: "네트워크 오류가 발생했습니다." };
   }
 }
@@ -58,7 +58,7 @@ export async function fetchRecord(
     const res = await fetch(`/api/admin?${params.toString()}`);
     const result = await res.json();
     return result;
-  } catch (err) {
+  } catch {
     return { ok: false, reason: "네트워크 오류가 발생했습니다." };
   }
 }
@@ -75,7 +75,7 @@ export async function createRecord(
     });
     const result = await res.json();
     return result;
-  } catch (err) {
+  } catch {
     return { ok: false, reason: "네트워크 오류가 발생했습니다." };
   }
 }
@@ -93,7 +93,7 @@ export async function updateRecord(
     });
     const result = await res.json();
     return result;
-  } catch (err) {
+  } catch {
     return { ok: false, reason: "네트워크 오류가 발생했습니다." };
   }
 }
@@ -113,7 +113,7 @@ export async function deleteRecord(
     });
     const result = await res.json();
     return result;
-  } catch (err) {
+  } catch {
     return { ok: false, reason: "네트워크 오류가 발생했습니다." };
   }
 }
@@ -134,7 +134,7 @@ export async function getTableCount(
       return { ok: true, data: result.data.count };
     }
     return { ok: false, reason: result.reason };
-  } catch (err) {
+  } catch {
     return { ok: false, reason: "네트워크 오류가 발생했습니다." };
   }
 }
