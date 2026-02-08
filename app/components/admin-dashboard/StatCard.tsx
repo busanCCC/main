@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { BookOpen, Megaphone, Music, CalendarDays } from "lucide-react";
+import {
+  BookOpen,
+  Megaphone,
+  Music,
+  CalendarDays,
+  Church,
+  Trophy,
+} from "lucide-react";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { getTableCount } from "@/app/(pages)/admin-dashboard/actions";
 
@@ -12,6 +19,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Megaphone,
   Music,
   CalendarDays,
+  Church,
+  Trophy,
 };
 
 interface StatCardProps {

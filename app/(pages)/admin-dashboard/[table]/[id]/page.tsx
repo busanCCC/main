@@ -6,10 +6,12 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { RecordForm } from "@/app/components/admin-dashboard/RecordForm";
+import { ChapelForm } from "@/app/components/admin-dashboard/ChapelForm";
 import { WeeklyFlowForm } from "@/app/components/admin-dashboard/WeeklyFlowForm";
+import { AchievementApplicationForm } from "@/app/components/admin-dashboard/AchievementApplicationForm";
 import { DeleteConfirmDialog } from "@/app/components/admin-dashboard/DeleteConfirmDialog";
 import { useRecordMutation } from "../../hooks/useRecordMutation";
-import { fetchRecord } from "../../actions";
+import { fetchRecord, fetchUserDetail } from "../../actions";
 import { getTableMeta, getValidTableNames } from "../../table-config";
 
 export default function EditRecordPage() {
@@ -19,6 +21,7 @@ export default function EditRecordPage() {
   const recordId = params.id as string;
 
   const [record, setRecord] = useState<Record<string, unknown> | null>(null);
+  const [applicantInfo, setApplicantInfo] = useState<Record<string, unknown> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -33,6 +36,13 @@ export default function EditRecordPage() {
       const result = await fetchRecord(tableMeta!.tableName, recordId);
       if (result.ok) {
         setRecord(result.data);
+        // achievement_applications: user_info 조회
+        if (tableMeta!.tableName === "achievement_applications" && result.data?.user_id) {
+          const userResult = await fetchUserDetail(String(result.data.user_id));
+          if (userResult.ok) {
+            setApplicantInfo(userResult.data);
+          }
+        }
       }
       setIsLoading(false);
     }
@@ -132,6 +142,63 @@ export default function EditRecordPage() {
       router.push(`/admin-dashboard/${tableName}`);
     }
   };
+
+  // achievement_applications 전용 폼 (승인/거부)
+  if (tableName === "achievement_applications") {
+    return (
+      <div className="p-8">
+        <AchievementApplicationForm
+          defaultValues={record}
+          applicantInfo={applicantInfo}
+          recordId={recordId}
+          onSubmitSuccess={() => router.push(`/admin-dashboard/${tableName}`)}
+          onBack={handleBack}
+        />
+      </div>
+    );
+  }
+
+  // chapels 전용 폼 분기 (미정 체크박스 포함)
+  if (tableName === "chapels") {
+    return (
+      <div className="p-8">
+        <ChapelForm
+          defaultValues={record}
+          onSubmit={handleSubmit}
+          onBack={handleBack}
+          isSubmitting={isSubmitting}
+          mode="edit"
+        />
+
+        <div className="max-w-2xl mt-12 pt-8 border-t">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-destructive">
+                위험 영역
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                이 레코드를 영구적으로 삭제합니다.
+              </p>
+            </div>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setShowDelete(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              삭제
+            </Button>
+          </div>
+        </div>
+
+        <DeleteConfirmDialog
+          open={showDelete}
+          onOpenChange={setShowDelete}
+          onConfirm={handleDelete}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">

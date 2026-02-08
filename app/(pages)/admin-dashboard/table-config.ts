@@ -19,6 +19,7 @@ export type FieldType =
   | "number"
   | "boolean"
   | "date"
+  | "datetime"
   | "url"
   | "enum"
   | "json"
@@ -46,6 +47,8 @@ export interface TableMeta {
   defaultSort: { column: string; ascending: boolean };
   fields: FieldConfig[];
   zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>;
+  /** 관리자 대시보드에서 "새로 만들기" 버튼 숨김 (사용자 신청 테이블 등) */
+  hideCreateButton?: boolean;
 }
 
 // --- Zod 스키마 정의 (form-level validation, Cohesion) ---
@@ -106,6 +109,35 @@ const weeklyFlowsSchema = z.object({
   related_events: z.string().optional().default(""),
   related_notices: z.string().optional().default(""),
   related_praises: z.string().optional().default(""),
+});
+
+const achievementApplicationsSchema = z.object({
+  user_id: z.string().uuid().optional(),
+  achievement_id: z.string().min(1, "업적 ID를 입력해주세요."),
+  status: z.enum(["pending", "approved", "rejected"]),
+  proof_image_urls: z.string().optional().default("[]"),
+  message: z.string().optional().default(""),
+  reviewed_by: z.string().uuid().optional().nullable(),
+  reviewed_at: z.string().optional().nullable(),
+});
+
+const chapelsSchema = z.object({
+  topic: z.string().min(1, "주제를 입력해주세요."),
+  messenger: z.string().min(1, "메신저를 입력해주세요."),
+  place: z.string().min(1, "장소를 입력해주세요."),
+  place_link: z
+    .string()
+    .url("올바른 URL을 입력해주세요.")
+    .optional()
+    .or(z.literal("")),
+  datetime: z.string().min(1, "채플 일시를 입력해주세요."),
+  thumbnail_url: z
+    .string()
+    .url("올바른 URL을 입력해주세요.")
+    .optional()
+    .or(z.literal("")),
+  active_from: z.string().min(1, "노출 시작일을 입력해주세요."),
+  active_until: z.string().min(1, "노출 종료일을 입력해주세요."),
 });
 
 // --- 테이블 설정 (도메인별 응집) ---
@@ -326,6 +358,113 @@ export const tableConfig: Record<string, TableMeta> = {
       { name: "updated_at", label: "수정일", type: "date", readOnly: true },
     ],
     zodSchema: weeklyFlowsSchema,
+  },
+  chapels: {
+    label: "채플",
+    icon: "Church",
+    description: "이번 주 채플 안내 (주제, 메신저, 장소, 일시)",
+    tableName: "chapels",
+    primaryKey: "id",
+    listColumns: ["id", "topic", "messenger", "place", "datetime", "active_from", "active_until"],
+    searchColumn: "topic",
+    defaultSort: { column: "datetime", ascending: false },
+    fields: [
+      { name: "id", label: "ID", type: "number", hidden: true },
+      {
+        name: "topic",
+        label: "주제",
+        type: "text",
+        required: true,
+        placeholder: "예: 하나님의 사랑",
+      },
+      {
+        name: "messenger",
+        label: "메신저",
+        type: "text",
+        required: true,
+        placeholder: "예: 김OO 간사님",
+      },
+      {
+        name: "place",
+        label: "장소",
+        type: "text",
+        required: true,
+        placeholder: "예: 넘치는 교회",
+      },
+      {
+        name: "place_link",
+        label: "지도 링크",
+        type: "url",
+        placeholder: "https://maps.google.com/...",
+      },
+      {
+        name: "datetime",
+        label: "채플 일시",
+        type: "datetime",
+        required: true,
+        placeholder: "YYYY-MM-DD HH:mm",
+      },
+      {
+        name: "thumbnail_url",
+        label: "썸네일 URL",
+        type: "url",
+        placeholder: "https://",
+      },
+      {
+        name: "active_from",
+        label: "노출 시작일",
+        type: "date",
+        required: true,
+        placeholder: "YYYY-MM-DD",
+      },
+      {
+        name: "active_until",
+        label: "노출 종료일",
+        type: "date",
+        required: true,
+        placeholder: "YYYY-MM-DD",
+      },
+      { name: "created_at", label: "생성일", type: "date", readOnly: true },
+      { name: "updated_at", label: "수정일", type: "date", readOnly: true },
+    ],
+    zodSchema: chapelsSchema,
+  },
+  achievement_applications: {
+    label: "업적 신청",
+    icon: "Trophy",
+    description: "나사렛, 대표단, 순장, 수련회 등 업적 신청 내역 조회 및 승인/거부",
+    tableName: "achievement_applications",
+    primaryKey: "id",
+    listColumns: ["user_id", "achievement_id", "status", "rejection_reason", "created_at"],
+    searchColumn: "achievement_id",
+    defaultSort: { column: "created_at", ascending: false },
+    hideCreateButton: true,
+    fields: [
+      { name: "id", label: "ID", type: "text", hidden: true },
+      { name: "user_id", label: "신청자 ID", type: "text", readOnly: true },
+      {
+        name: "achievement_id",
+        label: "업적 ID",
+        type: "text",
+        readOnly: true,
+        placeholder: "nazareth, delegation, general, leader, fasting, yeosu 등",
+      },
+      {
+        name: "status",
+        label: "상태",
+        type: "enum",
+        required: true,
+        enumValues: ["pending", "approved", "rejected"],
+      },
+      { name: "proof_image_urls", label: "증명 사진 URL", type: "json", readOnly: true },
+      { name: "message", label: "신청자 메모", type: "textarea", readOnly: true },
+      { name: "reviewed_by", label: "검토자 ID", type: "text", readOnly: true },
+      { name: "reviewed_at", label: "검토일시", type: "datetime", readOnly: true },
+      { name: "rejection_reason", label: "거부 사유", type: "textarea", readOnly: true },
+      { name: "created_at", label: "신청일", type: "date", readOnly: true },
+      { name: "updated_at", label: "수정일", type: "date", readOnly: true },
+    ],
+    zodSchema: achievementApplicationsSchema,
   },
 };
 

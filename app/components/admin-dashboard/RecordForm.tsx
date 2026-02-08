@@ -15,6 +15,8 @@ interface RecordFormProps {
   onBack: () => void;
   isSubmitting?: boolean;
   mode: "create" | "edit";
+  /** 입력 시 오른쪽에 표시할 미리보기 컴포넌트 (폼 값 → 미리보기) */
+  renderPreview?: (values: Record<string, unknown>) => React.ReactNode;
 }
 
 // --- 필드 타입별 전용 컴포넌트 (Separating Code Paths) ---
@@ -148,6 +150,27 @@ function DateFieldInput({
   );
 }
 
+function DatetimeFieldInput({
+  field,
+  register,
+  error,
+}: {
+  field: FieldConfig;
+  register: ReturnType<typeof useForm>["register"];
+  error?: string;
+}) {
+  return (
+    <Input
+      {...register(field.name)}
+      type={field.readOnly ? "text" : "datetime-local"}
+      placeholder={field.placeholder}
+      disabled={field.readOnly}
+      step={60}
+      className={error ? "border-destructive" : ""}
+    />
+  );
+}
+
 function UrlFieldInput({
   field,
   register,
@@ -233,6 +256,10 @@ function FieldRenderer({
       return <EnumSelectInput field={field} register={register} error={error} />;
     case "date":
       return <DateFieldInput field={field} register={register} error={error} />;
+    case "datetime":
+      return (
+        <DatetimeFieldInput field={field} register={register} error={error} />
+      );
     case "url":
       return <UrlFieldInput field={field} register={register} error={error} />;
     case "json":
@@ -252,6 +279,7 @@ export function RecordForm({
   onBack,
   isSubmitting = false,
   mode,
+  renderPreview,
 }: RecordFormProps) {
   const visibleFields = tableMeta.fields.filter((f) => !f.hidden);
   const editableFields =
@@ -273,6 +301,23 @@ export function RecordForm({
     } else if (field.type === "json") {
       formDefaults[field.name] =
         raw != null ? JSON.stringify(raw, null, 2) : "";
+    } else if (field.type === "datetime" && raw) {
+      // ISO string → datetime-local 형식 (YYYY-MM-DDTHH:mm)
+      try {
+        const d = new Date(String(raw));
+        if (!isNaN(d.getTime())) {
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          const h = String(d.getHours()).padStart(2, "0");
+          const min = String(d.getMinutes()).padStart(2, "0");
+          formDefaults[field.name] = `${y}-${m}-${day}T${h}:${min}`;
+        } else {
+          formDefaults[field.name] = "";
+        }
+      } catch {
+        formDefaults[field.name] = "";
+      }
     } else {
       formDefaults[field.name] = raw != null ? String(raw) : "";
     }
@@ -281,11 +326,14 @@ export function RecordForm({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(tableMeta.zodSchema),
     defaultValues: formDefaults,
   });
+
+  const watchedValues = renderPreview ? watch() : undefined;
 
   const processFormData = (data: Record<string, unknown>) => {
     const processed: Record<string, unknown> = {};
@@ -313,6 +361,15 @@ export function RecordForm({
         processed[field.name] = isNaN(num) ? null : num;
       } else if (field.type === "boolean") {
         processed[field.name] = value === true || value === "true";
+      } else if (field.type === "datetime") {
+        const str = String(value ?? "").trim();
+        if (str === "") {
+          processed[field.name] = null;
+        } else {
+          // YYYY-MM-DDTHH:mm → ISO (KST)
+          const iso = str.length <= 16 ? `${str}:00+09:00` : str;
+          processed[field.name] = iso;
+        }
       } else {
         const str = String(value ?? "").trim();
         processed[field.name] = str === "" ? null : str;
@@ -328,24 +385,28 @@ export function RecordForm({
   });
 
   return (
-    <div>
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <Button variant="ghost" size="icon" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div>
-          <h2 className="text-xl font-semibold">
-            {mode === "create"
-              ? `${tableMeta.label} 생성`
-              : `${tableMeta.label} 수정`}
-          </h2>
-          <p className="text-sm text-muted-foreground">{tableMeta.description}</p>
+    <div className={renderPreview ? "flex gap-8 flex-col lg:flex-row" : ""}>
+      {/* Form 영역 */}
+      <div className={renderPreview ? "flex-1 min-w-0" : ""}>
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-8">
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <h2 className="text-xl font-semibold">
+              {mode === "create"
+                ? `${tableMeta.label} 생성`
+                : `${tableMeta.label} 수정`}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {tableMeta.description}
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Form */}
-      <form onSubmit={onFormSubmit} className="space-y-6 max-w-2xl">
+        {/* Form */}
+        <form onSubmit={onFormSubmit} className="space-y-6 max-w-2xl">
         {editableFields.map((field) => {
           const errorMessage = errors[field.name]?.message as string | undefined;
           return (
@@ -387,6 +448,14 @@ export function RecordForm({
           </Button>
         </div>
       </form>
+      </div>
+
+      {/* 미리보기 영역 */}
+      {renderPreview && watchedValues && (
+        <div className="lg:w-[360px] shrink-0">
+          <div className="sticky top-8">{renderPreview(watchedValues)}</div>
+        </div>
+      )}
     </div>
   );
 }

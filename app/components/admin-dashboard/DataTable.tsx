@@ -84,14 +84,16 @@ export function DataTable({
             className="pl-9"
           />
         </div>
-        <Button
-          onClick={() =>
-            router.push(`/admin-dashboard/${tableMeta.tableName}/new`)
-          }
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          새로 만들기
-        </Button>
+        {!tableMeta.hideCreateButton && (
+          <Button
+            onClick={() =>
+              router.push(`/admin-dashboard/${tableMeta.tableName}/new`)
+            }
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            새로 만들기
+          </Button>
+        )}
       </div>
 
       {/* Table */}
@@ -104,10 +106,17 @@ export function DataTable({
       ) : data.length === 0 ? (
         <EmptyState
           title="데이터가 없습니다"
-          description={`아직 ${tableMeta.label} 데이터가 없습니다. 새로 만들어보세요.`}
-          actionLabel="새로 만들기"
-          onAction={() =>
-            router.push(`/admin-dashboard/${tableMeta.tableName}/new`)
+          description={
+            tableMeta.hideCreateButton
+              ? `아직 ${tableMeta.label} 데이터가 없습니다.`
+              : `아직 ${tableMeta.label} 데이터가 없습니다. 새로 만들어보세요.`
+          }
+          actionLabel={tableMeta.hideCreateButton ? undefined : "새로 만들기"}
+          onAction={
+            tableMeta.hideCreateButton
+              ? undefined
+              : () =>
+                  router.push(`/admin-dashboard/${tableMeta.tableName}/new`)
           }
         />
       ) : (

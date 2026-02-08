@@ -118,6 +118,18 @@ export async function deleteRecord(
   }
 }
 
+export async function fetchUserDetail(
+  userId: string
+): Promise<ActionResult<Record<string, unknown>>> {
+  try {
+    const res = await fetch(`/api/admin/user/${userId}`);
+    const result = await res.json();
+    return result;
+  } catch {
+    return { ok: false, reason: "네트워크 오류가 발생했습니다." };
+  }
+}
+
 export async function getTableCount(
   tableName: string
 ): Promise<ActionResult<number>> {
