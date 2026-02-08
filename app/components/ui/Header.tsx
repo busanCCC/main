@@ -8,12 +8,32 @@ import {
 } from "@/app/components/ui/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import MenuDrawer from "@/app/components/MenuDrawer";
 import { Button } from "./button";
+import supabase from "@/utils/supabase/client";
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.refresh();
+  };
+
   const isActive = (path: string): boolean => pathname === path;
   return (
     <div className="w-full flex items-center min-h-16">
@@ -73,6 +93,21 @@ export default function Header() {
                   </Button>
                 </NavigationMenuLink>
               </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              {isLoggedIn ? (
+                <Button variant="ghost" size="sm" onClick={handleLogout}>
+                  로그아웃
+                </Button>
+              ) : (
+                <Link href="/login" legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    <Button variant="ghost" size="sm">
+                      로그인
+                    </Button>
+                  </NavigationMenuLink>
+                </Link>
+              )}
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>

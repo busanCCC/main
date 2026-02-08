@@ -8,6 +8,8 @@ import {
   Megaphone,
   Music,
   CalendarDays,
+  Church,
+  Trophy,
   PanelLeftClose,
   PanelLeftOpen,
   LogOut,
@@ -26,6 +28,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Megaphone,
   Music,
   CalendarDays,
+  Church,
+  Trophy,
 };
 
 const navItems = Object.entries(tableConfig).map(([key, meta]) => ({

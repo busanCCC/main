@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const supabase = createClient();
 
@@ -25,22 +26,12 @@ export default function LoginPage() {
       return;
     }
 
-    // 로그인 성공 시 홈으로 이동
-    router.push("/");
-  };
-
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        // redirectTo: `${window.location.origin}/auth/callback` // 필요시
-      },
-    });
-    if (error) {
-      alert("구글 로그인 오류: " + error.message);
-    }
-    setLoading(false);
+    // 로그인 성공 시 redirectTo가 있으면 해당 경로로, 없으면 홈으로 이동 (내부 경로만 허용)
+    const target =
+      redirectTo?.startsWith("/") && !redirectTo.startsWith("//")
+        ? redirectTo
+        : "/";
+    router.push(target);
   };
 
   return (
@@ -74,22 +65,16 @@ export default function LoginPage() {
             회원가입
           </button>
         </div>
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          className="bg-white border border-gray-300 text-gray-700 font-bold py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition"
-          disabled={loading}
-        >
-          <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
-          {loading ? "구글 로그인 중..." : "구글로 로그인/회원가입"}
-        </button>
-        <div>
-          <button className="rounded-full bg-blue-500 text-white p-2">
-            카카오 로그인
-          </button>
-        </div>
         {error && <p className="text-red-500 mt-2">{error}</p>}
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200" />}>
+      <LoginForm />
+    </Suspense>
   );
 }

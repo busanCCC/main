@@ -18,10 +18,13 @@ export async function middleware(req: NextRequest) {
   const isProtectedRoute =
     pathname.startsWith("/admin-page") ||
     pathname.startsWith("/admin-dashboard") ||
-    pathname.startsWith("/register");
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/account");
 
   if (!user && isProtectedRoute) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("redirectTo", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   // 🔹 로그인한 사용자가 `/login` 또는 `/register` 페이지에 접근하면 `/admin-page`로 리디렉션
@@ -37,5 +40,5 @@ export async function middleware(req: NextRequest) {
 
 // ✅ `matcher`를 사용하여 특정 경로에서만 미들웨어 실행
 export const config = {
-  matcher: ["/admin-page/:path*", "/admin-dashboard/:path*", "/register", "/login"],
+  matcher: ["/admin-page/:path*", "/admin-dashboard/:path*", "/register", "/login", "/account/:path*"],
 };
