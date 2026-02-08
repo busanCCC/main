@@ -73,7 +73,7 @@ export default function AccountDeletePage() {
       await supabase.auth.signOut();
       router.replace("/");
       router.refresh();
-    } catch (err) {
+    } catch {
       setError("계정 삭제 중 오류가 발생했습니다.");
       setDeleting(false);
     }

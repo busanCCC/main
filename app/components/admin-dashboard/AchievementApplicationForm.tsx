@@ -238,14 +238,14 @@ export function AchievementApplicationForm({
             </div>
           </div>
 
-          {defaultValues.message && (
+          {defaultValues.message != null && String(defaultValues.message).trim() !== "" ? (
             <div>
               <span className="text-muted-foreground text-sm">신청자 메모</span>
               <p className="mt-1 p-3 rounded-md bg-muted/50 text-sm">
                 {String(defaultValues.message)}
               </p>
             </div>
-          )}
+          ) : null}
 
           {proofArray.length > 0 && (
             <div>
@@ -273,16 +273,18 @@ export function AchievementApplicationForm({
             </div>
           )}
 
-          {defaultValues.reviewed_at && (
+          {defaultValues.reviewed_at != null ? (
             <div className="text-sm text-muted-foreground pt-2 border-t">
               검토일시:{" "}
               {new Date(String(defaultValues.reviewed_at)).toLocaleString(
                 "ko-KR"
               )}
             </div>
-          )}
+          ) : null}
 
-          {status === "rejected" && defaultValues.rejection_reason && (
+          {status === "rejected" &&
+          defaultValues.rejection_reason != null &&
+          String(defaultValues.rejection_reason).trim() !== "" ? (
             <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20">
               <span className="text-sm font-medium text-destructive">
                 거부 사유
@@ -291,7 +293,7 @@ export function AchievementApplicationForm({
                 {String(defaultValues.rejection_reason)}
               </p>
             </div>
-          )}
+          ) : null}
 
           {error && (
             <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">

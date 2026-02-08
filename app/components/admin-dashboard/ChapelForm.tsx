@@ -54,16 +54,15 @@ interface ChapelFormProps {
 }
 
 function toFormDefaults(record?: Record<string, unknown>): ChapelFormValues {
-  const get = (key: string) => {
+  const get = (key: string): string => {
     const v = record?.[key];
     if (v == null) return "";
-    if (typeof v === "boolean") return v;
     return String(v);
   };
 
   const datetime = get("datetime");
   const isDatetimeUndecided =
-    !datetime || datetime === DATETIME_UNDECIDED_SENTINEL || datetime.startsWith("2099-");
+    !datetime || datetime === DATETIME_UNDECIDED_SENTINEL || (typeof datetime === "string" && datetime.startsWith("2099-"));
 
   return {
     topic: get("topic"),
@@ -164,7 +163,7 @@ export function ChapelForm({
     messenger: messengerUndecided ? "미정" : watchedValues.messenger,
     place: placeUndecided ? "미정" : watchedValues.place,
     place_link: watchedValues.place_link,
-    datetime: datetimeUndecided ? null : watchedValues.datetime,
+    datetime: datetimeUndecided ? undefined : watchedValues.datetime,
     active_from: watchedValues.active_from,
     active_until: watchedValues.active_until,
   };
