@@ -17,20 +17,18 @@ function getAdminClient() {
   });
 }
 
-// 현재 요청자가 admin인지 확인
+// 현재 요청자가 admin인지 확인 (getSession: 쿠키만 읽음, token 요청 없음)
 async function verifyAdmin(): Promise<boolean> {
   const supabase = createServerComponentClient({ cookies });
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
+  if (!userId) return false;
 
-  if (authError || !user) return false;
-
-  const { data, error } = await supabase
+  const adminClient = getAdminClient();
+  const { data, error } = await adminClient
     .from("user_info")
     .select("is_admin")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
 
   return !error && data?.is_admin === true;
@@ -48,6 +46,7 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const table = searchParams.get("table");
+  const tablesParam = searchParams.get("tables");
   const id = searchParams.get("id");
   const page = Number(searchParams.get("page") ?? 1);
   const pageSize = Number(searchParams.get("pageSize") ?? 20);
@@ -56,14 +55,33 @@ export async function GET(request: NextRequest) {
   const orderBy = searchParams.get("orderBy") ?? "id";
   const ascending = searchParams.get("ascending") === "true";
 
+  const adminClient = getAdminClient();
+
+  // 배치 카운트 조회 (tables=table1,table2 → 1회 요청으로 모든 카운트)
+  if (tablesParam) {
+    const tableNames = tablesParam.split(",").map((t) => t.trim()).filter(Boolean);
+    const counts: Record<string, number> = {};
+    await Promise.all(
+      tableNames.map(async (t) => {
+        try {
+          const { count } = await adminClient
+            .from(t)
+            .select("*", { count: "exact", head: true });
+          counts[t] = count ?? 0;
+        } catch {
+          counts[t] = 0;
+        }
+      })
+    );
+    return NextResponse.json({ ok: true, data: counts });
+  }
+
   if (!table) {
     return NextResponse.json(
       { ok: false, reason: "테이블명이 필요합니다." },
       { status: 400 }
     );
   }
-
-  const adminClient = getAdminClient();
 
   // 단건 조회
   if (id) {

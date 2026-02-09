@@ -14,13 +14,11 @@ export function useAdminAuth(): AdminAuthState {
 
   useEffect(() => {
     async function checkAdminStatus() {
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
+      // getSession: 쿠키/storage만 읽음, token 요청 없음 (429 방지)
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
 
-      if (authError || !user) {
-        console.warn("[AdminAuth] 인증 실패:", authError?.message ?? "유저 없음");
+      if (!user) {
         setIsAdmin(false);
         setIsLoading(false);
         return;

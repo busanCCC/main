@@ -14,25 +14,19 @@ function getAdminClient() {
 
 async function verifyAdmin(): Promise<{ ok: boolean; userId?: string }> {
   const supabase = createServerComponentClient({ cookies });
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
+  if (!userId) return { ok: false };
 
-  if (authError || !user) {
-    return { ok: false };
-  }
-
-  const { data, error } = await supabase
+  const adminClient = getAdminClient();
+  const { data, error } = await adminClient
     .from("user_info")
     .select("is_admin")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
 
-  if (error || !data?.is_admin) {
-    return { ok: false };
-  }
-  return { ok: true, userId: user.id };
+  if (error || !data?.is_admin) return { ok: false };
+  return { ok: true, userId };
 }
 
 /** POST /api/admin/achievement-applications/[id]/review

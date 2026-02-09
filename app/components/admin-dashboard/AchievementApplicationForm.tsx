@@ -11,7 +11,49 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog";
-import { ArrowLeft, Check, X, Loader2, ImageIcon } from "lucide-react";
+import { ArrowLeft, Check, X, Loader2, ImageIcon, Download } from "lucide-react";
+
+/** HEIC 등 브라우저 미지원 포맷: 로드 실패 시 다운로드 링크 표시 */
+function ProofImageThumb({ url, index }: { url: string; index: number }) {
+  const [loadFailed, setLoadFailed] = useState(false);
+  const isHeic = /\.heic(\?|$)/i.test(url) || url.toLowerCase().includes("heic");
+
+  if (loadFailed || isHeic) {
+    return (
+      <a
+        href={url}
+        download
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex h-24 w-24 flex-col items-center justify-center rounded border bg-muted/50 p-2 text-center hover:bg-muted transition"
+      >
+        <Download className="h-6 w-6 text-muted-foreground mb-1" />
+        <span className="text-[10px] text-muted-foreground leading-tight">
+          HEIC 형식
+        </span>
+        <span className="text-[10px] text-muted-foreground leading-tight">
+          다운로드 후 확인
+        </span>
+      </a>
+    );
+  }
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block"
+    >
+      <img
+        src={url}
+        alt={`증명 ${index + 1}`}
+        className="h-24 w-24 object-cover rounded border hover:opacity-90 transition"
+        onError={() => setLoadFailed(true)}
+      />
+    </a>
+  );
+}
 
 interface AchievementApplicationFormProps {
   defaultValues: Record<string, unknown>;
@@ -255,19 +297,7 @@ export function AchievementApplicationForm({
               </span>
               <div className="mt-2 flex flex-wrap gap-2">
                 {proofArray.map((url: string, i: number) => (
-                  <a
-                    key={i}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    <img
-                      src={url}
-                      alt={`증명 ${i + 1}`}
-                      className="h-24 w-24 object-cover rounded border hover:opacity-90 transition"
-                    />
-                  </a>
+                  <ProofImageThumb key={i} url={url} index={i} />
                 ))}
               </div>
             </div>

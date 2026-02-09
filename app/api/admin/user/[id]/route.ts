@@ -3,6 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -14,17 +16,15 @@ function getAdminClient() {
 
 async function verifyAdmin(): Promise<boolean> {
   const supabase = createServerComponentClient({ cookies });
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
+  if (!userId) return false;
 
-  if (authError || !user) return false;
-
-  const { data, error } = await supabase
+  const adminClient = getAdminClient();
+  const { data, error } = await adminClient
     .from("user_info")
     .select("is_admin")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
 
   return !error && data?.is_admin === true;
@@ -46,13 +46,19 @@ export async function GET(
   const { id } = await params;
   const adminClient = getAdminClient();
 
-  const [profilesRes, authUserRes] = await Promise.all([
-    adminClient.from("profiles").select("*").eq("id", id).maybeSingle(),
-    adminClient.auth.admin.getUserById(id),
-  ]);
+  let profiles: Record<string, unknown> = {};
+  let authUser: { email?: string; email_confirmed_at?: string; user_metadata?: Record<string, unknown> } | null = null;
 
-  const profiles = (profilesRes.data ?? {}) as Record<string, unknown>;
-  const authUser = authUserRes.data?.user;
+  try {
+    const [profilesRes, authUserRes] = await Promise.all([
+      adminClient.from("profiles").select("*").eq("id", id).maybeSingle(),
+      adminClient.auth.admin.getUserById(id),
+    ]);
+    profiles = (profilesRes.data ?? {}) as Record<string, unknown>;
+    authUser = authUserRes.data?.user ?? null;
+  } catch {
+    // 삭제된 사용자 등으로 조회 실패 시 빈 데이터 반환 (404 대신 200)
+  }
 
   const merged: Record<string, unknown> = {
     ...profiles,
