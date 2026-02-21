@@ -30,11 +30,8 @@ async function verifyAdmin(): Promise<boolean> {
   return !error && data?.is_admin === true;
 }
 
-/** GET /api/admin/user/[id] - profiles + auth.users(이메일 등) 조합 */
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+/** GET /api/admin/user?id=xxx - 프로덕션에서 동적 [id] 404 시 쿼리 파라미터로 대체 */
+export async function GET(request: NextRequest) {
   const isAdmin = await verifyAdmin();
   if (!isAdmin) {
     return NextResponse.json(
@@ -43,9 +40,15 @@ export async function GET(
     );
   }
 
-  const { id } = await params;
-  const adminClient = getAdminClient();
+  const id = request.nextUrl.searchParams.get("id");
+  if (!id) {
+    return NextResponse.json(
+      { ok: false, reason: "id 쿼리 파라미터가 필요합니다." },
+      { status: 400 }
+    );
+  }
 
+  const adminClient = getAdminClient();
   let profiles: Record<string, unknown> = {};
   let authUser: { email?: string; email_confirmed_at?: string; user_metadata?: Record<string, unknown> } | null = null;
 
@@ -57,7 +60,7 @@ export async function GET(
     profiles = (profilesRes.data ?? {}) as Record<string, unknown>;
     authUser = authUserRes.data?.user ?? null;
   } catch {
-    // 삭제된 사용자 등으로 조회 실패 시 빈 데이터 반환 (404 대신 200)
+    // 삭제된 사용자 등
   }
 
   const merged: Record<string, unknown> = {

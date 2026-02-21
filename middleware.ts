@@ -4,13 +4,14 @@ import { NextResponse, NextRequest } from "next/server";
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
-  // Supabase 클라이언트 생성 (각 요청마다 새로운 세션 확인)
+  // Supabase 클라이언트 생성 (세션은 쿠키에서 읽음, 네트워크 요청 없음)
   const supabase = createMiddlewareClient({ req, res });
 
-  // 현재 요청에서 사용자 세션을 가져옴
+  // getSession(): 쿠키만 읽어 세션 확인 (토큰 갱신 요청 없음 → 429 방지)
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   const { pathname } = req.nextUrl;
 

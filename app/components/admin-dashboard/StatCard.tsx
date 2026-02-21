@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -12,7 +11,6 @@ import {
   Trophy,
 } from "lucide-react";
 import { Skeleton } from "@/app/components/ui/skeleton";
-import { getTableCount } from "@/app/(pages)/admin-dashboard/actions";
 
 const ICON_MAP: Record<string, React.ElementType> = {
   BookOpen,
@@ -28,24 +26,14 @@ interface StatCardProps {
   label: string;
   description: string;
   icon: string;
+  /** 부모에서 배치 조회한 카운트 (미제공 시 로딩 표시) */
+  count?: number;
 }
 
-export function StatCard({ tableName, label, description, icon }: StatCardProps) {
-  const [count, setCount] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export function StatCard({ tableName, label, description, icon, count }: StatCardProps) {
   const router = useRouter();
   const Icon = ICON_MAP[icon] ?? BookOpen;
-
-  useEffect(() => {
-    async function loadCount() {
-      const result = await getTableCount(tableName);
-      if (result.ok) {
-        setCount(result.data);
-      }
-      setIsLoading(false);
-    }
-    loadCount();
-  }, [tableName]);
+  const isLoading = count === undefined;
 
   return (
     <motion.div

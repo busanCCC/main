@@ -122,7 +122,17 @@ export async function fetchUserDetail(
   userId: string
 ): Promise<ActionResult<Record<string, unknown>>> {
   try {
-    const res = await fetch(`/api/admin/user/${userId}`);
+    const res = await fetch(`/api/admin/user?id=${encodeURIComponent(userId)}`);
+    if (!res.ok) {
+      // 404: 라우트 미배포 또는 삭제된 사용자 → applicantInfo 없이 계속 진행
+      if (res.status === 404) {
+        return { ok: false, reason: "사용자 정보를 찾을 수 없습니다." };
+      }
+      const result = await res.json().catch(() => ({}));
+      return (result as { ok?: boolean }).ok === true
+        ? (result as ActionResult<Record<string, unknown>>)
+        : { ok: false, reason: (result as { reason?: string }).reason ?? "사용자 정보를 불러올 수 없습니다." };
+    }
     const result = await res.json();
     return result;
   } catch {
@@ -145,6 +155,22 @@ export async function getTableCount(
     if (result.ok) {
       return { ok: true, data: result.data.count };
     }
+    return { ok: false, reason: result.reason };
+  } catch {
+    return { ok: false, reason: "네트워크 오류가 발생했습니다." };
+  }
+}
+
+/** 모든 테이블 카운트를 1회 요청으로 조회 (API 요청 수 대폭 감소) */
+export async function fetchAllTableCounts(
+  tableNames: string[]
+): Promise<ActionResult<Record<string, number>>> {
+  if (tableNames.length === 0) return { ok: true, data: {} };
+  const params = new URLSearchParams({ tables: tableNames.join(",") });
+  try {
+    const res = await fetch(`/api/admin?${params.toString()}`);
+    const result = await res.json();
+    if (result.ok) return { ok: true, data: result.data };
     return { ok: false, reason: result.reason };
   } catch {
     return { ok: false, reason: "네트워크 오류가 발생했습니다." };

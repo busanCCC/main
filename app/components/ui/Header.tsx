@@ -20,7 +20,8 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user));
+    // getSession: 쿠키/storage만 읽음, token 요청 없음 (429 방지)
+    supabase.auth.getSession().then(({ data: { session } }) => setIsLoggedIn(!!session?.user));
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
