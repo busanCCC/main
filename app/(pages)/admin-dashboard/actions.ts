@@ -122,7 +122,7 @@ export async function fetchUserDetail(
   userId: string
 ): Promise<ActionResult<Record<string, unknown>>> {
   try {
-    const res = await fetch(`/api/admin/user/${userId}`);
+    const res = await fetch(`/api/admin/user?id=${encodeURIComponent(userId)}`);
     if (!res.ok) {
       // 404: 라우트 미배포 또는 삭제된 사용자 → applicantInfo 없이 계속 진행
       if (res.status === 404) {
