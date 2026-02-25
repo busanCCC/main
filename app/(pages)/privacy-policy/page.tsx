@@ -100,7 +100,7 @@ export default function PrivacyPolicyPage() {
               정보를 수집합니다.
             </p>
             <p className="text-gray-700 leading-relaxed">
-              1. 필수 수집 정보: 이메일 주소, 비밀번호, 이름 및 생년월일
+              1. 필수 수집 정보: 이메일 주소, 비밀번호, 이름
             </p>
           </section>
 
@@ -112,8 +112,7 @@ export default function PrivacyPolicyPage() {
               회사는 이용자의 본인인증을 위하여 다음과 같은 정보를 수집합니다.
             </p>
             <p className="text-gray-700 leading-relaxed">
-              1. 필수 수집 정보: 휴대폰 번호, 이메일 주소, 이름, 생년월일 및
-              성별
+              1. 필수 수집 정보: 휴대폰 번호, 이메일 주소, 이름
             </p>
           </section>
 
@@ -126,7 +125,7 @@ export default function PrivacyPolicyPage() {
               정보를 수집합니다.
             </p>
             <ol className="list-decimal list-inside space-y-2 text-gray-700">
-              <li>필수 수집 정보: 이메일 주소, 이름, 생년월일 및 연락처</li>
+              <li>필수 수집 정보: 이메일 주소, 이름</li>
               <li>
                 선택 수집 정보: (실물상품 지급 시) 이름, 전화번호, 주소,
                 (모바일상품 지급 시) 전화번호 및 (제세공과금 처리 시) 이름,
