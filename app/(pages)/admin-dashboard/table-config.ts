@@ -140,6 +140,17 @@ const chapelsSchema = z.object({
   active_until: z.string().min(1, "노출 종료일을 입력해주세요."),
 });
 
+const dailyDevotionsSchema = z.object({
+  date: z.string().min(1, "날짜를 입력해주세요."),
+  day_of_week: z.string().optional().default(""),
+  title: z.string().min(1, "제목을 입력해주세요."),
+  scripture_reference: z.string().min(1, "말씀 구절을 입력해주세요."),
+  scripture_text: z.string().min(1, "말씀 본문을 입력해주세요."),
+  questions: z.string().optional().default(""),
+  reference_notes: z.string().optional().default(""),
+  application: z.string().optional().default(""),
+});
+
 // --- 테이블 설정 (도메인별 응집) ---
 
 export const tableConfig: Record<string, TableMeta> = {
@@ -197,6 +208,37 @@ export const tableConfig: Record<string, TableMeta> = {
       { name: "created_at", label: "생성일", type: "date", readOnly: true },
     ],
     zodSchema: dailyCurationsSchema,
+  },
+  daily_devotions: {
+    label: "풍삶",
+    icon: "BookOpen",
+    description: "일일 묵상 및 풍삶 영상 (크론으로 YouTube 자동 수집)",
+    tableName: "daily_devotions",
+    primaryKey: "id",
+    listColumns: ["id", "date", "title", "scripture_reference", "youtube_video_id", "created_at"],
+    searchColumn: "title",
+    defaultSort: { column: "date", ascending: false },
+    fields: [
+      { name: "id", label: "ID", type: "number", hidden: true },
+      { name: "date", label: "날짜", type: "date", required: true },
+      { name: "day_of_week", label: "요일", type: "text" },
+      { name: "title", label: "제목", type: "text", required: true },
+      { name: "scripture_reference", label: "말씀 구절", type: "text", required: true },
+      { name: "scripture_text", label: "말씀 본문", type: "textarea", required: true },
+      { name: "questions", label: "질문", type: "json" },
+      { name: "reference_notes", label: "참고 노트", type: "json" },
+      { name: "application", label: "적용", type: "textarea" },
+      { name: "youtube_channel_id", label: "YouTube 채널 ID", type: "text", readOnly: true },
+      { name: "youtube_video_id", label: "YouTube 영상 ID", type: "text", readOnly: true },
+      { name: "youtube_url", label: "풍삶 영상 URL", type: "url", readOnly: true },
+      { name: "youtube_title", label: "풍삶 영상 제목", type: "text", readOnly: true },
+      { name: "youtube_thumbnail_url", label: "풍삶 썸네일 URL", type: "url", readOnly: true },
+      { name: "youtube_published_at", label: "영상 업로드 시각", type: "datetime", readOnly: true },
+      { name: "youtube_fetched_at", label: "영상 수집 시각", type: "datetime", readOnly: true },
+      { name: "created_at", label: "생성일", type: "date", readOnly: true },
+      { name: "updated_at", label: "수정일", type: "date", readOnly: true },
+    ],
+    zodSchema: dailyDevotionsSchema,
   },
   notices: {
     label: "공지사항",
