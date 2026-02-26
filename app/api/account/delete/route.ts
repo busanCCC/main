@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
 // Service Role Key를 사용하여 계정 삭제
@@ -19,7 +19,7 @@ function getServiceRoleClient() {
 
 // 사용자 본인 계정 삭제 요청 처리
 export async function POST() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createRouteHandlerClient({ cookies });
 
   const {
     data: { user },

@@ -5,6 +5,23 @@ const YOUTUBE_API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
 const CRON_SECRET = process.env.CRON_SECRET;
 const YOUTUBE_CHANNEL_ID = "UC7ueCtbLRAmctB0uv3MxAnQ";
 const YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search";
+const MAX_RETRIES = 2;
+
+async function fetchWithRetry(
+  url: string,
+  init?: RequestInit,
+  retries = MAX_RETRIES
+): Promise<Response> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fetch(url, init);
+    } catch (err) {
+      if (attempt >= retries) throw err;
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+    }
+  }
+  throw new Error("fetchWithRetry: unreachable");
+}
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -106,7 +123,7 @@ export async function GET(request: NextRequest) {
       key: YOUTUBE_API_KEY,
     }).toString();
 
-  const ytRes = await fetch(searchUrl);
+  const ytRes = await fetchWithRetry(searchUrl);
   if (!ytRes.ok) {
     const body = await ytRes.text();
     console.error("[poongsal-daily] YouTube 검색 실패:", body);

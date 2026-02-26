@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ function getAdminClient() {
 }
 
 async function verifyAdmin(): Promise<boolean> {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createRouteHandlerClient({ cookies });
   const { data: { session } } = await supabase.auth.getSession();
   const userId = session?.user?.id;
   if (!userId) return false;
@@ -33,7 +33,7 @@ async function verifyAdmin(): Promise<boolean> {
 /** GET /api/admin/user/[id] - profiles + auth.users(이메일 등) 조합 */
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   const isAdmin = await verifyAdmin();
   if (!isAdmin) {
@@ -43,7 +43,7 @@ export async function GET(
     );
   }
 
-  const { id } = await params;
+  const { id } = params;
   const adminClient = getAdminClient();
 
   let profiles: Record<string, unknown> = {};

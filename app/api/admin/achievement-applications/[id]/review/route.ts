@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
 function getAdminClient() {
@@ -13,7 +13,7 @@ function getAdminClient() {
 }
 
 async function verifyAdmin(): Promise<{ ok: boolean; userId?: string }> {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createRouteHandlerClient({ cookies });
   const { data: { session } } = await supabase.auth.getSession();
   const userId = session?.user?.id;
   if (!userId) return { ok: false };
@@ -34,9 +34,9 @@ async function verifyAdmin(): Promise<{ ok: boolean; userId?: string }> {
  */
 export async function POST(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
+  const { id } = params;
   const auth = await verifyAdmin();
   if (!auth.ok || !auth.userId) {
     return NextResponse.json(
