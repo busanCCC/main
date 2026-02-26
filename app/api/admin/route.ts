@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
 // Service Role Key를 사용하여 RLS 우회
@@ -19,7 +19,7 @@ function getAdminClient() {
 
 // 현재 요청자가 admin인지 확인 (getSession: 쿠키만 읽음, token 요청 없음)
 async function verifyAdmin(): Promise<boolean> {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createRouteHandlerClient({ cookies });
   const { data: { session } } = await supabase.auth.getSession();
   const userId = session?.user?.id;
   if (!userId) return false;
