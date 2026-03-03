@@ -4,7 +4,10 @@ import { createClient } from "@supabase/supabase-js";
 const YOUTUBE_API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
 const CRON_SECRET = process.env.CRON_SECRET;
 const YOUTUBE_CHANNEL_ID = "UC7ueCtbLRAmctB0uv3MxAnQ";
-const YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search";
+// 채널 업로드 재생목록: UC → UU
+const UPLOADS_PLAYLIST_ID = "UU7ueCtbLRAmctB0uv3MxAnQ";
+const YOUTUBE_PLAYLIST_ITEMS_URL =
+  "https://www.googleapis.com/youtube/v3/playlistItems";
 const MAX_RETRIES = 2;
 
 async function fetchWithRetry(
@@ -34,7 +37,6 @@ function getAdminClient() {
 
 function getNowInKst() {
   const now = new Date();
-  // UTC → KST(+9)을 직접 더해도 되지만, 여기선 Intl로 날짜 문자열만 뽑습니다.
   const formatter = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
     year: "numeric",
@@ -50,16 +52,16 @@ function getNowInKst() {
   const year = parts.find((p) => p.type === "year")!.value;
   const month = parts.find((p) => p.type === "month")!.value;
   const day = parts.find((p) => p.type === "day")!.value;
-  const weekday = parts.find((p) => p.type === "weekday")!.value; // 예: 일, 월, ...
+  const weekday = parts.find((p) => p.type === "weekday")!.value;
 
-  const dateStr = `${year}-${month}-${day}`; // YYYY-MM-DD
+  const dateStr = `${year}-${month}-${day}`;
   return { now, dateStr, weekday };
 }
 
 export const dynamic = "force-dynamic";
 
+/** 매일 자정 00시(KST) 실행 — 최신 YouTube 영상을 오늘 날짜의 daily_devotions에 매칭 */
 export async function GET(request: NextRequest) {
-  // 1) 크론 보안 체크
   const authHeader = request.headers.get("authorization") ?? "";
   const token = authHeader.replace(/^Bearer\s+/i, "");
   if (!CRON_SECRET || token !== CRON_SECRET) {
@@ -76,10 +78,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // 2) KST 기준 오늘 날짜/요일
   const { dateStr: todayKst, weekday } = getNowInKst();
 
-  // 일요일(주일) 스킵 (예: "일")
   if (weekday.startsWith("일")) {
     return NextResponse.json({
       ok: true,
@@ -89,7 +89,6 @@ export async function GET(request: NextRequest) {
 
   const adminClient = getAdminClient();
 
-  // 3) 이미 오늘 daily_devotions + youtube_* 가 채워져 있으면 바로 종료 (early-exit)
   const { data: existing, error: existingError } = await adminClient
     .from("daily_devotions")
     .select("id, youtube_video_id, youtube_fetched_at")
@@ -103,47 +102,66 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  if (existing?.youtube_video_id) {
-    // 이미 오늘 영상이 저장되어 있으면 이후 크론 실행에서는 바로 종료
-    return NextResponse.json({
-      ok: true,
-      skipped: "already_saved_today",
-    });
-  }
-
-  // 4) YouTube 최신 영상 1개 조회
-  const searchUrl =
-    `${YOUTUBE_SEARCH_URL}?` +
+  // PlaylistItems API로 채널의 최신 업로드 영상 조회 (캐싱 없이 실시간)
+  const playlistUrl =
+    `${YOUTUBE_PLAYLIST_ITEMS_URL}?` +
     new URLSearchParams({
       part: "snippet",
-      channelId: YOUTUBE_CHANNEL_ID,
-      order: "date",
-      maxResults: "1",
-      type: "video",
+      playlistId: UPLOADS_PLAYLIST_ID,
+      maxResults: "5",
       key: YOUTUBE_API_KEY,
     }).toString();
 
-  const ytRes = await fetchWithRetry(searchUrl);
+  const ytRes = await fetchWithRetry(playlistUrl);
   if (!ytRes.ok) {
     const body = await ytRes.text();
-    console.error("[poongsal-daily] YouTube 검색 실패:", body);
+    console.error("[poongsal-daily] YouTube PlaylistItems 실패:", body);
     return NextResponse.json(
-      { ok: false, reason: "YouTube 검색 실패" },
+      { ok: false, reason: "YouTube 조회 실패" },
       { status: 502 }
     );
   }
 
   const ytData = await ytRes.json();
-  const item = (ytData.items ?? [])[0];
-  if (!item) {
+  const items = ytData.items ?? [];
+  if (items.length === 0) {
     return NextResponse.json({
       ok: true,
       skipped: "no_video",
     });
   }
 
-  const videoId: string | undefined = item.id?.videoId;
-  const snippet = item.snippet ?? {};
+  // 이미 다른 날짜에 저장된 영상은 제외하고 새 영상만 선택
+  const candidateVideoIds = items.map(
+    (item: { snippet?: { resourceId?: { videoId?: string } } }) =>
+      item.snippet?.resourceId?.videoId
+  ).filter(Boolean) as string[];
+
+  const { data: alreadyUsed } = await adminClient
+    .from("daily_devotions")
+    .select("youtube_video_id")
+    .in("youtube_video_id", candidateVideoIds);
+
+  const usedIds = new Set(
+    (alreadyUsed ?? []).map((r: { youtube_video_id: string }) => r.youtube_video_id)
+  );
+
+  const freshItem = items.find(
+    (item: { snippet?: { resourceId?: { videoId?: string } } }) => {
+      const vid = item.snippet?.resourceId?.videoId;
+      return vid && !usedIds.has(vid);
+    }
+  );
+
+  if (!freshItem) {
+    return NextResponse.json({
+      ok: true,
+      skipped: "no_new_video",
+    });
+  }
+
+  const snippet = freshItem.snippet ?? {};
+  const videoId: string = snippet.resourceId?.videoId;
   const title: string = snippet.title ?? "";
   const publishedAt: string = snippet.publishedAt ?? "";
   const thumbnail: string | undefined =
@@ -158,10 +176,8 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // 전날 저녁(22시~24시) 업로드된 영상이 “오늘” 풍삶이므로, 최신 영상 1개를 오늘 날짜(todayKst)에 저장
   const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
-  // 5) 해당 날짜의 daily_devotions가 있을 때만 UPDATE (없으면 스킵)
   if (!existing) {
     return NextResponse.json({
       ok: true,
@@ -179,7 +195,6 @@ export async function GET(request: NextRequest) {
       youtube_thumbnail_url: thumbnail ?? null,
       youtube_published_at: publishedAt,
       youtube_fetched_at: new Date().toISOString(),
-      // updated_at 트리거가 있으므로 별도 처리 불필요
     })
     .eq("date", todayKst)
     .select("id")
@@ -203,4 +218,3 @@ export async function GET(request: NextRequest) {
     },
   });
 }
-
