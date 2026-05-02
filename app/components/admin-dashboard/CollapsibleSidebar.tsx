@@ -10,6 +10,7 @@ import {
   CalendarDays,
   Church,
   Trophy,
+  Tent,
   PanelLeftClose,
   PanelLeftOpen,
   LogOut,
@@ -104,6 +105,27 @@ export function CollapsibleSidebar() {
               className="truncate"
             >
               대시보드
+            </motion.span>
+          )}
+        </button>
+
+        {/* 여름수련회 */}
+        <button
+          onClick={() => router.push("/admin-dashboard/summer-retreat")}
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+            pathname.startsWith("/admin-dashboard/summer-retreat")
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          }`}
+        >
+          <Tent className="h-4 w-4 shrink-0" />
+          {isExpanded && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="truncate"
+            >
+              여름수련회
             </motion.span>
           )}
         </button>

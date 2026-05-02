@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import {
@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "@/app/components/ui/dialog";
 import { ArrowLeft, Check, X, Loader2, ImageIcon, Download } from "lucide-react";
+import { updateRecord } from "@/app/(pages)/admin-dashboard/actions";
+import supabase from "@/utils/supabase/client";
 
 /** HEIC 등 브라우저 미지원 포맷: 로드 실패 시 다운로드 링크 표시 */
 function ProofImageThumb({ url, index }: { url: string; index: number }) {
@@ -106,6 +108,15 @@ export function AchievementApplicationForm({
   const [error, setError] = useState<string | null>(null);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadUserId() {
+      const { data: { session } } = await supabase.auth.getSession();
+      setCurrentUserId(session?.user?.id ?? null);
+    }
+    loadUserId();
+  }, []);
 
   const status = String(defaultValues.status ?? "pending");
   const achievementId = String(defaultValues.achievement_id ?? "");
@@ -130,27 +141,22 @@ export function AchievementApplicationForm({
     setError(null);
     setIsSubmitting(true);
     try {
-      const body: { status: string; rejection_reason?: string } = {
+      const now = new Date().toISOString();
+      const data: Record<string, unknown> = {
         status: newStatus,
+        reviewed_by: currentUserId,
+        reviewed_at: now,
+        updated_at: now,
+        rejection_reason: newStatus === "rejected" ? (reason ?? null) : null,
       };
-      if (newStatus === "rejected" && reason) {
-        body.rejection_reason = reason;
-      }
-      const res = await fetch(
-        `/api/admin/achievement-applications/${recordId}/review`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        }
-      );
-      const json = await res.json();
-      if (json.ok) {
+
+      const result = await updateRecord("achievement_applications", recordId, data);
+      if (result.ok) {
         setRejectDialogOpen(false);
         setRejectionReason("");
         onSubmitSuccess();
       } else {
-        setError(json.reason ?? "처리 중 오류가 발생했습니다.");
+        setError(result.reason ?? "처리 중 오류가 발생했습니다.");
       }
     } catch {
       setError("네트워크 오류가 발생했습니다.");
