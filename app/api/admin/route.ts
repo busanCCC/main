@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { table, data: recordData } = body;
+  const { table, data: recordData, onConflict } = body;
 
   if (!table || !recordData) {
     return NextResponse.json(
@@ -144,11 +144,11 @@ export async function POST(request: NextRequest) {
   }
 
   const adminClient = getAdminClient();
-  const { data, error } = await adminClient
-    .from(table)
-    .insert(recordData)
-    .select()
-    .single();
+  const mutation = onConflict
+    ? adminClient.from(table).upsert(recordData, { onConflict })
+    : adminClient.from(table).insert(recordData);
+
+  const { data, error } = await mutation.select().single();
 
   if (error) {
     return NextResponse.json({ ok: false, reason: error.message });
