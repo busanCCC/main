@@ -80,6 +80,24 @@ export async function createRecord(
   }
 }
 
+export async function upsertRecord(
+  tableName: string,
+  data: Record<string, unknown>,
+  onConflict: string
+): Promise<ActionResult<Record<string, unknown>>> {
+  try {
+    const res = await fetch("/api/admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ table: tableName, data, onConflict }),
+    });
+    const result = await res.json();
+    return result;
+  } catch {
+    return { ok: false, reason: "네트워크 오류가 발생했습니다." };
+  }
+}
+
 export async function updateRecord(
   tableName: string,
   id: number | string,

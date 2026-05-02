@@ -18,6 +18,7 @@ import {
   ChevronUp,
   Loader2,
   RotateCcw,
+  Swords,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -38,6 +39,7 @@ import {
   deleteRecord,
 } from "@/app/(pages)/admin-dashboard/actions";
 import { toast } from "sonner";
+import { SportsTournamentManager } from "@/app/components/admin-dashboard/SportsTournamentManager";
 
 // ─── 상수 ────────────────────────────────────────────────────────────────────
 
@@ -45,12 +47,13 @@ const TABLE = "summer_conference_prayer_topics";
 
 // ─── 탭 정의 ──────────────────────────────────────────────────────────────────
 
-type TabKey = "contest" | "prayer" | "notice";
+type TabKey = "contest" | "prayer" | "notice" | "sports";
 
 const TABS: { key: TabKey; label: string; icon: React.ElementType; description: string }[] = [
   { key: "contest", label: "공모전", icon: Trophy, description: "여름수련회 공모전 항목을 관리합니다." },
   { key: "prayer", label: "기도제목", icon: HeartHandshake, description: "날짜별 기도제목을 입력하고 앱에 표시될 내용을 관리합니다." },
   { key: "notice", label: "공지사항", icon: Megaphone, description: "여름수련회 관련 공지사항을 관리합니다." },
+  { key: "sports", label: "스포츠", icon: Swords, description: "축구 대진표와 경기 결과를 작성하고 앱 화면 기준으로 미리 확인합니다." },
 ];
 
 // ─── 기도제목 타입 (DDL 반영) ─────────────────────────────────────────────────
@@ -1321,6 +1324,7 @@ export default function SummerRetreatPage() {
       {activeTab === "prayer" && <PrayerTab />}
       {activeTab === "contest" && <ContestTab />}
       {activeTab === "notice" && <NoticeTab />}
+      {activeTab === "sports" && <SportsTournamentManager />}
     </div>
   );
 }
