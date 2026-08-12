@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, Play, Square, Radio } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { SessionStatusBadge } from "./SessionStatusBadge";
-import { MicrophoneController } from "./MicrophoneController";
+import { AudioSourceController } from "./AudioSourceController";
 import {
   ParticipantPanel,
   TranscriptMonitor,
@@ -13,10 +13,16 @@ import {
 import { KeytermsPanel } from "./KeytermsPanel";
 import {
   fetchInterpretationSession,
+  fetchSessionParticipantStats,
   fetchStreamCredentials,
   startInterpretationSession,
   stopInterpretationSession,
 } from "@/lib/interpretation/clientApi";
+import {
+  mergeParticipantCounts,
+  parseStreamPresenceEvent,
+  type RoomParticipantStats,
+} from "@/lib/interpretation/streamStats";
 import type {
   InterpretationSession,
   SessionStatus,
@@ -44,10 +50,15 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
     isFinal: false,
   });
   const [logs, setLogs] = useState<string[]>([]);
+  const [participantStats, setParticipantStats] = useState<RoomParticipantStats>({
+    total: 0,
+    byLang: {},
+  });
 
   const adminWsRef = useRef<WebSocket | null>(null);
   const monitorWsRef = useRef<WebSocket | null>(null);
   const monitorLangRef = useRef("en");
+  const targetLanguagesRef = useRef<string[]>([]);
   /**
    * connectStreams 는 자격증명을 받아오느라 await 를 한 번 거친다. 그 사이에도
    * connectionState 는 "idle" 이라 아래 이펙트가 한 번 더 들어온다 — 소켓이 두 벌
@@ -73,12 +84,24 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
     );
   }, []);
 
+  const applyParticipantStats = useCallback(
+    (stats: RoomParticipantStats | null, targetLanguages: string[]) => {
+      if (!stats) return;
+      setParticipantStats(
+        mergeParticipantCounts(targetLanguages, stats.byLang),
+      );
+    },
+    [],
+  );
+
   const loadSession = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await fetchInterpretationSession(sessionId);
       setSession(data);
       monitorLangRef.current = data.targetLanguages[0] ?? "en";
+      targetLanguagesRef.current = data.targetLanguages;
+      setParticipantStats(mergeParticipantCounts(data.targetLanguages));
       setTranslation((prev) => ({
         ...prev,
         lang: data.targetLanguages[0] ?? "en",
@@ -95,6 +118,23 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
   useEffect(() => {
     loadSession();
   }, [loadSession]);
+
+  useEffect(() => {
+    if (session?.status !== "live") return;
+
+    const refreshStats = async () => {
+      try {
+        const stats = await fetchSessionParticipantStats(sessionId);
+        applyParticipantStats(stats, session.targetLanguages);
+      } catch {
+        // 스트림 서버 stats API 미지원 시 WebSocket 이벤트에만 의존
+      }
+    };
+
+    void refreshStats();
+    const timer = window.setInterval(refreshStats, 5000);
+    return () => window.clearInterval(timer);
+  }, [session?.status, session?.targetLanguages, sessionId, applyParticipantStats]);
 
   /**
    * 끊긴 소켓을 다시 잇는다.
@@ -161,6 +201,10 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
 
       adminWs.onmessage = (event) => {
         const msg = JSON.parse(event.data as string);
+        applyParticipantStats(
+          parseStreamPresenceEvent(msg),
+          targetLanguagesRef.current,
+        );
         if (msg.type === "authenticated") {
           appendLog("Admin 인증 완료");
           // 인증만으로는 이 소켓이 어느 방인지 서버가 알 수 없다.
@@ -241,6 +285,11 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
           | StreamTranslationEvent
           | { type: string };
 
+        applyParticipantStats(
+          parseStreamPresenceEvent(msg),
+          targetLanguagesRef.current,
+        );
+
         if (msg.type === "transcript") {
           const t = msg as StreamTranscriptEvent;
           setTranscript({ text: t.text, isFinal: t.isFinal });
@@ -266,7 +315,7 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
 
       isConnectingRef.current = false;
     },
-    [appendLog, sessionId, scheduleReconnect],
+    [appendLog, sessionId, scheduleReconnect, applyParticipantStats],
   );
 
   useEffect(() => {
@@ -423,7 +472,7 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
-          <MicrophoneController
+          <AudioSourceController
             enabled={isLive && connectionState === "connected"}
             onChunk={handleAudioChunk}
           />
@@ -439,7 +488,11 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
         </div>
         <div className="space-y-4">
           <KeytermsPanel session={session} onUpdated={setSession} />
-          <ParticipantPanel count={session.participantCount ?? 0} />
+          <ParticipantPanel
+            total={participantStats.total}
+            byLanguage={participantStats.byLang}
+            targetLanguages={session.targetLanguages}
+          />
           <div className="rounded-lg border bg-card p-4">
             <h3 className="text-sm font-semibold mb-2">로그</h3>
             <div className="max-h-64 overflow-y-auto space-y-1">

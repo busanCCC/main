@@ -14,10 +14,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { SOURCE_LANGUAGES, TARGET_LANGUAGES } from "@/lib/interpretation/constants";
+import {
+  SOURCE_LANGUAGES,
+  TARGET_LANGUAGES,
+} from "@/lib/interpretation/constants";
 import { createInterpretationSession } from "@/lib/interpretation/clientApi";
-import { normalizeKeyterms, parseKeytermsInput } from "@/lib/interpretation/keyterms";
-import type { CreateSessionInput, SessionVisibility } from "@/lib/interpretation/types";
+import {
+  normalizeKeyterms,
+  parseKeytermsInput,
+} from "@/lib/interpretation/keyterms";
+import type {
+  CreateSessionInput,
+  SessionVisibility,
+} from "@/lib/interpretation/types";
 import { KeytermsField } from "./KeytermsField";
 import { KeytermsImport } from "./KeytermsImport";
 import { toast } from "sonner";
@@ -26,7 +35,11 @@ export function SessionForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState<
-    CreateSessionInput & { description?: string; password?: string; keytermsText?: string }
+    CreateSessionInput & {
+      description?: string;
+      password?: string;
+      keytermsText?: string;
+    }
   >({
     title: "",
     speaker: "",
@@ -44,7 +57,10 @@ export function SessionForm() {
       const next = exists
         ? prev.targetLanguages.filter((l) => l !== lang)
         : [...prev.targetLanguages, lang];
-      return { ...prev, targetLanguages: next.length ? next : prev.targetLanguages };
+      return {
+        ...prev,
+        targetLanguages: next.length ? next : prev.targetLanguages,
+      };
     });
   };
 
@@ -63,12 +79,17 @@ export function SessionForm() {
         speaker: rest.speaker?.trim() || undefined,
         description: rest.description?.trim() || undefined,
         keyterms: normalizeKeyterms(parseKeytermsInput(keytermsText ?? "")),
-        password: rest.visibility === "private" ? password?.trim() || undefined : undefined,
+        password:
+          rest.visibility === "private"
+            ? password?.trim() || undefined
+            : undefined,
       });
       toast.success("세션이 생성되었습니다.");
       router.push(`/admin-dashboard/interpretation/${created.id}/live`);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "세션 생성에 실패했습니다.");
+      toast.error(
+        err instanceof Error ? err.message : "세션 생성에 실패했습니다.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -78,7 +99,9 @@ export function SessionForm() {
     <Card className="max-w-2xl">
       <CardHeader>
         <CardTitle>통번역 세션 생성</CardTitle>
-        <CardDescription>행사/예배 실시간 통번역 세션을 새로 만듭니다.</CardDescription>
+        <CardDescription>
+          행사/예배 실시간 통번역 세션을 새로 만듭니다.
+        </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
@@ -88,7 +111,7 @@ export function SessionForm() {
               id="title"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="예: BHST 2026 Day1"
+              placeholder="예: 00월 00일 캠퍼스채플"
             />
           </div>
 
@@ -107,7 +130,9 @@ export function SessionForm() {
             <Input
               id="description"
               value={form.description ?? ""}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               placeholder="세션 설명 (선택)"
             />
           </div>
@@ -132,7 +157,12 @@ export function SessionForm() {
               id="visibility"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               value={form.visibility}
-              onChange={(e) => setForm({ ...form, visibility: e.target.value as SessionVisibility })}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  visibility: e.target.value as SessionVisibility,
+                })
+              }
             >
               <option value="public">공개</option>
               <option value="private">비공개</option>
@@ -161,10 +191,14 @@ export function SessionForm() {
               id="sourceLanguage"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               value={form.sourceLanguage}
-              onChange={(e) => setForm({ ...form, sourceLanguage: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, sourceLanguage: e.target.value })
+              }
             >
               {SOURCE_LANGUAGES.map((lang) => (
-                <option key={lang.value} value={lang.value}>{lang.label}</option>
+                <option key={lang.value} value={lang.value}>
+                  {lang.label}
+                </option>
               ))}
             </select>
           </div>

@@ -60,3 +60,9 @@ export async function fetchStreamCredentials() {
     "/api/interpretation/token",
   );
 }
+
+export async function fetchSessionParticipantStats(sessionId: string) {
+  return request<{ total: number; byLang: Record<string, number> }>(
+    `/api/interpretation/sessions/${sessionId}/stats`,
+  );
+}
