@@ -7,6 +7,7 @@ import { Button } from "@/app/components/ui/button";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { RecordForm } from "@/app/components/admin-dashboard/RecordForm";
 import { ChapelForm } from "@/app/components/admin-dashboard/ChapelForm";
+import { ChapelSummaryForm } from "@/app/components/admin-dashboard/ChapelSummaryForm";
 import { WeeklyFlowForm } from "@/app/components/admin-dashboard/WeeklyFlowForm";
 import { AchievementApplicationForm } from "@/app/components/admin-dashboard/AchievementApplicationForm";
 import { DeleteConfirmDialog } from "@/app/components/admin-dashboard/DeleteConfirmDialog";
@@ -153,6 +154,48 @@ export default function EditRecordPage() {
           recordId={recordId}
           onSubmitSuccess={() => router.push(`/admin-dashboard/${tableName}`)}
           onBack={handleBack}
+        />
+      </div>
+    );
+  }
+
+  // chapel_summaries 전용 폼 분기 (영상 → 전사문 → AI 요약 흐름)
+  if (tableName === "chapel_summaries") {
+    return (
+      <div className="p-8">
+        <ChapelSummaryForm
+          defaultValues={record}
+          onSubmit={handleSubmit}
+          onBack={handleBack}
+          isSubmitting={isSubmitting}
+          mode="edit"
+        />
+
+        <div className="max-w-3xl mt-12 pt-8 border-t">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-destructive">
+                위험 영역
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                이 레코드를 영구적으로 삭제합니다.
+              </p>
+            </div>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setShowDelete(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              삭제
+            </Button>
+          </div>
+        </div>
+
+        <DeleteConfirmDialog
+          open={showDelete}
+          onOpenChange={setShowDelete}
+          onConfirm={handleDelete}
         />
       </div>
     );

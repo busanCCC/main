@@ -137,3 +137,27 @@ body {
   font-size: clamp(17px, calc(8vw - 0.8rem), 32px);
   white-space: nowrap;
 }
+
+@keyframes service-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.service-progress-fill {
+  animation-name: service-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.service-dot-grid {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(148, 163, 184, 0.22) 1px,
+    transparent 0
+  );
+  background-size: 22px 22px;
+}

@@ -1,0 +1,7 @@
+{
+  "tool_name": "WebSearch",
+  "tool_input_preview": "{\"query\":\"gpt-5.6-terra pricing per million tokens OpenAI API\",\"allowed_domains\":[\"developers.openai.com\",\"platform.openai.com\",\"openai.com\"]}",
+  "error": "You've hit your session limit · resets 11:20am (Asia/Seoul)",
+  "timestamp": "2026-08-02T23:03:26.960Z",
+  "retry_count": 1
+}

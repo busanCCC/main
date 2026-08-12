@@ -10,13 +10,13 @@ import SessionProvider from "@/components/SessionProvider";
 // });
 
 export const metadata: Metadata = {
-  title: "부산지구 CCC 온라인 주보",
+  title: "부산지구 CCC",
   description:
-    "부산지구 CCC 온라인 주보 사이트. 채플 정보와 부산지구의 다양한 소식을 함께 나눠요.",
+    "부산지구 CCC의 사역 플랫폼. AI 씨앗순장, CCC 커뮤니티 앱을 비롯한 서비스와 채플·기도제목 소식을 한 곳에서 만나보세요.",
   openGraph: {
-    title: "부산지구 CCC 온라인 주보",
+    title: "부산지구 CCC",
     description:
-      "부산지구 CCC 온라인 주보 사이트. 채플 정보와 부산지구의 다양한 소식을 함께 나눠요.",
+      "부산지구 CCC의 사역 플랫폼. AI 씨앗순장, CCC 커뮤니티 앱을 비롯한 서비스와 채플·기도제목 소식을 한 곳에서 만나보세요.",
     url: "https://busanccc-swart.vercel.app",
     siteName: "CCC 부산지구",
     images: [

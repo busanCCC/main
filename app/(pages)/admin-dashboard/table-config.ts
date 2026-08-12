@@ -140,6 +140,13 @@ const chapelsSchema = z.object({
   active_until: z.string().min(1, "노출 종료일을 입력해주세요."),
 });
 
+const chapelSummariesSchema = z.object({
+  youtube_url: z.string().url("올바른 유튜브 링크를 입력해주세요."),
+  title: z.string().min(1, "제목을 입력해주세요."),
+  summary: z.string().min(1, "요약 본문을 입력해주세요."),
+  status: z.enum(["draft", "published"]),
+});
+
 const dailyDevotionsSchema = z.object({
   date: z.string().min(1, "날짜를 입력해주세요."),
   day_of_week: z.string().optional().default(""),
@@ -470,6 +477,34 @@ export const tableConfig: Record<string, TableMeta> = {
       { name: "updated_at", label: "수정일", type: "date", readOnly: true },
     ],
     zodSchema: chapelsSchema,
+  },
+  chapel_summaries: {
+    label: "채플 요약",
+    icon: "ScrollText",
+    description: "유튜브 영상 기반 채플 설교 요약 (전사문 + AI 요약)",
+    tableName: "chapel_summaries",
+    primaryKey: "id",
+    listColumns: ["title", "messenger", "chapel_date", "status", "updated_at"],
+    searchColumn: "title",
+    defaultSort: { column: "chapel_date", ascending: false },
+    // 전용 폼(ChapelSummaryForm)에서 다루는 값이라 RecordForm 용 필드는 최소로 둔다
+    fields: [
+      { name: "id", label: "ID", type: "text", hidden: true },
+      { name: "title", label: "제목", type: "text", required: true },
+      { name: "messenger", label: "메신저", type: "text" },
+      { name: "chapel_date", label: "채플 날짜", type: "date" },
+      {
+        name: "status",
+        label: "상태",
+        type: "enum",
+        required: true,
+        enumValues: ["draft", "published"],
+      },
+      { name: "youtube_url", label: "영상 링크", type: "url", required: true },
+      { name: "summary", label: "요약 본문", type: "textarea", required: true },
+      { name: "updated_at", label: "수정일", type: "date", readOnly: true },
+    ],
+    zodSchema: chapelSummariesSchema,
   },
   achievement_applications: {
     label: "업적 신청",

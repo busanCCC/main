@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node /private/tmp/claude-501/-Users-kimgarden-dev-main/fdb89a3c-3d19-4e9f-b3c9-9372c0cf1e0b/scratchpad/shot.js)"
+    ]
+  }
+}

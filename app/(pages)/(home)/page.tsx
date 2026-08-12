@@ -4,8 +4,8 @@ import EventCarousel from "@/app/components/EventCarousel";
 import FooterSection from "@/app/components/FooterSection";
 import MainCarousel from "@/app/components/MainCarousel";
 import PrayerChainSection from "@/app/components/PrayerChainSection";
+import ServiceHubSection from "@/app/components/service-hub/ServiceHubSection";
 import Header from "@/app/components/ui/Header";
-import { Cover } from "@/components/ui/cover";
 export default function Main() {
   return (
     <>
@@ -17,6 +17,20 @@ export default function Main() {
           </div>
         </div>
         <main className="w-full max-w-4xl flex flex-col items-center gap-10 py-2 px-2 md:px-0">
+          {/* 사역 서비스 허브 섹션 */}
+          <div className="w-full pt-10">
+            <ServiceHubSection />
+          </div>
+
+          {/* 여기부터는 부산지구의 소식·정보 영역 */}
+          <div className="w-full flex items-center gap-4">
+            <div className="h-px flex-1 bg-gray-300/60" />
+            <span className="text-xs font-medium text-gray-500">
+              부산지구 소식
+            </span>
+            <div className="h-px flex-1 bg-gray-300/60" />
+          </div>
+
           {/* 기도체인 섹션 */}
           <PrayerChainSection />
           {/* 목요채플 섹션 */}
@@ -31,7 +45,7 @@ export default function Main() {
           </section>
 
           {/* 캠퍼스 소식 섹션 */}
-          <section className="w-full bg-white/80 rounded-2xl shadow-md p-6 flex flex-col gap-2">
+          <section className="w-full bg-white/80 rounded-2xl shadow-md p-6 flex flex-col gap-2 mb-10">
             <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-400 bg-clip-text text-transparent">
               캠퍼스 소식
             </h1>
@@ -39,14 +53,6 @@ export default function Main() {
               부산지구 캠퍼스의 소식들
             </p>
             <CampusStory />
-          </section>
-
-          {/* 미디어팀 안내 섹션 */}
-          <section className="w-full bg-gradient-to-r from-yellow-100 via-pink-100 to-blue-100 rounded-2xl shadow-md p-8 flex flex-col items-center mb-10">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-center">
-              미디어 팀에서 <Cover>빠른 속도로</Cover>
-              <br /> 새 컨텐츠를 추가중이에요..!
-            </h1>
           </section>
         </main>
         <FooterSection />
