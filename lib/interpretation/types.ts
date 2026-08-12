@@ -62,3 +62,11 @@ export interface StreamTranslationEvent {
   isFinal: boolean;
   at: string;
 }
+
+export interface StreamPresenceEvent {
+  type: "presence" | "stats" | "room_stats" | "participants";
+  total?: number;
+  byLang?: Record<string, number>;
+  counts?: Record<string, number>;
+  participantsByLang?: Record<string, number>;
+}
