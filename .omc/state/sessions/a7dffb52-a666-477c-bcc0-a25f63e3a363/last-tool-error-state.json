@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"set -a && . ./.env.local && set +a && curl -s -m 10 \\\"${NEXT_PUBLIC_SUPABASE_URL// /}/rest/v1/interpretation_sessions?select=id,room_id,title,status,visibility,stream_url,source_lang,targe...",
+  "error": "Exit code 1\n./.env.local:2: no such file or directory: https://burvvigwesbfgsetpfry.supabase.co\n./.env.local:3: command not found: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cnZ2aWd3ZXNiZmdzZXRwZnJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3OTMyMzIsImV4cCI6MjA2MjM2OTIzMn0.OJfjRDx5wQwGatLov-MKzHsIFNAqcBOn_6DN7dEfisc\n./.env.local:5: command not found: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cnZ2aWd3ZXNiZmdzZXRwZnJ5Iiwicm9sZSI6InNlcnZpY2Vfcm9s...",
+  "timestamp": "2026-08-02T16:25:53.300Z",
+  "retry_count": 1
+}

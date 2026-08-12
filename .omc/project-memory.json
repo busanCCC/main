@@ -1,0 +1,303 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1785867308954,
+  "projectRoot": "/Users/kimgarden/dev/main",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "14.2.35",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "18",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18",
+        "category": "frontend"
+      },
+      {
+        "name": "playwright",
+        "version": "1.55.0",
+        "category": "testing"
+      },
+      {
+        "name": "vitest",
+        "version": "3.2.4",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build 2>&1 | grep -E \"✓|✗|error|Error|warn|Compiled|Failed\" | head -15",
+    "testCommand": null,
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint",
+      "storybook": "storybook dev -p 6006",
+      "build-storybook": "storybook build"
+    }
+  },
+  "conventions": {
+    "namingStyle": "camelCase",
+    "importStyle": "ES modules",
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "app",
+      "components",
+      "lib",
+      "public"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "api": {
+      "path": "api",
+      "purpose": "API routes",
+      "fileCount": 2,
+      "lastAccessed": 1785867308899,
+      "keyFiles": [
+        "posts.ts",
+        "supabase.ts"
+      ]
+    },
+    "app": {
+      "path": "app",
+      "purpose": "Application code",
+      "fileCount": 4,
+      "lastAccessed": 1785867308899,
+      "keyFiles": [
+        "favicon.png",
+        "globals.css",
+        "layout.tsx"
+      ]
+    },
+    "components": {
+      "path": "components",
+      "purpose": "UI components",
+      "fileCount": 1,
+      "lastAccessed": 1785867308900,
+      "keyFiles": [
+        "SessionProvider.tsx"
+      ]
+    },
+    "lib": {
+      "path": "lib",
+      "purpose": "Library code",
+      "fileCount": 2,
+      "lastAccessed": 1785867308901,
+      "keyFiles": [
+        "gtag.ts",
+        "utils.ts"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 24,
+      "lastAccessed": 1785867308901,
+      "keyFiles": [
+        "2025Next.png",
+        "2025_scposter.jpg",
+        "IMG_2015 2.jpg",
+        "IMG_2016 2.jpg",
+        "Instagram.png"
+      ]
+    },
+    "shared": {
+      "path": "shared",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1785867308901,
+      "keyFiles": [
+        "supabase.d.ts",
+        "supabase.local.ts"
+      ]
+    },
+    "stories": {
+      "path": "stories",
+      "purpose": null,
+      "fileCount": 10,
+      "lastAccessed": 1785867308901,
+      "keyFiles": [
+        "Button.stories.ts",
+        "Button.tsx",
+        "Configure.mdx",
+        "Header.stories.ts",
+        "Header.tsx"
+      ]
+    },
+    "types": {
+      "path": "types",
+      "purpose": "Type definitions",
+      "fileCount": 1,
+      "lastAccessed": 1785867308901,
+      "keyFiles": [
+        "react-tournament-brackets.d.ts"
+      ]
+    },
+    "utils": {
+      "path": "utils",
+      "purpose": "Utility functions",
+      "fileCount": 0,
+      "lastAccessed": 1785867308901,
+      "keyFiles": []
+    },
+    "app/api": {
+      "path": "app/api",
+      "purpose": "API routes",
+      "fileCount": 0,
+      "lastAccessed": 1785867308901,
+      "keyFiles": []
+    },
+    "app/components": {
+      "path": "app/components",
+      "purpose": "UI components",
+      "fileCount": 16,
+      "lastAccessed": 1785867308902,
+      "keyFiles": [
+        "Accordion.tsx",
+        "AnnouncementSection.tsx",
+        "Calendar.tsx"
+      ]
+    },
+    "app/types": {
+      "path": "app/types",
+      "purpose": "Type definitions",
+      "fileCount": 2,
+      "lastAccessed": 1785867308902,
+      "keyFiles": [
+        "global.d.ts",
+        "worship.d.ts"
+      ]
+    },
+    "stories/assets": {
+      "path": "stories/assets",
+      "purpose": "Static assets",
+      "fileCount": 16,
+      "lastAccessed": 1785867308902,
+      "keyFiles": [
+        "accessibility.png",
+        "accessibility.svg",
+        "addon-library.png"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "app/components/service-hub/services.ts",
+      "accessCount": 8,
+      "lastAccessed": 1785868930730,
+      "type": "file"
+    },
+    {
+      "path": "app/components/service-hub/ServiceCard.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1785869016351,
+      "type": "file"
+    },
+    {
+      "path": "app/(pages)/(home)/page.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1785868315439,
+      "type": "file"
+    },
+    {
+      "path": "app/(pages)/(home)/layout.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1785868329179,
+      "type": "file"
+    },
+    {
+      "path": "app/components/ui/Header.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1785867803031,
+      "type": "file"
+    },
+    {
+      "path": "app/components/MainCarousel.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1785867807637,
+      "type": "file"
+    },
+    {
+      "path": "app/components/PrayerChainSection.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1785867808051,
+      "type": "file"
+    },
+    {
+      "path": "app/components/FooterSection.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1785867808235,
+      "type": "file"
+    },
+    {
+      "path": "app/components/MenuDrawer.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1785867814964,
+      "type": "file"
+    },
+    {
+      "path": "public/siat-sunjang.png",
+      "accessCount": 1,
+      "lastAccessed": 1785867996102,
+      "type": "file"
+    },
+    {
+      "path": "app/components/ui/card.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1785868167136,
+      "type": "file"
+    },
+    {
+      "path": "app/components/ui/button.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1785868167232,
+      "type": "file"
+    },
+    {
+      "path": "app/components/service-hub/ServiceHubSection.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1785868295549,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

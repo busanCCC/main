@@ -11,6 +11,8 @@ import {
   Church,
   Trophy,
   Tent,
+  Languages,
+  ScrollText,
   PanelLeftClose,
   PanelLeftOpen,
   LogOut,
@@ -31,6 +33,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   CalendarDays,
   Church,
   Trophy,
+  ScrollText,
 };
 
 const navItems = Object.entries(tableConfig).map(([key, meta]) => ({
@@ -105,6 +108,27 @@ export function CollapsibleSidebar() {
               className="truncate"
             >
               대시보드
+            </motion.span>
+          )}
+        </button>
+
+        {/* 실시간 통번역 */}
+        <button
+          onClick={() => router.push("/admin-dashboard/interpretation")}
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+            pathname.startsWith("/admin-dashboard/interpretation")
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          }`}
+        >
+          <Languages className="h-4 w-4 shrink-0" />
+          {isExpanded && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="truncate"
+            >
+              실시간 통번역
             </motion.span>
           )}
         </button>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams, useRouter, notFound } from "next/navigation";
 import { RecordForm } from "@/app/components/admin-dashboard/RecordForm";
 import { ChapelForm } from "@/app/components/admin-dashboard/ChapelForm";
+import { ChapelSummaryForm } from "@/app/components/admin-dashboard/ChapelSummaryForm";
 import { WeeklyFlowForm } from "@/app/components/admin-dashboard/WeeklyFlowForm";
 import { useRecordMutation } from "../../hooks/useRecordMutation";
 import { getTableMeta, getValidTableNames } from "../../table-config";
@@ -32,6 +33,25 @@ export default function CreateRecordPage() {
           onSubmit={async (data) => {
             setIsSubmitting(true);
             const result = await createRecord("chapels", data);
+            setIsSubmitting(false);
+            if (result.ok) router.push(`/admin-dashboard/${tableName}`);
+          }}
+          onBack={handleBack}
+          isSubmitting={isSubmitting}
+          mode="create"
+        />
+      </div>
+    );
+  }
+
+  // chapel_summaries 전용 폼 분기 (영상 → 전사문 → AI 요약 흐름)
+  if (tableName === "chapel_summaries") {
+    return (
+      <div className="p-8">
+        <ChapelSummaryForm
+          onSubmit={async (data) => {
+            setIsSubmitting(true);
+            const result = await createRecord("chapel_summaries", data);
             setIsSubmitting(false);
             if (result.ok) router.push(`/admin-dashboard/${tableName}`);
           }}
