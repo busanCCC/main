@@ -233,7 +233,7 @@ export function ChapelSummaryForm({
 
     setIsGenerating(true);
     try {
-      const response = await fetch("/api/chapel-summary/generate", {
+      const createRes = await fetch("/api/chapel-summary/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -244,28 +244,61 @@ export function ChapelSummaryForm({
           chapelDate: form.chapel_date,
         }),
       });
-      const result = await response.json();
+      const created = await createRes.json();
 
-      if (!result.ok) {
-        toast.error(result.reason);
+      if (!created.ok) {
+        toast.error(created.reason);
         return;
       }
 
-      const draft = result.data as ChapelSummaryDraft;
-      setForm((current) => ({
-        ...current,
-        title: draft.title || current.title,
-        topic: draft.topic || current.topic,
-        messenger: draft.messenger || current.messenger,
-        scripture_reference: draft.scripture_reference,
-        scripture_text: draft.scripture_text,
-        summary: draft.summary,
-        key_points: draft.key_points,
-        chapters: draft.chapters,
-        application_questions: draft.application_questions,
-        action_points: draft.action_points,
-      }));
-      toast.success("요약 초안을 만들었습니다. 내용을 확인해주세요.");
+      const jobId = created.data.jobId as string;
+      toast.message("요약 생성을 시작했습니다. 잠시만 기다려주세요.");
+
+      const pollIntervalMs = 2500;
+      const maxAttempts = 120; // 약 5분
+
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+
+        const statusRes = await fetch(`/api/chapel-summary/jobs/${jobId}`);
+        const statusBody = await statusRes.json();
+
+        if (!statusBody.ok) {
+          toast.error(statusBody.reason ?? "작업 상태를 확인하지 못했습니다.");
+          return;
+        }
+
+        const { status, draft, error } = statusBody.data as {
+          status: string;
+          draft?: ChapelSummaryDraft;
+          error?: string;
+        };
+
+        if (status === "completed" && draft) {
+          setForm((current) => ({
+            ...current,
+            title: draft.title || current.title,
+            topic: draft.topic || current.topic,
+            messenger: draft.messenger || current.messenger,
+            scripture_reference: draft.scripture_reference,
+            scripture_text: draft.scripture_text,
+            summary: draft.summary,
+            key_points: draft.key_points,
+            chapters: draft.chapters,
+            application_questions: draft.application_questions,
+            action_points: draft.action_points,
+          }));
+          toast.success("요약 초안을 만들었습니다. 내용을 확인해주세요.");
+          return;
+        }
+
+        if (status === "failed") {
+          toast.error(error ?? "요약 생성에 실패했습니다.");
+          return;
+        }
+      }
+
+      toast.error("요약 생성 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.");
     } catch {
       toast.error("요약 생성에 실패했습니다.");
     } finally {
@@ -429,10 +462,11 @@ export function ChapelSummaryForm({
             ) : (
               <Sparkles className="h-4 w-4 mr-2" />
             )}
-            {isGenerating ? "생성 중… (1~3분)" : "AI 요약 생성"}
+            {isGenerating ? "생성 중… (백그라운드)" : "AI 요약 생성"}
           </Button>
           <p className="text-xs text-muted-foreground">
-            생성된 내용은 초안입니다. 아래에서 확인하고 고친 뒤 저장해주세요.
+            생성된 내용은 초안입니다. 백그라운드에서 처리되며 1~3분 정도
+            걸릴 수 있습니다. 아래에서 확인하고 고친 뒤 저장해주세요.
           </p>
         </section>
 
