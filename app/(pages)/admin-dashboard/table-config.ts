@@ -121,6 +121,9 @@ const achievementApplicationsSchema = z.object({
   reviewed_at: z.string().optional().nullable(),
 });
 
+/** 출석 가능 반경 기본값 (m) — ChapelForm 및 DB 컬럼 기본값과 동일 */
+const DEFAULT_ATTENDANCE_RADIUS_M = 150;
+
 const chapelsSchema = z.object({
   topic: z.string().min(1, "주제를 입력해주세요."),
   messenger: z.string().min(1, "메신저를 입력해주세요."),
@@ -131,11 +134,20 @@ const chapelsSchema = z.object({
     .optional()
     .or(z.literal("")),
   datetime: z.string().min(1, "채플 일시를 입력해주세요."),
+  retreat_datetime: z.string().optional().nullable(),
   thumbnail_url: z
     .string()
     .url("올바른 URL을 입력해주세요.")
     .optional()
     .or(z.literal("")),
+  latitude: z.coerce.number().min(-90).max(90).optional().nullable(),
+  longitude: z.coerce.number().min(-180).max(180).optional().nullable(),
+  attendance_radius_m: z.coerce
+    .number()
+    .int("출석 가능 반경은 정수(m)여야 합니다.")
+    .positive("출석 가능 반경은 1 이상이어야 합니다.")
+    .optional()
+    .default(DEFAULT_ATTENDANCE_RADIUS_M),
   active_from: z.string().min(1, "노출 시작일을 입력해주세요."),
   active_until: z.string().min(1, "노출 종료일을 입력해주세요."),
 });
@@ -441,6 +453,24 @@ export const tableConfig: Record<string, TableMeta> = {
         placeholder: "예: 넘치는 교회",
       },
       {
+        name: "latitude",
+        label: "위도",
+        type: "number",
+        placeholder: "예: 37.481234",
+      },
+      {
+        name: "longitude",
+        label: "경도",
+        type: "number",
+        placeholder: "예: 126.952345",
+      },
+      {
+        name: "attendance_radius_m",
+        label: "출석 가능 반경 (m)",
+        type: "number",
+        placeholder: String(DEFAULT_ATTENDANCE_RADIUS_M),
+      },
+      {
         name: "place_link",
         label: "지도 링크",
         type: "url",
@@ -452,6 +482,12 @@ export const tableConfig: Record<string, TableMeta> = {
         type: "datetime",
         required: true,
         placeholder: "YYYY-MM-DD HH:mm",
+      },
+      {
+        name: "retreat_datetime",
+        label: "리트릿 시작 시간",
+        type: "datetime",
+        placeholder: "미진행 시 비워두세요",
       },
       {
         name: "thumbnail_url",
