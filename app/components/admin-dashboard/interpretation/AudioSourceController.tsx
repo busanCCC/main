@@ -8,6 +8,7 @@ import {
   computeAudioLevel,
   downsampleBuffer,
   floatTo16BitPCM,
+  mixToMono,
   PCM_SAMPLE_RATE,
 } from "@/lib/interpretation/audioProcessing";
 
@@ -140,11 +141,14 @@ export function AudioSourceController({
       analyser.fftSize = 256;
       analyserRef.current = analyser;
 
-      const processor = audioContext.createScriptProcessor(4096, 1, 1);
+      const trackSettings = stream.getAudioTracks()[0]?.getSettings();
+      const inputChannels = Math.min(Math.max(trackSettings?.channelCount ?? 2, 1), 2);
+
+      const processor = audioContext.createScriptProcessor(4096, inputChannels, 1);
       processorRef.current = processor;
 
       processor.onaudioprocess = (event) => {
-        const input = event.inputBuffer.getChannelData(0);
+        const input = mixToMono(event.inputBuffer);
         const downsampled = downsampleBuffer(
           input,
           audioContext.sampleRate,
@@ -209,9 +213,11 @@ export function AudioSourceController({
 
       const constraints: MediaStreamConstraints = {
         audio: {
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
+          // 외장 오디오 인터페이스는 스테레오로 캡처한 뒤 전송 직전에 모노로 믹스한다.
+          channelCount: { ideal: 2 },
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
           ...(selectedDeviceId
             ? { deviceId: { exact: selectedDeviceId } }
             : {}),
@@ -267,7 +273,7 @@ export function AudioSourceController({
         <div>
           <h3 className="text-sm font-semibold">오디오 입력</h3>
           <p className="text-xs text-muted-foreground">
-            PCM 16kHz Mono → Stream Server
+            스테레오 캡처 → 16kHz Mono PCM → Stream Server
           </p>
           {sourceLabel && isActive && (
             <p className="text-xs text-emerald-600 mt-1">{sourceLabel}</p>
