@@ -9,6 +9,30 @@ export function floatTo16BitPCM(input: Float32Array): ArrayBuffer {
   return output.buffer;
 }
 
+/** 스테레오(또는 다채널) 입력을 서버 전송용 모노로 평균 믹스한다. */
+export function mixToMono(inputBuffer: AudioBuffer): Float32Array {
+  const { numberOfChannels, length } = inputBuffer;
+
+  if (numberOfChannels <= 1) {
+    return inputBuffer.getChannelData(0);
+  }
+
+  const mono = new Float32Array(length);
+  for (let channel = 0; channel < numberOfChannels; channel++) {
+    const data = inputBuffer.getChannelData(channel);
+    for (let i = 0; i < length; i++) {
+      mono[i] += data[i];
+    }
+  }
+
+  const scale = 1 / numberOfChannels;
+  for (let i = 0; i < length; i++) {
+    mono[i] *= scale;
+  }
+
+  return mono;
+}
+
 export function downsampleBuffer(
   buffer: Float32Array,
   inputRate: number,
