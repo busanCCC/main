@@ -15,6 +15,8 @@ export const SOURCE_LANGUAGES = [
   { value: "en", label: "English" },
   { value: "ja", label: "日本語" },
   { value: "zh", label: "中文" },
+  { value: "ru", label: "Русский" },
+  { value: "vi", label: "Tiếng Việt" },
 ] as const;
 
 export const TARGET_LANGUAGES = [
@@ -22,6 +24,8 @@ export const TARGET_LANGUAGES = [
   { value: "ja", label: "日本語" },
   { value: "zh", label: "中文" },
   { value: "ko", label: "한국어" },
+  { value: "ru", label: "Русский" },
+  { value: "vi", label: "Tiếng Việt" },
 ] as const;
 
 export const AUDIO_CHUNK_INTERVAL_MS = 200;
