@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Languages } from "lucide-react";
+import { ClipboardCheck, Languages } from "lucide-react";
 import { StatCard } from "@/app/components/admin-dashboard/StatCard";
 import { Button } from "@/app/components/ui/button";
 import { fetchAllTableCounts } from "./actions";
@@ -41,6 +41,22 @@ export default function AdminDashboardPage() {
         </div>
         <Button asChild>
           <Link href="/admin-dashboard/interpretation">통번역 관리</Link>
+        </Button>
+      </div>
+
+      {/* 출석 현황 shortcut */}
+      <div className="mb-8 rounded-xl border bg-card p-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <ClipboardCheck className="h-5 w-5 text-primary" />
+            <h2 className="font-semibold">출석 현황</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            채플·리트릿 출석을 학기별로 집계해 순위와 명단을 확인하고 엑셀로 내보냅니다.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/admin-dashboard/attendance">출석 관리</Link>
         </Button>
       </div>
 

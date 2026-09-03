@@ -17,6 +17,7 @@ import {
   PanelLeftOpen,
   LogOut,
   LayoutDashboard,
+  ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import supabase from "@/utils/supabase/client";
@@ -108,6 +109,27 @@ export function CollapsibleSidebar() {
               className="truncate"
             >
               대시보드
+            </motion.span>
+          )}
+        </button>
+
+        {/* 출석 현황 */}
+        <button
+          onClick={() => router.push("/admin-dashboard/attendance")}
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+            pathname.startsWith("/admin-dashboard/attendance")
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          }`}
+        >
+          <ClipboardCheck className="h-4 w-4 shrink-0" />
+          {isExpanded && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="truncate"
+            >
+              출석 현황
             </motion.span>
           )}
         </button>

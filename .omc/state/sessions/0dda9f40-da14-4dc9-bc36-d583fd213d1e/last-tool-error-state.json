@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"node -e '\\nconst fs=require(\\\"fs\\\");\\nconst p=\\\"app/(pages)/(home)/../../(pages)/admin-dashboard/page.tsx\\\".replace(\\\"(home)/../../\\\",\\\"\\\");\\nlet s=fs.readFileSync(p,\\\"utf8\\\");\\n\\ns=s.repl...",
+  "error": "Exit code 1\nnode:fs:440\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open 'app/(pages)/(pages)/admin-dashboard/page.tsx'\n    at Object.readFileSync (node:fs:440:20)\n    at [eval]:4:10\n    at runScriptInThisContext (node:internal/vm:219:10)\n    at node:internal/process/execution:451:12\n    at [eval]-wrapper:6:24\n    at runScriptInContext (node:internal/process/execution:449:60)\n    at evalFunction (node:interna...",
+  "timestamp": "2026-09-03T07:02:05.292Z",
+  "retry_count": 1
+}
