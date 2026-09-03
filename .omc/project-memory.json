@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1785867308954,
+  "lastScanned": 1788417996758,
   "projectRoot": "/Users/kimgarden/dev/main",
   "techStack": {
     "languages": [
       {
         "name": "JavaScript/TypeScript",
-        "version": null,
+        "version": "24.x",
         "confidence": "high",
         "markers": [
           "package.json"
@@ -49,11 +49,11 @@
       }
     ],
     "packageManager": "npm",
-    "runtime": null
+    "runtime": "Node.js 24.x"
   },
   "build": {
-    "buildCommand": "npm run build 2>&1 | grep -E \"✓|✗|error|Error|warn|Compiled|Failed\" | head -15",
-    "testCommand": null,
+    "buildCommand": "SP=/private/tmp/claude-501/-Users-kimgarden-dev-main/0dda9f40-da14-4dc9-bc36-d583fd213d1e/scratchpad\nrm -rf $SP/attn && npx tsc lib/attendance/*.ts lib/xlsx/writer.ts --outDir $SP/attn --rootDir lib --module commonjs --target es2020 --moduleResolution node --skipLibCheck --esModuleInterop 2>&1 | head -20\nsed -i \"\" 's|require(\"@/lib/xlsx/writer\")|require(\"../xlsx/writer\")|' $SP/attn/attendance/workbook.js\nls $SP/attn/attendance $SP/attn/xlsx",
+    "testCommand": "cat vitest.config.ts",
     "lintCommand": "npm run lint",
     "devCommand": "npm run dev",
     "scripts": {
@@ -91,7 +91,7 @@
       "path": "api",
       "purpose": "API routes",
       "fileCount": 2,
-      "lastAccessed": 1785867308899,
+      "lastAccessed": 1788417996726,
       "keyFiles": [
         "posts.ts",
         "supabase.ts"
@@ -101,7 +101,7 @@
       "path": "app",
       "purpose": "Application code",
       "fileCount": 4,
-      "lastAccessed": 1785867308899,
+      "lastAccessed": 1788417996726,
       "keyFiles": [
         "favicon.png",
         "globals.css",
@@ -112,7 +112,7 @@
       "path": "components",
       "purpose": "UI components",
       "fileCount": 1,
-      "lastAccessed": 1785867308900,
+      "lastAccessed": 1788417996728,
       "keyFiles": [
         "SessionProvider.tsx"
       ]
@@ -121,7 +121,7 @@
       "path": "lib",
       "purpose": "Library code",
       "fileCount": 2,
-      "lastAccessed": 1785867308901,
+      "lastAccessed": 1788417996728,
       "keyFiles": [
         "gtag.ts",
         "utils.ts"
@@ -130,8 +130,8 @@
     "public": {
       "path": "public",
       "purpose": "Public files",
-      "fileCount": 24,
-      "lastAccessed": 1785867308901,
+      "fileCount": 25,
+      "lastAccessed": 1788417996728,
       "keyFiles": [
         "2025Next.png",
         "2025_scposter.jpg",
@@ -144,7 +144,7 @@
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1785867308901,
+      "lastAccessed": 1788417996728,
       "keyFiles": [
         "supabase.d.ts",
         "supabase.local.ts"
@@ -154,7 +154,7 @@
       "path": "stories",
       "purpose": null,
       "fileCount": 10,
-      "lastAccessed": 1785867308901,
+      "lastAccessed": 1788417996729,
       "keyFiles": [
         "Button.stories.ts",
         "Button.tsx",
@@ -167,7 +167,7 @@
       "path": "types",
       "purpose": "Type definitions",
       "fileCount": 1,
-      "lastAccessed": 1785867308901,
+      "lastAccessed": 1788417996729,
       "keyFiles": [
         "react-tournament-brackets.d.ts"
       ]
@@ -176,21 +176,21 @@
       "path": "utils",
       "purpose": "Utility functions",
       "fileCount": 0,
-      "lastAccessed": 1785867308901,
+      "lastAccessed": 1788417996729,
       "keyFiles": []
     },
     "app/api": {
       "path": "app/api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1785867308901,
+      "lastAccessed": 1788417996729,
       "keyFiles": []
     },
     "app/components": {
       "path": "app/components",
       "purpose": "UI components",
       "fileCount": 16,
-      "lastAccessed": 1785867308902,
+      "lastAccessed": 1788417996729,
       "keyFiles": [
         "Accordion.tsx",
         "AnnouncementSection.tsx",
@@ -201,7 +201,7 @@
       "path": "app/types",
       "purpose": "Type definitions",
       "fileCount": 2,
-      "lastAccessed": 1785867308902,
+      "lastAccessed": 1788417996729,
       "keyFiles": [
         "global.d.ts",
         "worship.d.ts"
@@ -211,7 +211,7 @@
       "path": "stories/assets",
       "purpose": "Static assets",
       "fileCount": 16,
-      "lastAccessed": 1785867308902,
+      "lastAccessed": 1788417996730,
       "keyFiles": [
         "accessibility.png",
         "accessibility.svg",
@@ -242,6 +242,12 @@
       "path": "app/(pages)/(home)/layout.tsx",
       "accessCount": 2,
       "lastAccessed": 1785868329179,
+      "type": "file"
+    },
+    {
+      "path": "lib/attendance/server.ts",
+      "accessCount": 2,
+      "lastAccessed": 1788418831985,
       "type": "file"
     },
     {
@@ -296,6 +302,84 @@
       "path": "app/components/service-hub/ServiceHubSection.tsx",
       "accessCount": 1,
       "lastAccessed": 1785868295549,
+      "type": "file"
+    },
+    {
+      "path": "lib/xlsx/writer.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788418552745,
+      "type": "file"
+    },
+    {
+      "path": "lib/attendance/semester.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788418589041,
+      "type": "file"
+    },
+    {
+      "path": "lib/attendance/types.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788418601457,
+      "type": "file"
+    },
+    {
+      "path": "lib/admin/adminAuth.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788418609503,
+      "type": "file"
+    },
+    {
+      "path": "lib/attendance/format.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788418665213,
+      "type": "file"
+    },
+    {
+      "path": "lib/attendance/workbook.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788418680734,
+      "type": "file"
+    },
+    {
+      "path": "lib/attendance/params.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788418697384,
+      "type": "file"
+    },
+    {
+      "path": "app/api/admin/attendance/route.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788418704503,
+      "type": "file"
+    },
+    {
+      "path": "app/api/admin/attendance/export/route.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788418713888,
+      "type": "file"
+    },
+    {
+      "path": "lib/attendance/clientApi.ts",
+      "accessCount": 1,
+      "lastAccessed": 1788418736012,
+      "type": "file"
+    },
+    {
+      "path": "app/components/admin-dashboard/attendance/AttendanceRankingTable.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1788418768726,
+      "type": "file"
+    },
+    {
+      "path": "app/components/admin-dashboard/attendance/AttendanceSessionTable.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1788418781484,
+      "type": "file"
+    },
+    {
+      "path": "app/(pages)/admin-dashboard/attendance/page.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1788418885807,
       "type": "file"
     }
   ],
