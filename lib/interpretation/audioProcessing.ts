@@ -9,6 +9,25 @@ export function floatTo16BitPCM(input: Float32Array): ArrayBuffer {
   return output.buffer;
 }
 
+/**
+ * 어느 채널을 전사에 쓸지.
+ *
+ * 콘솔에서 L=원어, R=통역 리턴처럼 갈라 보내는 경우, 평균을 내면 통역 음성이
+ * 그대로 전사에 섞여 들어간다 — 소프트웨어가 스스로 피드백 루프를 만드는 셈이다.
+ * 기본값을 단일 채널로 두는 이유가 이것이다.
+ */
+export type InputChannel = "left" | "right" | "mix";
+
+export function selectChannel(
+  inputBuffer: AudioBuffer,
+  channel: InputChannel,
+): Float32Array {
+  if (inputBuffer.numberOfChannels <= 1) return inputBuffer.getChannelData(0);
+  if (channel === "left") return inputBuffer.getChannelData(0);
+  if (channel === "right") return inputBuffer.getChannelData(1);
+  return mixToMono(inputBuffer);
+}
+
 /** 스테레오(또는 다채널) 입력을 서버 전송용 모노로 평균 믹스한다. */
 export function mixToMono(inputBuffer: AudioBuffer): Float32Array {
   const { numberOfChannels, length } = inputBuffer;

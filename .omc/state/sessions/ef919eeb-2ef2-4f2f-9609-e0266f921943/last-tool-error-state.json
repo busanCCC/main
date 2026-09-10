@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"KEY=$(grep CCC_INTERNAL_API_KEY .env.local | cut -d= -f2)\\nRID=room_9xegysbw\\nfor p in \\\"/internal/rooms/$RID\\\" \\\"/internal/rooms?roomId=$RID\\\" \\\"/internal/rooms?detail=true\\\" \\\"/internal/...",
+  "error": "Exit code 1\n404  /internal/rooms/room_9xegysbw\n200  /internal/rooms?roomId=room_9xegysbw\n{\"success\":true,\"data\":[{\"roomId\":\"room_9xegysbw\",\"sessionId\":\"20f829aa-4ed6-4d84-8c1c-3656b928740e\",\"status\":\"live\",\"adminBound\":true,\"adminSocketOpen\":true,\"participants\":2,\"sequence\":28,\"segments\":28,\"lastAudioAgoMs\":17,\"adminBoundAgoMs\":138040,\"startedAt\":\"2026-09-07T07:14:08.284Z\"}]}\n200  /internal/rooms?detail=true\n{\"success\":true,\"data\":[{\"roomId\":\"room_9xegysbw\",\"sessionId\":\"20f829aa-4ed6-4d84-8c1c-3...",
+  "timestamp": "2026-09-07T07:16:30.756Z",
+  "retry_count": 1
+}

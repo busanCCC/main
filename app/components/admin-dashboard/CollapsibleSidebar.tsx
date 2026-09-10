@@ -18,6 +18,7 @@ import {
   LogOut,
   LayoutDashboard,
   ClipboardCheck,
+  HeartHandshake,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import supabase from "@/utils/supabase/client";
@@ -172,6 +173,27 @@ export function CollapsibleSidebar() {
               className="truncate"
             >
               여름수련회
+            </motion.span>
+          )}
+        </button>
+
+        {/* 리트릿 기도제목 */}
+        <button
+          onClick={() => router.push("/admin-dashboard/retreat-prayer")}
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+            pathname.startsWith("/admin-dashboard/retreat-prayer")
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          }`}
+        >
+          <HeartHandshake className="h-4 w-4 shrink-0" />
+          {isExpanded && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="truncate"
+            >
+              리트릿 기도제목
             </motion.span>
           )}
         </button>

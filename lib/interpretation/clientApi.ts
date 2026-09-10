@@ -64,5 +64,7 @@ export async function fetchStreamCredentials() {
 export async function fetchSessionParticipantStats(sessionId: string) {
   return request<{ total: number; byLang: Record<string, number> }>(
     `/api/interpretation/sessions/${sessionId}/stats`,
+    // 5초마다 같은 URL 을 친다. 캐시가 끼면 숫자가 그대로 굳는다.
+    { cache: "no-store" },
   );
 }

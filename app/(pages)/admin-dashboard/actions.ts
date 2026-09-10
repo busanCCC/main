@@ -11,6 +11,9 @@ interface FetchOptions {
   searchColumn?: string;
   orderBy?: string;
   ascending?: boolean;
+  /** 특정 컬럼 값과 일치하는 행만 조회 (eq 필터) */
+  filterColumn?: string;
+  filterValue?: string;
 }
 
 export async function fetchTableData(
@@ -24,6 +27,8 @@ export async function fetchTableData(
     searchColumn = "",
     orderBy = "id",
     ascending = false,
+    filterColumn = "",
+    filterValue = "",
   } = options;
 
   const params = new URLSearchParams({
@@ -34,6 +39,8 @@ export async function fetchTableData(
     searchColumn,
     orderBy,
     ascending: String(ascending),
+    filterColumn,
+    filterValue,
   });
 
   try {

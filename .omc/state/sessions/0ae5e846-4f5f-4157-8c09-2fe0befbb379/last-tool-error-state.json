@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"URL=$(awk -F'=' '/^NEXT_PUBLIC_SUPABASE_URL=/{v=substr($0,index($0,\\\"=\\\")+1); gsub(/^[ \\\\t]+|[ \\\\t\\\\r]+$/,\\\"\\\",v); print v; exit}' .env.local)\\nKEY=$(awk -F'=' '/^SUPABASE_SERVICE_ROLE_KEY...",
+  "error": "Exit code 1\nt+1x3s: [{\"status\":\"completed\",\"error\":null,\"started_at\":\"2026-09-04T00:38:09.147+00:00\",\"completed_at\":\"2026-09-04T00:38:13.492+00:00\"}]\nt+2x3s: [{\"status\":\"completed\",\"error\":null,\"started_at\":\"2026-09-04T00:38:09.147+00:00\",\"completed_at\":\"2026-09-04T00:38:13.492+00:00\"}]\nt+3x3s: [{\"status\":\"completed\",\"error\":null,\"started_at\":\"2026-09-04T00:38:09.147+00:00\",\"completed_at\":\"2026-09-04T00:38:13.492+00:00\"}]\nt+4x3s: [{\"status\":\"completed\",\"error\":null,\"started_at\":\"2026-09-04T00:38...",
+  "timestamp": "2026-09-04T00:38:32.496Z",
+  "retry_count": 1
+}

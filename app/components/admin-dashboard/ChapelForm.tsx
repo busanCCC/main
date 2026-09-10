@@ -149,7 +149,7 @@ function toFormDefaults(
   const isDatetimeUndecided =
     !datetime || datetime === DATETIME_UNDECIDED_SENTINEL || (typeof datetime === "string" && datetime.startsWith("2099-"));
 
-  // 생성 시 주제는 "N월 M째주 지구채플"로 미리 채운다.
+  // 생성 시 주제는 "N월 M주차 지구채플"로 미리 채운다.
   // 채플 일시가 아직 없으면 오늘 날짜를 기준으로 잡고, 일시를 고르면 그에 맞춰 갱신된다.
   const autoTopic =
     mode === "create"
@@ -232,7 +232,7 @@ export function ChapelForm({
 
   const datetimeValue = watchedValues.datetime;
 
-  // 채플 일시가 바뀌면 주제("N월 M째주 지구채플")를 다시 계산한다.
+  // 채플 일시가 바뀌면 주제("N월 M주차 지구채플")를 다시 계산한다.
   // 관리자가 주제를 직접 수정했거나 "미정"이면 건드리지 않는다.
   useEffect(() => {
     if (topicEditedManually || topicUndecided) return;

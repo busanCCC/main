@@ -8,8 +8,9 @@ import {
   computeAudioLevel,
   downsampleBuffer,
   floatTo16BitPCM,
-  mixToMono,
+  selectChannel,
   PCM_SAMPLE_RATE,
+  type InputChannel,
 } from "@/lib/interpretation/audioProcessing";
 
 export type AudioSourceMode = "microphone" | "tab";
@@ -68,6 +69,11 @@ export function AudioSourceController({
   onChunk,
 }: AudioSourceControllerProps) {
   const [sourceMode, setSourceMode] = useState<AudioSourceMode>("microphone");
+  /**
+   * 기본을 L 단일로 둔다. 콘솔이 R 로 통역 리턴을 보내는 배선이면 Mix 는
+   * 그 소리를 그대로 전사에 먹여 피드백 루프가 된다 — 화면에는 아무 오류도 안 뜬다.
+   */
+  const [inputChannel, setInputChannel] = useState<InputChannel>("left");
   const [devices, setDevices] = useState<AudioInputDevice[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
   const [isActive, setIsActive] = useState(false);
@@ -81,6 +87,11 @@ export function AudioSourceController({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const levelRafRef = useRef<number | null>(null);
+  const inputChannelRef = useRef<InputChannel>(inputChannel);
+
+  useEffect(() => {
+    inputChannelRef.current = inputChannel;
+  }, [inputChannel]);
 
   const refreshDevices = useCallback(async () => {
     if (!navigator.mediaDevices?.enumerateDevices) return;
@@ -148,7 +159,7 @@ export function AudioSourceController({
       processorRef.current = processor;
 
       processor.onaudioprocess = (event) => {
-        const input = mixToMono(event.inputBuffer);
+        const input = selectChannel(event.inputBuffer, inputChannelRef.current);
         const downsampled = downsampleBuffer(
           input,
           audioContext.sampleRate,
@@ -273,7 +284,7 @@ export function AudioSourceController({
         <div>
           <h3 className="text-sm font-semibold">오디오 입력</h3>
           <p className="text-xs text-muted-foreground">
-            스테레오 캡처 → 16kHz Mono PCM → Stream Server
+            스테레오 캡처 → 채널 선택 → 16kHz Mono PCM → Stream Server
           </p>
           {sourceLabel && isActive && (
             <p className="text-xs text-emerald-600 mt-1">{sourceLabel}</p>
@@ -339,6 +350,40 @@ export function AudioSourceController({
             </select>
           </div>
         )}
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium text-muted-foreground">
+          전사에 쓸 입력 채널
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {(
+            [
+              { value: "left", label: "L (기본)" },
+              { value: "right", label: "R" },
+              { value: "mix", label: "L+R 믹스" },
+            ] as const
+          ).map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              disabled={isActive}
+              onClick={() => setInputChannel(option.value)}
+              className={cn(
+                "rounded-md border px-2.5 py-1 text-xs transition-colors disabled:opacity-50",
+                inputChannel === option.value
+                  ? "border-primary bg-primary/10 font-medium text-primary"
+                  : "border-input text-muted-foreground hover:bg-muted",
+              )}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-[11px] text-muted-foreground">
+          통역 음성이 되돌아오는 채널이 섞이면 전사가 제 통역을 다시 받아씁니다.
+          한쪽에만 원어가 들어온다면 그 채널만 고르세요.
+        </p>
       </div>
 
       {sourceMode === "tab" && !isActive && (

@@ -66,6 +66,20 @@ export function ParticipantPanel({
   byLanguage,
   targetLanguages,
 }: ParticipantPanelProps) {
+  // 세션 대상 언어가 아닌 언어로 듣고 있는 사람도 있다. 그 줄이 빠지면
+  // 언어별 합이 전체와 어긋나 보인다.
+  const languages = [
+    ...targetLanguages,
+    ...Object.keys(byLanguage).filter(
+      (lang) => !targetLanguages.includes(lang) && (byLanguage[lang] ?? 0) > 0,
+    ),
+  ];
+  const accounted = languages.reduce(
+    (sum, lang) => sum + (byLanguage[lang] ?? 0),
+    0,
+  );
+  const others = Math.max(0, total - accounted);
+
   return (
     <div className="rounded-lg border bg-card p-4 space-y-3">
       <div className="flex items-end justify-between gap-3">
@@ -82,7 +96,7 @@ export function ParticipantPanel({
       </div>
 
       <div className="space-y-2">
-        {targetLanguages.map((lang) => {
+        {languages.map((lang) => {
           const count = byLanguage[lang] ?? 0;
           const ratio = total > 0 ? count / total : 0;
 
@@ -97,12 +111,20 @@ export function ParticipantPanel({
               <div className="h-2 rounded-full bg-muted overflow-hidden">
                 <div
                   className="h-full rounded-full bg-primary transition-all duration-300"
-                  style={{ width: `${Math.max(ratio * 100, count > 0 ? 8 : 0)}%` }}
+                  style={{
+                    width: `${Math.max(ratio * 100, count > 0 ? 8 : 0)}%`,
+                  }}
                 />
               </div>
             </div>
           );
         })}
+
+        {others > 0 ? (
+          <p className="text-xs text-muted-foreground pt-1">
+            그 외 {others}명
+          </p>
+        ) : null}
       </div>
     </div>
   );
