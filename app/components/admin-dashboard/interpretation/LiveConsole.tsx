@@ -11,6 +11,8 @@ import {
   TranslationMonitor,
 } from "./Monitors";
 import { KeytermsPanel } from "./KeytermsPanel";
+import { TtsOutputPanel } from "./TtsOutputPanel";
+import { useTtsPipeline } from "@/lib/interpretation/useTtsPipeline";
 import {
   fetchInterpretationSession,
   fetchSessionParticipantStats,
@@ -19,6 +21,7 @@ import {
   stopInterpretationSession,
 } from "@/lib/interpretation/clientApi";
 import {
+  excludeSelfFromStats,
   mergeParticipantCounts,
   parseStreamPresenceEvent,
   type RoomParticipantStats,
@@ -84,12 +87,20 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
     );
   }, []);
 
+  const isStreamReady = session?.status === "live" && connectionState === "connected";
+
+  const tts = useTtsPipeline({
+    sessionId,
+    roomId: session?.roomId,
+    targetLanguages: session?.targetLanguages ?? [],
+    ready: isStreamReady,
+    onLog: appendLog,
+  });
+
   const applyParticipantStats = useCallback(
     (stats: RoomParticipantStats | null, targetLanguages: string[]) => {
       if (!stats) return;
-      setParticipantStats(
-        mergeParticipantCounts(targetLanguages, stats.byLang),
-      );
+      setParticipantStats(mergeParticipantCounts(targetLanguages, stats));
     },
     [],
   );
@@ -420,6 +431,15 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
   }
 
   const isLive = session.status === "live";
+  // 모니터 소켓이 붙어 있는 동안은 그 한 자리가 서버 집계에 섞여 있다
+  const listenerStats =
+    connectionState === "connected"
+      ? excludeSelfFromStats(participantStats, [
+          monitorLangRef.current,
+          // 음성 송출을 켠 언어마다 소켓이 하나씩 더 붙어 있다
+          ...(tts.running ? tts.selfLangs : []),
+        ])
+      : participantStats;
 
   return (
     <div className="p-8 space-y-6">
@@ -476,6 +496,22 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
             enabled={isLive && connectionState === "connected"}
             onChunk={handleAudioChunk}
           />
+          <TtsOutputPanel
+            supported={tts.supported}
+            ready={isStreamReady}
+            running={tts.running}
+            muted={tts.muted}
+            preset={tts.preset}
+            targetLanguages={session.targetLanguages}
+            configs={tts.configs}
+            statuses={tts.statuses}
+            onPresetChange={tts.setPreset}
+            onChannelChange={tts.updateChannel}
+            onStart={tts.start}
+            onStop={tts.stop}
+            onToggleMute={tts.toggleMute}
+            onClearQueues={tts.clearQueues}
+          />
           <TranscriptMonitor
             text={transcript.text}
             isFinal={transcript.isFinal}
@@ -489,8 +525,8 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
         <div className="space-y-4">
           <KeytermsPanel session={session} onUpdated={setSession} />
           <ParticipantPanel
-            total={participantStats.total}
-            byLanguage={participantStats.byLang}
+            total={listenerStats.total}
+            byLanguage={listenerStats.byLang}
             targetLanguages={session.targetLanguages}
           />
           <div className="rounded-lg border bg-card p-4">

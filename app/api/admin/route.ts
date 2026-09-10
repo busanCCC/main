@@ -52,6 +52,9 @@ export async function GET(request: NextRequest) {
   const pageSize = Number(searchParams.get("pageSize") ?? 20);
   const search = searchParams.get("search") ?? "";
   const searchColumn = searchParams.get("searchColumn") ?? "";
+  // 특정 컬럼 값으로 목록을 좁힐 때 사용 (예: chapel_id로 기도제목 필터)
+  const filterColumn = searchParams.get("filterColumn") ?? "";
+  const filterValue = searchParams.get("filterValue") ?? "";
   const orderBy = searchParams.get("orderBy") ?? "id";
   const ascending = searchParams.get("ascending") === "true";
 
@@ -109,6 +112,10 @@ export async function GET(request: NextRequest) {
 
   if (search.trim() !== "" && searchColumn) {
     query = query.ilike(searchColumn, `%${search.trim()}%`);
+  }
+
+  if (filterColumn && filterValue !== "") {
+    query = query.eq(filterColumn, filterValue);
   }
 
   const { data, error, count } = await query;

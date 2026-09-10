@@ -2,8 +2,8 @@
 
 /**
  * 달력 주 기준(일요일 시작) 월 내 주차.
- * 그 달 1일이 포함된 주가 1째주다.
- * 예) 2026-08-01(토) → 1째주, 2026-08-02(일) → 2째주
+ * 그 달 1일이 포함된 주가 1주차다.
+ * 예) 2026-08-01(토) → 1주차, 2026-08-02(일) → 2주차
  */
 export function getWeekOfMonth(date: Date): number {
   const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -12,7 +12,7 @@ export function getWeekOfMonth(date: Date): number {
 
 /** 채플 일시로부터 기본 주제 문자열을 만든다. */
 export function buildDefaultChapelTopic(date: Date): string {
-  return `${date.getMonth() + 1}월 ${getWeekOfMonth(date)}째주 지구채플`;
+  return `${date.getMonth() + 1}월 ${getWeekOfMonth(date)}주차 지구채플`;
 }
 
 /**

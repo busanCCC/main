@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ClipboardCheck, Languages } from "lucide-react";
+import { ClipboardCheck, HeartHandshake, Languages } from "lucide-react";
 import { StatCard } from "@/app/components/admin-dashboard/StatCard";
 import { Button } from "@/app/components/ui/button";
 import { fetchAllTableCounts } from "./actions";
@@ -57,6 +57,22 @@ export default function AdminDashboardPage() {
         </div>
         <Button asChild>
           <Link href="/admin-dashboard/attendance">출석 관리</Link>
+        </Button>
+      </div>
+
+      {/* 리트릿 기도제목 shortcut */}
+      <div className="mb-8 rounded-xl border bg-card p-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <HeartHandshake className="h-5 w-5 text-primary" />
+            <h2 className="font-semibold">리트릿 기도제목</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            채플별 리트릿에서 함께 기도할 제목을 지구 전체 / 캠퍼스별로 작성합니다.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/admin-dashboard/retreat-prayer">기도제목 관리</Link>
         </Button>
       </div>
 
