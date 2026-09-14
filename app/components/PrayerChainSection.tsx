@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -7,41 +7,147 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/app/components/ui/carousel";
-import PrayerChainCardClient from "./tempComponents/PrayerChainCardClient";
-import supabase from "@/utils/supabase/client";
+import PrayerChainCard from "@/app/components/PrayerChainCard";
+import { Skeleton } from "@/app/components/ui/skeleton";
+import type { PrayerTopicBoard, PrayerTopicGroup } from "@/lib/prayer-topics/types";
 
-interface PrayerChainItem {
-  id: number;
-  date: string;
-  day: string;
-  campus: string;
-  prayers: string[];
-  prayingCount: number;
+const API_PATH = "/api/prayer-topics";
+
+/** 비로그인 방문자도 누를 수 있는 CTA 라, 하루 1회 제한은 브라우저에 남긴다 */
+const PRAYED_STORAGE_PREFIX = "chapelPrayerGroupPrayed_";
+
+const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+
+function formatChapelDate(datetime: string | null): { date: string; day: string } {
+  if (!datetime) return { date: "일시 미정", day: "-" };
+
+  const parsed = new Date(datetime);
+  if (Number.isNaN(parsed.getTime())) return { date: "일시 미정", day: "-" };
+
+  const yyyy = parsed.getFullYear();
+  const mm = String(parsed.getMonth() + 1).padStart(2, "0");
+  const dd = String(parsed.getDate()).padStart(2, "0");
+  return { date: `${yyyy}.${mm}.${dd}`, day: WEEKDAYS[parsed.getDay()] };
+}
+
+function storageKey(chapelId: number, groupKey: string): string {
+  return `${PRAYED_STORAGE_PREFIX}${chapelId}_${groupKey}`;
+}
+
+/**
+ * 카드 하나의 "함께 기도중" 인원.
+ *
+ * 버튼 한 번에 카드의 기도제목이 모두 +1 되므로, 합계는 제목 수만큼 부풀려진다.
+ * 가장 큰 값이 곧 그 카드를 누른 횟수라 최댓값을 쓴다.
+ */
+function prayingCountOf(group: PrayerTopicGroup): number {
+  return group.topics.reduce((max, topic) => Math.max(max, topic.intercessionCount), 0);
+}
+
+function prayedTodayKeys(board: PrayerTopicBoard): string[] {
+  if (typeof window === "undefined" || !board.chapel) return [];
+
+  const today = new Date().toDateString();
+  return board.groups
+    .filter((group) => {
+      const prayedAt = localStorage.getItem(
+        storageKey((board.chapel as { id: number }).id, group.key)
+      );
+      return !!prayedAt && new Date(prayedAt).toDateString() === today;
+    })
+    .map((group) => group.key);
 }
 
 export default function PrayerChainSection() {
-  const [data, setData] = useState<PrayerChainItem[]>([]);
+  const [board, setBoard] = useState<PrayerTopicBoard | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [prayedKeys, setPrayedKeys] = useState<string[]>([]);
+  const [pendingKey, setPendingKey] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
   const [resetKey, setResetKey] = useState(0);
 
   useEffect(() => {
-    // supabase에서 데이터 fetch
-    async function fetchData() {
-      const { data } = await supabase
-        .from("prayer_chain")
-        .select("*")
-        .order("date", { ascending: false })
-        .order("id", { ascending: false });
-      setData(data ?? []);
+    let cancelled = false;
+
+    async function fetchBoard() {
+      try {
+        const response = await fetch(API_PATH, { cache: "no-store" });
+        const payload = await response.json();
+        if (cancelled) return;
+
+        if (!response.ok || !payload.ok) {
+          setError(payload.reason ?? "기도제목을 불러오지 못했습니다.");
+          return;
+        }
+
+        setBoard(payload.data as PrayerTopicBoard);
+        setPrayedKeys(prayedTodayKeys(payload.data as PrayerTopicBoard));
+      } catch {
+        if (!cancelled) setError("기도제목을 불러오지 못했습니다.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
-    fetchData();
+
+    fetchBoard();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const handlePrev = () => {
-    setResetKey((k) => k + 1); // resetKey를 변경해 리셋 트리거
-  };
-  const handleNext = () => {
-    setResetKey((k) => k + 1);
-  };
+  const handlePray = useCallback(
+    async (group: PrayerTopicGroup) => {
+      const chapelId = board?.chapel?.id;
+      if (chapelId === undefined) return;
+      if (pendingKey !== null || prayedKeys.includes(group.key)) return;
+
+      setPendingKey(group.key);
+      try {
+        const response = await fetch(API_PATH, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ topicIds: group.topics.map((topic) => topic.id) }),
+        });
+        const payload = await response.json();
+
+        if (!response.ok || !payload.ok) {
+          setMessage(payload.reason ?? "기도를 기록하지 못했습니다.");
+          return;
+        }
+
+        const counts = payload.data.counts as Record<string, number>;
+        setBoard((prev) =>
+          prev === null
+            ? prev
+            : {
+                ...prev,
+                groups: prev.groups.map((item) => ({
+                  ...item,
+                  topics: item.topics.map((topic) =>
+                    counts[topic.id] === undefined
+                      ? topic
+                      : { ...topic, intercessionCount: counts[topic.id] }
+                  ),
+                })),
+              }
+        );
+        setPrayedKeys((prev) => [...prev, group.key]);
+        setMessage("기도로 동역해주셔서 감사합니다");
+        localStorage.setItem(storageKey(chapelId, group.key), new Date().toISOString());
+      } catch {
+        setMessage("기도를 기록하지 못했습니다.");
+      } finally {
+        setPendingKey(null);
+      }
+    },
+    [board, pendingKey, prayedKeys]
+  );
+
+  const resetCards = () => setResetKey((key) => key + 1);
+
+  const { date, day } = formatChapelDate(board?.chapel?.datetime ?? null);
+  const groups = board?.groups ?? [];
 
   return (
     <section className="w-full h-full bg-white/80 rounded-2xl shadow-md p-6 flex flex-col gap-2 mt-10">
@@ -49,38 +155,61 @@ export default function PrayerChainSection() {
         부산지구 기도제목
       </h1>
       <p className="text-xs font-light text-gray-600 pb-2">
-        각 캠퍼스의 기도제목을 확인하고 함께 기도해요
+        {board?.chapel?.topic
+          ? `${board.chapel.topic} · 기도제목을 확인하고 함께 기도해요`
+          : "각 캠퍼스의 기도제목을 확인하고 함께 기도해요"}
       </p>
-      <div className="relative w-full flex items-center justify-center">
-        <Carousel
-          className="pl-1 flex-col justify-center w-full items-center"
-          opts={{ align: "center" }}
-        >
-          <CarouselPrevious onClick={handlePrev} />
-          <CarouselContent className="flex-row items-center overflow-visible">
-            {data.map((item) => (
-              <CarouselItem
-                key={item.id}
-                className="max-w-fit transition group flex justify-center items-center mx-auto"
-              >
-                <div className="mx-2">
-                  <PrayerChainCardClient
-                    initialData={{
-                      id: item.id,
-                      date: item.date,
-                      campus: item.campus,
-                      prayers: item.prayers,
-                      resetKey: resetKey,
-                      praying_count: item.prayingCount,
-                    }}
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselNext onClick={handleNext} />
-        </Carousel>
-      </div>
+
+      {loading ? (
+        <div className="w-full flex gap-4 overflow-hidden">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton key={index} className="min-w-[280px] h-[400px] rounded-3xl" />
+          ))}
+        </div>
+      ) : error ? (
+        <p className="py-10 text-center text-sm text-gray-500">{error}</p>
+      ) : groups.length === 0 ? (
+        <p className="py-10 text-center text-sm text-gray-500">
+          아직 등록된 기도제목이 없습니다.
+        </p>
+      ) : (
+        <div className="relative w-full flex items-center justify-center">
+          <Carousel
+            className="pl-1 flex-col justify-center w-full items-center"
+            opts={{ align: "center" }}
+          >
+            <CarouselPrevious onClick={resetCards} />
+            <CarouselContent className="flex-row items-center overflow-visible">
+              {groups.map((group) => (
+                <CarouselItem
+                  key={group.key}
+                  className="max-w-fit transition group flex justify-center items-center mx-auto"
+                >
+                  <div className="mx-2">
+                    <PrayerChainCard
+                      date={date}
+                      day={day}
+                      campus={group.label}
+                      topics={group.topics}
+                      prayingCount={prayingCountOf(group)}
+                      onPray={() => handlePray(group)}
+                      disabled={
+                        prayedKeys.includes(group.key) || pendingKey === group.key
+                      }
+                      resetKey={resetKey}
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselNext onClick={resetCards} />
+          </Carousel>
+        </div>
+      )}
+
+      {message && (
+        <div className="text-center text-blue-500 text-sm mt-2">{message}</div>
+      )}
     </section>
   );
 }

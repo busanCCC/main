@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1789028668189,
+  "lastScanned": 1789362986647,
   "projectRoot": "/Users/kimgarden/dev/main",
   "techStack": {
     "languages": [
@@ -52,7 +52,7 @@
     "runtime": "Node.js 24.x"
   },
   "build": {
-    "buildCommand": "npm run build 2>&1 | grep -E \"interpretation|Error|error|✓|Compiled|Failed\" | head -20",
+    "buildCommand": "python3 - <<'PY'\np = \"app/components/PrayerChainCard.stories.tsx\"\ns = open(p).read()\ns = s.replace('''    prayedTopicIds: {\n      control: \"object\",\n      description: \"오늘 이미 중보한 기도제목 id\",\n    },\n    pendingTopicId: {\n      control: \"number\",\n      description: \"중보 요청이 진행 중인 기도제목 id\",\n    },\n    onPray: {\n      action: \"prayed\",\n      description: \"기도제목별 중보 버튼 클릭 핸들러\",\n    },''', '''    prayingCount: {\n      control: \"number\",\n      description: \"기도할게요 누른 사람 수\",\n    },\n    disabled: {\n      control: \"boolean\",\n      description: \"버튼 비활성화 여부\",\n    },\n    onPray: {\n      action: \"prayed\",\n      description: \"기도할게요 버튼 클릭 핸들러\",\n    },''')\ns = s.replace('''    prayedTopicIds: [],\n    pendingTopicId: null,\n  },''', '''    prayingCount: 12,\n    disabled: false,\n  },''')\ns = s.replace('''export const AlreadyPrayed: Story = {\n  args: {\n    ...Default.args,\n    prayedTopicIds: [1, 2, 3],\n  },\n};''', '''export const AlreadyPrayed: Story = {\n  args: {\n    ...Default.args,\n    disabled: true,\n  },\n};''')\ns = s.replace('''    campus: \"지구 전체\",\n    topics: [''', '''    campus: \"지구 전체\",\n    prayingCount: 41,\n    topics: [''')\ns = s.replace('''    campus: \"경성대\",\n    topics: Array''', '''    campus: \"경성대\",\n    prayingCount: 21,\n    topics: Array''')\nopen(p, \"w\").write(s)\nPY\nnpx tsc --noEmit -p tsconfig.json 2>&1 | head -20; echo \"exit=$?\"",
     "testCommand": null,
     "lintCommand": "npm run lint",
     "devCommand": "npm run dev",
@@ -91,7 +91,7 @@
       "path": "api",
       "purpose": "API routes",
       "fileCount": 2,
-      "lastAccessed": 1789028668168,
+      "lastAccessed": 1789362986592,
       "keyFiles": [
         "posts.ts",
         "supabase.ts"
@@ -101,7 +101,7 @@
       "path": "app",
       "purpose": "Application code",
       "fileCount": 4,
-      "lastAccessed": 1789028668168,
+      "lastAccessed": 1789362986592,
       "keyFiles": [
         "favicon.png",
         "globals.css",
@@ -112,7 +112,7 @@
       "path": "components",
       "purpose": "UI components",
       "fileCount": 1,
-      "lastAccessed": 1789028668170,
+      "lastAccessed": 1789362986594,
       "keyFiles": [
         "SessionProvider.tsx"
       ]
@@ -121,7 +121,7 @@
       "path": "lib",
       "purpose": "Library code",
       "fileCount": 2,
-      "lastAccessed": 1789028668170,
+      "lastAccessed": 1789362986594,
       "keyFiles": [
         "gtag.ts",
         "utils.ts"
@@ -131,7 +131,7 @@
       "path": "public",
       "purpose": "Public files",
       "fileCount": 25,
-      "lastAccessed": 1789028668170,
+      "lastAccessed": 1789362986594,
       "keyFiles": [
         "2025Next.png",
         "2025_scposter.jpg",
@@ -144,7 +144,7 @@
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1789028668170,
+      "lastAccessed": 1789362986594,
       "keyFiles": [
         "supabase.d.ts",
         "supabase.local.ts"
@@ -154,7 +154,7 @@
       "path": "stories",
       "purpose": null,
       "fileCount": 10,
-      "lastAccessed": 1789028668170,
+      "lastAccessed": 1789362986595,
       "keyFiles": [
         "Button.stories.ts",
         "Button.tsx",
@@ -167,14 +167,14 @@
       "path": "supabase",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1789028668170,
+      "lastAccessed": 1789362986595,
       "keyFiles": []
     },
     "types": {
       "path": "types",
       "purpose": "Type definitions",
       "fileCount": 1,
-      "lastAccessed": 1789028668170,
+      "lastAccessed": 1789362986595,
       "keyFiles": [
         "react-tournament-brackets.d.ts"
       ]
@@ -183,21 +183,21 @@
       "path": "utils",
       "purpose": "Utility functions",
       "fileCount": 0,
-      "lastAccessed": 1789028668170,
+      "lastAccessed": 1789362986595,
       "keyFiles": []
     },
     "app/api": {
       "path": "app/api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1789028668171,
+      "lastAccessed": 1789362986596,
       "keyFiles": []
     },
     "app/components": {
       "path": "app/components",
       "purpose": "UI components",
       "fileCount": 16,
-      "lastAccessed": 1789028668171,
+      "lastAccessed": 1789362986596,
       "keyFiles": [
         "Accordion.tsx",
         "AnnouncementSection.tsx",
@@ -208,7 +208,7 @@
       "path": "app/types",
       "purpose": "Type definitions",
       "fileCount": 2,
-      "lastAccessed": 1789028668171,
+      "lastAccessed": 1789362986596,
       "keyFiles": [
         "global.d.ts",
         "worship.d.ts"
@@ -218,7 +218,7 @@
       "path": "stories/assets",
       "purpose": "Static assets",
       "fileCount": 16,
-      "lastAccessed": 1789028668172,
+      "lastAccessed": 1789362986597,
       "keyFiles": [
         "accessibility.png",
         "accessibility.svg",
@@ -229,62 +229,13 @@
       "path": "supabase/migrations",
       "purpose": "Database migrations",
       "fileCount": 2,
-      "lastAccessed": 1789028668172,
+      "lastAccessed": 1789362986597,
       "keyFiles": [
         "20260904000000_chapel_summary_jobs.sql",
         "20260904010000_chapel_prayer_topics.sql"
       ]
     }
   },
-  "hotPaths": [
-    {
-      "path": "lib/interpretation/ttsTypes.ts",
-      "accessCount": 1,
-      "lastAccessed": 1789030474835,
-      "type": "file"
-    },
-    {
-      "path": "lib/interpretation/speechSegmenter.ts",
-      "accessCount": 1,
-      "lastAccessed": 1789030501780,
-      "type": "file"
-    },
-    {
-      "path": "app/api/interpretation/tts/route.ts",
-      "accessCount": 1,
-      "lastAccessed": 1789030531496,
-      "type": "file"
-    },
-    {
-      "path": "lib/interpretation/refineContext.ts",
-      "accessCount": 1,
-      "lastAccessed": 1789030580774,
-      "type": "file"
-    },
-    {
-      "path": "app/api/interpretation/sessions/[id]/refine/route.ts",
-      "accessCount": 1,
-      "lastAccessed": 1789030617545,
-      "type": "file"
-    },
-    {
-      "path": "lib/interpretation/ttsPlayer.ts",
-      "accessCount": 1,
-      "lastAccessed": 1789030690319,
-      "type": "file"
-    },
-    {
-      "path": "lib/interpretation/useTtsPipeline.ts",
-      "accessCount": 1,
-      "lastAccessed": 1789030771279,
-      "type": "file"
-    },
-    {
-      "path": "app/components/admin-dashboard/interpretation/TtsOutputPanel.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1789030813363,
-      "type": "file"
-    }
-  ],
+  "hotPaths": [],
   "userDirectives": []
 }
