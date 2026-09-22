@@ -1,11 +1,13 @@
 import React, { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+import type { PrayerTopicItem } from "@/lib/prayer-topics/types";
+
 interface PrayerChainCardProps {
   date: string; // 예: '2024.06.13'
   day: string; // 예: '목'
-  campus: string; // 예: '부산대 캠퍼스'
-  prayers: string[]; // 기도제목 리스트
+  campus: string; // 예: '부산대' 또는 '지구 전체'
+  topics: PrayerTopicItem[]; // chapel_prayer_topics 의 기도제목들
   prayingCount: number; // 기도할게요 누른 사람 수
   onPray?: () => void; // 버튼 클릭 핸들러
   disabled?: boolean; // 버튼 비활성화
@@ -16,7 +18,7 @@ export default function PrayerChainCard({
   date,
   day,
   campus,
-  prayers,
+  topics,
   prayingCount,
   onPray,
   disabled,
@@ -36,7 +38,7 @@ export default function PrayerChainCard({
         setIsClamped(el.scrollHeight > el.clientHeight + 1);
       }, 0);
     }
-  }, [prayers, expanded]);
+  }, [topics, expanded]);
 
   useEffect(() => {
     setExpanded(false);
@@ -67,12 +69,12 @@ export default function PrayerChainCard({
       transition={{ duration: 0.3, ease: "easeInOut" }}
       onAnimationComplete={handleAnimationComplete}
     >
-      {/* 기도제목 날짜 요일 */}
+      {/* 채플 날짜 요일 */}
       <div className="flex flex-col gap-1">
         <div className="text-[13px] font-semibold text-[#3b4a6b] tracking-tight">
           {date} ({day})
         </div>
-        {/* 캠퍼스 이름 */}
+        {/* 캠퍼스 이름 (지구 전체 기도제목은 '지구 전체') */}
         <div className="text-[22px] font-bold text-[#1a7f5a] tracking-tight">
           {campus}
         </div>
@@ -84,10 +86,17 @@ export default function PrayerChainCard({
         style={{ minHeight: "3.5em" }}
       >
         <div className="text-[15px] text-[#222] leading-relaxed whitespace-pre-line">
-          {prayers.map((prayer, idx) => (
-            <div key={idx} className="mb-1 flex items-start">
+          {topics.map((topic) => (
+            <div key={topic.id} className="mb-1 flex items-start">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#a3bffa] mt-2 mr-2 flex-shrink-0" />
-              <span>{prayer}</span>
+              <span>
+                {topic.title}
+                {topic.body && (
+                  <span className="block text-[13px] text-[#4a5a7a] mt-0.5">
+                    {topic.body}
+                  </span>
+                )}
+              </span>
             </div>
           ))}
         </div>
@@ -121,8 +130,8 @@ export default function PrayerChainCard({
           접기
         </button>
       )}
-      {/* 기도할게요 버튼 */}
-      <div className="flex flex-col gap-2 mb-2">
+      {/* 기도할게요 버튼 - 카드의 기도제목 전체에 중보를 기록한다 */}
+      <div className="mt-auto flex flex-col gap-2 mb-2">
         <motion.button
           className="w-full h-14 bg-[#2176ff] hover:bg-[#1761c6] transition rounded-xl shadow-[0_4px_16px_rgba(30,60,120,0.18)] flex items-center justify-center text-white text-lg font-bold mb-1 disabled:bg-gray-300 disabled:cursor-not-allowed"
           onClick={onPray}

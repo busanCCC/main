@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"set -a; . ./.env.local >/dev/null 2>&1; set +a; echo \\\"URL set: ${NEXT_PUBLIC_SUPABASE_URL:0:30}\\\"; echo \\\"KEY len: ${#NEXT_PUBLIC_SUPABASE_ANON_KEY}\\\"; curl -s -m 10 -o /dev/null -w \\\"%{h...",
+  "error": "Exit code 3\nURL set: \nKEY len: 0\n000 URL rejected: No host part in the URL",
+  "timestamp": "2026-09-14T05:26:50.510Z",
+  "retry_count": 1
+}

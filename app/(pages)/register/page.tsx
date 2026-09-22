@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import FooterSection from "@/app/components/FooterSection";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -36,7 +37,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex min-h-screen flex-col">
+      <div className="flex flex-1 flex-col items-center justify-center">
       <h1 className="text-2xl font-bold mb-4">회원가입</h1>
       <input
         type="text"
@@ -66,6 +68,8 @@ export default function RegisterPage() {
         회원가입
       </button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
+      </div>
+      <FooterSection />
     </div>
   );
 }
