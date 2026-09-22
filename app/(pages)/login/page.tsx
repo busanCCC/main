@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import FooterSection from "@/app/components/FooterSection";
 
 function LoginForm() {
   const router = useRouter();
@@ -35,7 +36,8 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 to-indigo-200">
+      <div className="flex flex-1 items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm flex flex-col gap-4">
         <h2 className="text-2xl font-bold text-center text-indigo-600 mb-2">
           로그인
@@ -67,13 +69,22 @@ function LoginForm() {
         </div>
         {error && <p className="text-red-500 mt-2">{error}</p>}
       </div>
+      </div>
+      <FooterSection />
     </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200" />}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 to-indigo-200">
+          <div className="flex-1" />
+          <FooterSection />
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );

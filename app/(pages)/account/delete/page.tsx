@@ -23,6 +23,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { AlertTriangle } from "lucide-react";
+import FooterSection from "@/app/components/FooterSection";
 
 export default function AccountDeletePage() {
   const router = useRouter();
@@ -81,14 +82,18 @@ export default function AccountDeletePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <p className="text-slate-600">로딩 중...</p>
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-slate-600">로딩 중...</p>
+        </div>
+        <FooterSection />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="flex flex-1 items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
@@ -167,6 +172,8 @@ export default function AccountDeletePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
+      <FooterSection />
     </div>
   );
 }

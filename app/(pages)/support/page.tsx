@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import FooterSection from "@/app/components/FooterSection";
 
 export const metadata: Metadata = {
   title: "고객 지원 센터 | 부산CCC 앱",
@@ -322,6 +323,7 @@ export default function SupportPage() {
           </p>
         </footer>
       </div>
+      <FooterSection />
     </div>
   );
 }

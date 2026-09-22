@@ -51,8 +51,11 @@ export default async function EventPage({
 
   if (!postData) {
     return (
-      <div className="text-center p-10 text-red-500">
-        해당 게시물을 찾을 수 없습니다.
+      <div className="flex min-h-full flex-col">
+        <div className="flex-1 p-10 text-center text-red-500">
+          해당 게시물을 찾을 수 없습니다.
+        </div>
+        <FooterSection />
       </div>
     );
   }

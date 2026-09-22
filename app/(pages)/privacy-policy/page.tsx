@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import FooterSection from "@/app/components/FooterSection";
 
 export const metadata: Metadata = {
   title: "개인정보처리방침 | CCC 부산지구 커뮤니티",
@@ -681,6 +682,7 @@ export default function PrivacyPolicyPage() {
           </section>
         </div>
       </div>
+      <FooterSection />
     </div>
   );
 }
