@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1790062340966,
+  "lastScanned": 1790358571378,
   "projectRoot": "/Users/kimgarden/dev/main",
   "techStack": {
     "languages": [
@@ -91,7 +91,7 @@
       "path": "api",
       "purpose": "API routes",
       "fileCount": 2,
-      "lastAccessed": 1790062340958,
+      "lastAccessed": 1790358571373,
       "keyFiles": [
         "posts.ts",
         "supabase.ts"
@@ -101,7 +101,7 @@
       "path": "app",
       "purpose": "Application code",
       "fileCount": 4,
-      "lastAccessed": 1790062340959,
+      "lastAccessed": 1790358571373,
       "keyFiles": [
         "favicon.png",
         "globals.css",
@@ -112,7 +112,7 @@
       "path": "components",
       "purpose": "UI components",
       "fileCount": 1,
-      "lastAccessed": 1790062340960,
+      "lastAccessed": 1790358571374,
       "keyFiles": [
         "SessionProvider.tsx"
       ]
@@ -121,7 +121,7 @@
       "path": "lib",
       "purpose": "Library code",
       "fileCount": 2,
-      "lastAccessed": 1790062340961,
+      "lastAccessed": 1790358571374,
       "keyFiles": [
         "gtag.ts",
         "utils.ts"
@@ -131,7 +131,7 @@
       "path": "public",
       "purpose": "Public files",
       "fileCount": 25,
-      "lastAccessed": 1790062340961,
+      "lastAccessed": 1790358571374,
       "keyFiles": [
         "2025Next.png",
         "2025_scposter.jpg",
@@ -144,7 +144,7 @@
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1790062340961,
+      "lastAccessed": 1790358571375,
       "keyFiles": [
         "supabase.d.ts",
         "supabase.local.ts"
@@ -154,7 +154,7 @@
       "path": "stories",
       "purpose": null,
       "fileCount": 10,
-      "lastAccessed": 1790062340961,
+      "lastAccessed": 1790358571375,
       "keyFiles": [
         "Button.stories.ts",
         "Button.tsx",
@@ -167,14 +167,14 @@
       "path": "supabase",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1790062340962,
+      "lastAccessed": 1790358571375,
       "keyFiles": []
     },
     "types": {
       "path": "types",
       "purpose": "Type definitions",
       "fileCount": 1,
-      "lastAccessed": 1790062340962,
+      "lastAccessed": 1790358571375,
       "keyFiles": [
         "react-tournament-brackets.d.ts"
       ]
@@ -183,32 +183,32 @@
       "path": "utils",
       "purpose": "Utility functions",
       "fileCount": 0,
-      "lastAccessed": 1790062340962,
+      "lastAccessed": 1790358571376,
       "keyFiles": []
     },
     "app/api": {
       "path": "app/api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1790062340963,
+      "lastAccessed": 1790358571376,
       "keyFiles": []
     },
     "app/components": {
       "path": "app/components",
       "purpose": "UI components",
-      "fileCount": 16,
-      "lastAccessed": 1790062340963,
+      "fileCount": 17,
+      "lastAccessed": 1790358571376,
       "keyFiles": [
         "Accordion.tsx",
         "AnnouncementSection.tsx",
-        "Calendar.tsx"
+        "BizLookupLink.tsx"
       ]
     },
     "app/types": {
       "path": "app/types",
       "purpose": "Type definitions",
       "fileCount": 2,
-      "lastAccessed": 1790062340964,
+      "lastAccessed": 1790358571376,
       "keyFiles": [
         "global.d.ts",
         "worship.d.ts"
@@ -218,7 +218,7 @@
       "path": "stories/assets",
       "purpose": "Static assets",
       "fileCount": 16,
-      "lastAccessed": 1790062340964,
+      "lastAccessed": 1790358571377,
       "keyFiles": [
         "accessibility.png",
         "accessibility.svg",
@@ -229,7 +229,7 @@
       "path": "supabase/migrations",
       "purpose": "Database migrations",
       "fileCount": 3,
-      "lastAccessed": 1790062340964,
+      "lastAccessed": 1790358571377,
       "keyFiles": [
         "20260904000000_chapel_summary_jobs.sql",
         "20260904010000_chapel_prayer_topics.sql",
