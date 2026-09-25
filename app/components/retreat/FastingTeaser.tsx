@@ -148,13 +148,18 @@ function endLabel(start: number, span: number) {
   return hourLabel(next ?? (start + span) % 24);
 }
 
+function cellEntries(cells: Map<number, TableCell>) {
+  const entries: [number, TableCell][] = [];
+  cells.forEach((cell, start) => entries.push([start, cell]));
+  return entries;
+}
+
 function isCovered(cells: Map<number, TableCell>, hour: number) {
   const index = HOURS.indexOf(hour as (typeof HOURS)[number]);
-  for (const [start, cell] of cells) {
+  return cellEntries(cells).some(([start, cell]) => {
     const startIndex = HOURS.indexOf(start as (typeof HOURS)[number]);
-    if (index > startIndex && index < startIndex + cell.span) return true;
-  }
-  return false;
+    return index > startIndex && index < startIndex + cell.span;
+  });
 }
 
 function kindColor(kind: Kind, alpha = 1) {
@@ -217,7 +222,7 @@ function DayList({ dayIndex }: { dayIndex: number }) {
   const col = COL_DAYS[dayIndex];
   return (
     <ol className="space-y-2">
-      {[...col.cells.entries()].map(([start, cell]) => (
+      {cellEntries(col.cells).map(([start, cell]) => (
         <li
           key={start}
           className="flex items-stretch gap-3 rounded-xl border border-white/[0.06] p-3"
