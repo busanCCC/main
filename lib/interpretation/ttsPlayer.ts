@@ -31,6 +31,20 @@ const LOOKAHEAD_SEC = 3;
 const SCHEDULE_CHUNK_BYTES = TTS_PCM_SAMPLE_RATE * 2 * 0.25;
 /** 예약 여유. 이보다 촉박하면 브라우저가 첫 조각을 놓친다 */
 const SCHEDULE_LEAD_SEC = 0.08;
+/**
+ * 같은 문장을 이 시간 안에 다시 읽지 않는다. 서버가 같은 내용을 다른 id 로
+ * 다시 보내는 경우의 마지막 방어선이다. 짧은 감탄("아멘")은 실제로 반복되므로 뺀다.
+ */
+const REPEAT_WINDOW_MS = 30_000;
+const REPEAT_MIN_CHARS = 8;
+
+/** 공백과 모든 언어의 문장부호. tsconfig 대상이 낮아 리터럴 대신 생성자로 만든다 */
+const SPACE_AND_PUNCT = new RegExp("[\\s\\p{P}]+", "gu");
+
+/** 비교용 정규화. 문장부호·공백·대소문자 차이는 같은 문장으로 본다 */
+function normalizeForRepeat(text: string) {
+  return text.toLowerCase().replace(SPACE_AND_PUNCT, "");
+}
 
 export function supportsOutputRouting(): boolean {
   return (
@@ -61,7 +75,16 @@ export interface ChannelCallbacks {
   onStatus: (lang: string, patch: Partial<ChannelStatus>) => void;
   onLog: (message: string) => void;
   /** 초안을 세션 문맥으로 다듬는다. 예산을 넘기면 초안을 그대로 돌려줘야 한다 */
-  refine: (unit: SpeechUnit) => Promise<{ text: string; timedOut: boolean }>;
+  refine: (unit: SpeechUnit) => Promise<RefineOutcome>;
+  /** 세션 전체에 걸친 화자 말투 설명. 합성할 때마다 읽는다 */
+  getSpeakerStyle: () => string;
+}
+
+export interface RefineOutcome {
+  text: string;
+  /** 이 문장의 연기 지시. 정제를 건너뛰었으면 빈 문자열 */
+  delivery: string;
+  timedOut: boolean;
 }
 
 /**
@@ -73,7 +96,7 @@ export interface ChannelCallbacks {
  */
 interface PendingUnit {
   unit: SpeechUnit;
-  refined: Promise<{ text: string; timedOut: boolean }>;
+  refined: Promise<RefineOutcome>;
 }
 
 class TtsChannel {
@@ -88,6 +111,12 @@ class TtsChannel {
   private dropped = 0;
   private refineTimeouts = 0;
   private state: ChannelState = "off";
+  /**
+   * clear() 때마다 오른다. 정제나 합성을 기다리던 발화가 깨어났을 때 세대가
+   * 바뀌어 있으면 이미 버려진 것이다 — 이 확인이 없으면 비운 큐가 되살아나 말한다.
+   */
+  private generation = 0;
+  private recent: { key: string; at: number }[] = [];
 
   config: ChannelConfig = { ...DEFAULT_CHANNEL_CONFIG };
 
@@ -167,10 +196,10 @@ class TtsChannel {
 
     // 이미 밀려 있으면 정제를 시작조차 하지 않는다. 어차피 못 기다린다
     const refined = this.catchingUp
-      ? Promise.resolve({ text: unit.draftText, timedOut: false })
+      ? Promise.resolve({ text: unit.draftText, delivery: "", timedOut: false })
       : this.cb
           .refine(unit)
-          .catch(() => ({ text: unit.draftText, timedOut: true }));
+          .catch(() => ({ text: unit.draftText, delivery: "", timedOut: true }));
 
     this.queue.push({ unit, refined });
     this.applyPressure();
@@ -248,22 +277,33 @@ class TtsChannel {
     if (!ctx || !this.gain) return;
 
     const { unit } = pending;
+    const generation = this.generation;
 
     // 커밋 때 이미 시작해 둔 정제를 거둔다. 대개 앞 발화를 재생하는 사이에 끝나 있다.
     // 밀리는 중이면 기다리지 않고 초안을 읽는다 — 정확도보다 따라잡는 게 먼저다.
     let text = unit.draftText;
+    let delivery = "";
     if (!this.catchingUp) {
       const refined = await pending.refined;
       text = refined.text;
+      delivery = refined.delivery;
+      if (generation !== this.generation) return;
       if (refined.timedOut) {
         this.refineTimeouts += 1;
         this.report({ refineTimeouts: this.refineTimeouts });
       }
     }
 
+    if (this.isRepeat(text)) {
+      this.cb.onLog(`${this.lang}: 직전에 읽은 문장과 같아 건너뜀 — ${text.slice(0, 40)}`);
+      return;
+    }
+
     this.report({ currentText: text });
 
-    const rate = this.catchingUp
+    // 배속은 합성 단계에서 건다. playbackRate 로 올리면 음정까지 올라가
+    // 목소리가 변조된다 — 화자 말투를 살리려는 목적과 정반대다
+    const speed = this.catchingUp
       ? Math.min(2, this.config.rate * CATCHUP_RATE)
       : this.config.rate;
 
@@ -273,7 +313,14 @@ class TtsChannel {
     const res = await fetch("/api/interpretation/tts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, voice: this.config.voice, speed: 1 }),
+      body: JSON.stringify({
+        text,
+        voice: this.config.voice,
+        speed,
+        lang: this.lang,
+        style: this.cb.getSpeakerStyle(),
+        delivery,
+      }),
       signal: abort.signal,
     });
 
@@ -290,17 +337,17 @@ class TtsChannel {
     let firstScheduled = false;
 
     const schedule = (bytes: Uint8Array) => {
+      if (generation !== this.generation) return;
       const buffer = pcmToAudioBuffer(ctx, bytes);
       if (!buffer) return;
 
       const source = ctx.createBufferSource();
       source.buffer = buffer;
-      source.playbackRate.value = rate;
       source.connect(this.gain!);
 
       const startAt = Math.max(ctx.currentTime + SCHEDULE_LEAD_SEC, this.nextTime);
       source.start(startAt);
-      this.nextTime = startAt + buffer.duration / rate;
+      this.nextTime = startAt + buffer.duration;
 
       this.active.push(source);
       source.onended = () => {
@@ -345,11 +392,22 @@ class TtsChannel {
     }
 
     // 발화 사이의 숨. 붙여 놓으면 한 문장처럼 들린다
-    this.nextTime += UTTERANCE_GAP_SEC;
+    if (generation === this.generation) this.nextTime += UTTERANCE_GAP_SEC;
+  }
+
+  private isRepeat(text: string): boolean {
+    const now = Date.now();
+    this.recent = this.recent.filter((item) => now - item.at < REPEAT_WINDOW_MS);
+    const key = normalizeForRepeat(text);
+    if (key.length < REPEAT_MIN_CHARS) return false;
+    if (this.recent.some((item) => item.key === key)) return true;
+    this.recent.push({ key, at: now });
+    return false;
   }
 
   /** 밀린 것을 버리고 지금으로 점프한다 */
   clear() {
+    this.generation += 1;
     const pending = this.queue.length;
     this.queue = [];
     this.fetchAbort?.abort();

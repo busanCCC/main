@@ -15,8 +15,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchStreamCredentials } from "./clientApi";
+import { extractHistoryEvents } from "./history";
+import { SegmentOrderer } from "./segmentOrderer";
 import { SpeechSegmenter } from "./speechSegmenter";
-import { supportsOutputRouting, TtsBus } from "./ttsPlayer";
+import { supportsOutputRouting, TtsBus, type RefineOutcome } from "./ttsPlayer";
 import {
   DEFAULT_CHANNEL_CONFIG,
   TTS_PRESETS,
@@ -26,6 +28,14 @@ import {
   type TtsPreset,
 } from "./ttsTypes";
 import type { StreamTranscriptEvent, StreamTranslationEvent } from "./types";
+
+/** 앞 문장 번역을 이만큼 기다린다. 넘기면 건너뛰고 뒤 문장을 읽는다 */
+const ORDER_WAIT_MS = 3000;
+/**
+ * 송출을 켜기 이만큼 전보다 오래된 세그먼트는 지나간 말로 본다. 재구독 백필이
+ * 낱개 이벤트로 와도 소리로 내지 않기 위한 선이다. 서버·PC 시계 차이를 감안해 넉넉히 둔다.
+ */
+const STALE_BEFORE_START_MS = 15_000;
 
 function storageKey(sessionId: string) {
   return `interpretation-tts:${sessionId}`;
@@ -42,6 +52,28 @@ function loadConfigs(sessionId: string): Record<string, ChannelConfig> {
     return raw ? (JSON.parse(raw) as Record<string, ChannelConfig>) : {};
   } catch {
     return {};
+  }
+}
+
+/** 화자 말투 설명은 세션마다 다르고, 설정과 같은 이유로 이 기계에만 남긴다 */
+function styleKey(sessionId: string) {
+  return `interpretation-tts-style:${sessionId}`;
+}
+
+function loadStyle(sessionId: string): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return window.localStorage.getItem(styleKey(sessionId)) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function saveStyle(sessionId: string, style: string) {
+  try {
+    window.localStorage.setItem(styleKey(sessionId), style);
+  } catch {
+    // 저장이 안 될 뿐 이번 세션에는 적용된다
   }
 }
 
@@ -93,16 +125,25 @@ export function useTtsPipeline({
   const [muted, setMuted] = useState(false);
   const [running, setRunning] = useState(false);
   const [supported] = useState(() => supportsOutputRouting());
+  const [speakerStyle, setSpeakerStyleState] = useState("");
 
   const busRef = useRef<TtsBus | null>(null);
   const socketsRef = useRef<Map<string, WebSocket>>(new Map());
   const segmentersRef = useRef<Map<string, SpeechSegmenter>>(new Map());
+  /**
+   * 언어별 순서 정렬기. 소켓·세그먼터와 달리 송출을 껐다 켜도 버리지 않는다 —
+   * 이미 읽은 세그먼트를 기억하는 곳이 여기라서, 버리면 재구독 때 다시 읽는다.
+   */
+  const orderersRef = useRef<Map<string, SegmentOrderer>>(new Map());
+  /** 언어별 송출 시작 시각. 이보다 오래된 세그먼트는 읽지 않는다 */
+  const liveSinceRef = useRef<Map<string, number>>(new Map());
   /** 세그먼트 id → 확정 전사문. 정제가 원문을 봐야 무엇이 빠졌는지 안다 */
   const sourceTextRef = useRef<Map<string, string>>(new Map());
   const presetRef = useRef(preset);
   const configsRef = useRef(configs);
   const runningRef = useRef(false);
   const onLogRef = useRef(onLog);
+  const speakerStyleRef = useRef(speakerStyle);
 
   useEffect(() => {
     presetRef.current = preset;
@@ -128,12 +169,19 @@ export function useTtsPipeline({
   useEffect(() => {
     const langs = langKey ? langKey.split(",") : [];
     const stored = loadConfigs(sessionId);
+    // 다른 세션의 "이미 읽음" 기록이 넘어오면 안 된다
+    for (const orderer of Array.from(orderersRef.current.values())) orderer.dispose();
+    orderersRef.current.clear();
+    liveSinceRef.current.clear();
     const next: Record<string, ChannelConfig> = {};
     for (const lang of langs) {
       next[lang] = { ...DEFAULT_CHANNEL_CONFIG, ...(stored[lang] ?? {}) };
     }
     configsRef.current = next;
     setConfigs(next);
+    const style = loadStyle(sessionId);
+    speakerStyleRef.current = style;
+    setSpeakerStyleState(style);
     setStatuses(
       Object.fromEntries(langs.map((lang) => [lang, emptyStatus(lang, next[lang])])),
     );
@@ -156,9 +204,11 @@ export function useTtsPipeline({
    * 필수 경로가 아니다 — 여기서 기다리면 소리가 멈춘다.
    */
   const refine = useCallback(
-    async (unit: SpeechUnit): Promise<{ text: string; timedOut: boolean }> => {
+    async (unit: SpeechUnit): Promise<RefineOutcome> => {
       const profile = TTS_PRESETS[presetRef.current];
-      if (!profile.refine) return { text: unit.draftText, timedOut: false };
+      if (!profile.refine) {
+        return { text: unit.draftText, delivery: "", timedOut: false };
+      }
 
       const abort = new AbortController();
       const timer = setTimeout(() => abort.abort(), profile.refineTimeoutMs);
@@ -173,6 +223,7 @@ export function useTtsPipeline({
               lang: unit.lang,
               sourceText: unit.sourceText,
               draftText: unit.draftText,
+              fragments: unit.segIds.length,
             }),
             signal: abort.signal,
           },
@@ -180,12 +231,16 @@ export function useTtsPipeline({
 
         const json = await res.json();
         if (!json.ok || !json.data?.text) {
-          return { text: unit.draftText, timedOut: false };
+          return { text: unit.draftText, delivery: "", timedOut: false };
         }
-        return { text: json.data.text as string, timedOut: false };
+        return {
+          text: json.data.text as string,
+          delivery: (json.data.delivery as string | undefined) ?? "",
+          timedOut: false,
+        };
       } catch {
         // 취소든 네트워크 오류든 결과는 같다 — 초안을 읽는다
-        return { text: unit.draftText, timedOut: true };
+        return { text: unit.draftText, delivery: "", timedOut: true };
       } finally {
         clearTimeout(timer);
       }
@@ -199,6 +254,7 @@ export function useTtsPipeline({
         onStatus: patchStatus,
         onLog: (message) => onLogRef.current(message),
         refine,
+        getSpeakerStyle: () => speakerStyleRef.current,
       });
     }
     return busRef.current;
@@ -221,6 +277,47 @@ export function useTtsPipeline({
     },
     [getBus],
   );
+
+  const ordererFor = useCallback(
+    (lang: string) => {
+      let orderer = orderersRef.current.get(lang);
+      if (!orderer) {
+        orderer = new SegmentOrderer({
+          waitMs: ORDER_WAIT_MS,
+          onRelease: (segId, text) =>
+            segmenterFor(lang).push(
+              segId,
+              text,
+              sourceTextRef.current.get(segId) ?? "",
+            ),
+          onSkip: (segId, reason) =>
+            onLogRef.current(
+              reason === "timeout"
+                ? `${lang}: 앞 문장 번역이 오지 않아 건너뜀 (${segId})`
+                : `${lang}: 순서가 지난 번역이 늦게 와서 버림 (${segId})`,
+            ),
+        });
+        orderersRef.current.set(lang, orderer);
+      }
+      return orderer;
+    },
+    [segmenterFor],
+  );
+
+  /** 지금 이후에 말해진 것만 읽는다. 시각이 없으면 판단하지 않는다 */
+  const isBeforeStart = useCallback((lang: string, at: string | undefined) => {
+    const since = liveSinceRef.current.get(lang);
+    if (!since || !at) return false;
+    const time = Date.parse(at);
+    return !Number.isNaN(time) && time < since - STALE_BEFORE_START_MS;
+  }, []);
+
+  /** 대기 중인 번역과 모인 조각을 버리고 지금으로 넘어간다 */
+  const skipToNow = useCallback((lang: string) => {
+    orderersRef.current.get(lang)?.skipPending();
+    segmentersRef.current.get(lang)?.dispose();
+    segmentersRef.current.delete(lang);
+  }, []);
 
   const closeSocket = useCallback((lang: string) => {
     const socket = socketsRef.current.get(lang);
@@ -270,24 +367,40 @@ export function useTtsPipeline({
           return;
         }
 
-        // 백필은 이미 지나간 말이다. 화면은 채우되 소리로는 내지 않는다
-        if (msg.type === "history") return;
+        const orderer = ordererFor(lang);
+
+        // 백필은 이미 지나간 말이다. 소리로 내지 않고, 이후 같은 세그먼트가
+        // 다시 와도 읽지 않도록 지나간 것으로 표시만 한다
+        if (msg.type === "history") {
+          for (const item of extractHistoryEvents(msg as Record<string, unknown>)) {
+            const id = (item as { id?: string }).id;
+            if (id) orderer.markDone(id);
+          }
+          return;
+        }
 
         if (msg.type === "transcript") {
           const t = msg as unknown as StreamTranscriptEvent;
-          if (t.isFinal && t.text) sourceTextRef.current.set(t.id, t.text);
+          if (!t.isFinal || !t.text) return;
+          if (isBeforeStart(lang, t.at)) {
+            orderer.markDone(t.id);
+            return;
+          }
+          sourceTextRef.current.set(t.id, t.text);
+          // 원문 확정 순서가 곧 읽는 순서다
+          orderer.noteSource(t.id);
           return;
         }
 
         if (msg.type === "translation") {
           const t = msg as unknown as StreamTranslationEvent;
-          if (!t.isFinal) return;
+          if (!t.isFinal || !t.text) return;
           if (t.lang && t.lang.toLowerCase() !== lang.toLowerCase()) return;
-          segmenterFor(lang).push(
-            t.id,
-            t.text,
-            sourceTextRef.current.get(t.id) ?? "",
-          );
+          if (isBeforeStart(lang, t.at)) {
+            orderer.markDone(t.id);
+            return;
+          }
+          orderer.pushTranslation(t.id, t.text);
         }
       };
 
@@ -303,7 +416,7 @@ export function useTtsPipeline({
         }
       };
     },
-    [roomId, segmenterFor],
+    [roomId, ordererFor, isBeforeStart],
   );
 
   /** 사용자 제스처 안에서 불러야 AudioContext 가 열린다 */
@@ -316,6 +429,7 @@ export function useTtsPipeline({
     const bus = getBus();
     for (const [lang, config] of Object.entries(configsRef.current)) {
       if (!config.enabled) continue;
+      liveSinceRef.current.set(lang, Date.now());
       await bus.open(lang);
       await bus.updateConfig(lang, config);
       await openSocket(lang);
@@ -327,12 +441,14 @@ export function useTtsPipeline({
     runningRef.current = false;
     setRunning(false);
     for (const lang of Array.from(socketsRef.current.keys())) closeSocket(lang);
+    for (const lang of Array.from(orderersRef.current.keys())) skipToNow(lang);
     busRef.current?.clear();
     onLogRef.current("음성 송출 중지");
-  }, [closeSocket]);
+  }, [closeSocket, skipToNow]);
 
   const updateChannel = useCallback(
     async (lang: string, patch: Partial<ChannelConfig>) => {
+      const wasEnabled = configsRef.current[lang]?.enabled ?? false;
       const next = {
         ...configsRef.current,
         [lang]: { ...(configsRef.current[lang] ?? DEFAULT_CHANNEL_CONFIG), ...patch },
@@ -353,15 +469,27 @@ export function useTtsPipeline({
 
       const bus = getBus();
       if (next[lang].enabled) {
+        // 보이스·배속만 바꿀 때는 시작 시각을 건드리지 않는다
+        if (!wasEnabled) liveSinceRef.current.set(lang, Date.now());
         await bus.open(lang);
         await bus.updateConfig(lang, next[lang]);
         await openSocket(lang);
       } else {
         await bus.updateConfig(lang, next[lang]);
         closeSocket(lang);
+        skipToNow(lang);
       }
     },
-    [sessionId, getBus, openSocket, closeSocket, patchStatus],
+    [sessionId, getBus, openSocket, closeSocket, skipToNow, patchStatus],
+  );
+
+  const setSpeakerStyle = useCallback(
+    (style: string) => {
+      speakerStyleRef.current = style;
+      setSpeakerStyleState(style);
+      saveStyle(sessionId, style);
+    },
+    [sessionId],
   );
 
   const toggleMute = useCallback(() => {
@@ -373,11 +501,12 @@ export function useTtsPipeline({
 
   const clearQueues = useCallback(() => {
     busRef.current?.clear();
-    for (const segmenter of Array.from(segmentersRef.current.values())) {
-      segmenter.dispose();
-    }
-    segmentersRef.current.clear();
-  }, []);
+    const langs = new Set([
+      ...Array.from(orderersRef.current.keys()),
+      ...Array.from(segmentersRef.current.keys()),
+    ]);
+    for (const lang of Array.from(langs)) skipToNow(lang);
+  }, [skipToNow]);
 
   // 세션이 끝나거나 화면을 벗어나면 소리부터 끊는다
   useEffect(() => {
@@ -399,6 +528,10 @@ export function useTtsPipeline({
         segmenter.dispose();
       }
       segmentersRef.current.clear();
+      for (const orderer of Array.from(orderersRef.current.values())) {
+        orderer.dispose();
+      }
+      orderersRef.current.clear();
       busRef.current?.dispose();
       busRef.current = null;
     },
@@ -416,6 +549,8 @@ export function useTtsPipeline({
     muted,
     preset,
     setPreset,
+    speakerStyle,
+    setSpeakerStyle,
     configs,
     statuses,
     selfLangs,
