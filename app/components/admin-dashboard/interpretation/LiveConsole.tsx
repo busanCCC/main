@@ -10,9 +10,10 @@ import {
   InterpretationHistory,
 } from "./Monitors";
 import {
+  applyHistorySegments,
   applyTranscript,
   applyTranslation,
-  extractHistoryEvents,
+  extractHistorySegments,
   type HistoryEntry,
 } from "@/lib/interpretation/history";
 import { KeytermsPanel } from "./KeytermsPanel";
@@ -95,6 +96,7 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
     roomId: session?.roomId,
     targetLanguages: session?.targetLanguages ?? [],
     ready: isStreamReady,
+    live: session?.status === "live",
     onLog: appendLog,
   });
 
@@ -301,26 +303,20 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
 
         // 구독 직후의 백필도 같은 기록에 넣는다. 콘솔을 새로 열거나 재접속해도
         // 앞부분이 비지 않는다
-        const events =
-          msg.type === "history"
-            ? extractHistoryEvents(msg as unknown as Record<string, unknown>)
-            : [msg];
-        setHistory((prev) => {
-          let next = prev;
-          for (const item of events) {
-            const ev = item as { type?: string };
-            if (ev.type === "transcript") {
-              next = applyTranscript(next, ev as StreamTranscriptEvent);
-            } else if (ev.type === "translation") {
-              next = applyTranslation(
-                next,
-                ev as StreamTranslationEvent,
-                monitorLangRef.current,
-              );
-            }
-          }
-          return next;
-        });
+        if (msg.type === "history") {
+          const segments = extractHistorySegments(
+            msg as unknown as Record<string, unknown>,
+          );
+          setHistory((prev) => applyHistorySegments(prev, segments));
+        }
+        if (msg.type === "transcript") {
+          const t = msg as StreamTranscriptEvent;
+          setHistory((prev) => applyTranscript(prev, t));
+        }
+        if (msg.type === "translation") {
+          const t = msg as StreamTranslationEvent;
+          setHistory((prev) => applyTranslation(prev, t, monitorLangRef.current));
+        }
         if (msg.type === "ready") appendLog("모니터 ready");
         if (msg.type === "session_ended") appendLog("모니터: 세션 종료");
       };
@@ -503,7 +499,8 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
           <AudioSourceController
-            enabled={isLive && connectionState === "connected"}
+            enabled={isLive}
+            connected={connectionState === "connected"}
             onChunk={handleAudioChunk}
           />
           <TtsOutputPanel

@@ -15,7 +15,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchStreamCredentials } from "./clientApi";
-import { extractHistoryEvents } from "./history";
+import { extractHistorySegments } from "./history";
 import { SegmentOrderer } from "./segmentOrderer";
 import { SpeechSegmenter } from "./speechSegmenter";
 import { supportsOutputRouting, TtsBus, type RefineOutcome } from "./ttsPlayer";
@@ -109,6 +109,11 @@ interface UseTtsPipelineOptions {
   targetLanguages: string[];
   /** 세션이 live 이고 관리자 스트림이 붙어 있을 때만 송출할 수 있다 */
   ready: boolean;
+  /**
+   * 세션이 live 인가. 이게 꺼질 때만 송출을 멈춘다. 재연결 중(ready=false)에
+   * 멈추면 연결이 돌아와도 송출이 다시 켜지지 않는다. 송출 소켓은 스스로 다시 붙는다.
+   */
+  live: boolean;
   onLog: (message: string) => void;
 }
 
@@ -117,6 +122,7 @@ export function useTtsPipeline({
   roomId,
   targetLanguages,
   ready,
+  live,
   onLog,
 }: UseTtsPipelineOptions) {
   const [configs, setConfigs] = useState<Record<string, ChannelConfig>>({});
@@ -372,9 +378,8 @@ export function useTtsPipeline({
         // 백필은 이미 지나간 말이다. 소리로 내지 않고, 이후 같은 세그먼트가
         // 다시 와도 읽지 않도록 지나간 것으로 표시만 한다
         if (msg.type === "history") {
-          for (const item of extractHistoryEvents(msg as Record<string, unknown>)) {
-            const id = (item as { id?: string }).id;
-            if (id) orderer.markDone(id);
+          for (const segment of extractHistorySegments(msg as Record<string, unknown>)) {
+            orderer.markDone(segment.id);
           }
           return;
         }
@@ -510,8 +515,8 @@ export function useTtsPipeline({
 
   // 세션이 끝나거나 화면을 벗어나면 소리부터 끊는다
   useEffect(() => {
-    if (!ready && runningRef.current) stop();
-  }, [ready, stop]);
+    if (!live && runningRef.current) stop();
+  }, [live, stop]);
 
   useEffect(
     () => () => {

@@ -29,8 +29,12 @@ function upsert(
 ): HistoryEntry[] {
   const index = entries.findIndex((entry) => entry.id === id);
   if (index >= 0) {
+    const current = entries[index];
+    // 순서가 뒤집혀 도착한 진행 중 결과가 확정본을 덮으면 안 된다
+    if (patch.sourceFinal === false && current.sourceFinal) return entries;
+    if (patch.translationFinal === false && current.translationFinal) return entries;
     const next = entries.slice();
-    next[index] = { ...next[index], ...patch };
+    next[index] = { ...current, ...patch };
     return next;
   }
 
@@ -71,14 +75,47 @@ export function applyTranslation(
   });
 }
 
+/** 백필 항목 하나. 한 세그먼트의 원문과 구독 언어 번역이 함께 온다 */
+export interface HistorySegment {
+  id: string;
+  seq?: number;
+  transcript?: string;
+  translation?: string;
+  isFinal?: boolean;
+  at?: string;
+}
+
 /**
- * 구독 직후 오는 백필. 프로토콜 문서에 묶음 필드 이름이 정해져 있지 않아
- * 흔한 이름을 차례로 본다. 하나도 없으면 아무것도 하지 않는다.
+ * 구독 직후 오는 백필("history" 메시지의 segments).
+ * 확정된 세그먼트만 담기며, 진행 중인 것은 들어오지 않는다.
  */
-export function extractHistoryEvents(message: Record<string, unknown>): unknown[] {
-  for (const key of ["events", "items", "messages", "entries", "history", "data"]) {
-    const value = message[key];
-    if (Array.isArray(value)) return value;
+export function extractHistorySegments(message: Record<string, unknown>): HistorySegment[] {
+  const segments = message.segments;
+  if (!Array.isArray(segments)) return [];
+  return segments.filter(
+    (item): item is HistorySegment =>
+      !!item && typeof (item as HistorySegment).id === "string",
+  );
+}
+
+/** 백필을 기록에 합친다. 이미 있는 세그먼트는 실시간으로 받은 쪽을 믿는다 */
+export function applyHistorySegments(
+  entries: HistoryEntry[],
+  segments: HistorySegment[],
+): HistoryEntry[] {
+  let next = entries;
+  // seq 는 세그먼트가 생긴 순서다. 말한 순서대로 쌓는다
+  const ordered = segments
+    .slice()
+    .sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0));
+  for (const segment of ordered) {
+    if (next.some((entry) => entry.id === segment.id)) continue;
+    next = upsert(next, segment.id, segment.at, {
+      source: segment.transcript ?? "",
+      sourceFinal: true,
+      translation: segment.translation ?? "",
+      translationFinal: !!segment.translation,
+    });
   }
-  return [];
+  return next;
 }

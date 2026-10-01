@@ -21,7 +21,16 @@ interface AudioInputDevice {
 }
 
 interface AudioSourceControllerProps {
+  /** 세션이 live 인가. 꺼지면 캡처도 멈춘다 */
   enabled: boolean;
+  /**
+   * 스트림 서버에 붙어 있는가. 새로 시작할 때만 필요하다.
+   *
+   * 재연결 중이라고 캡처를 멈추면 안 된다. 연결이 돌아와도 캡처는 스스로
+   * 다시 켜지지 않아, 서버가 한 번 재시작되면 관리자가 다시 누를 때까지
+   * 오디오가 조용히 끊긴다. 끊긴 동안의 오디오는 onChunk 쪽에서 버려진다.
+   */
+  connected: boolean;
   onChunk: (chunk: ArrayBuffer) => void;
 }
 
@@ -66,6 +75,7 @@ function AudioLevelMeter({ level }: { level: number }) {
 
 export function AudioSourceController({
   enabled,
+  connected,
   onChunk,
 }: AudioSourceControllerProps) {
   const [sourceMode, setSourceMode] = useState<AudioSourceMode>("microphone");
@@ -191,7 +201,7 @@ export function AudioSourceController({
   );
 
   const startCapture = useCallback(async () => {
-    if (!enabled || isActive) return;
+    if (!enabled || !connected || isActive) return;
 
     setIsStarting(true);
     setError(null);
@@ -253,6 +263,7 @@ export function AudioSourceController({
     attachStream,
     devices,
     enabled,
+    connected,
     isActive,
     refreshDevices,
     selectedDeviceId,
@@ -293,7 +304,7 @@ export function AudioSourceController({
         <Button
           type="button"
           variant={isActive ? "destructive" : "default"}
-          disabled={!enabled || isStarting}
+          disabled={!enabled || isStarting || (!isActive && !connected)}
           onClick={isActive ? stopCapture : startCapture}
         >
           {isStarting ? (
@@ -396,6 +407,11 @@ export function AudioSourceController({
       <AudioLevelMeter level={isActive ? level : 0} />
 
       {error && <p className="text-sm text-destructive">{error}</p>}
+      {enabled && isActive && !connected && (
+        <p className="rounded-md bg-amber-500/10 px-3 py-2 text-xs text-amber-700">
+          스트림 서버에 다시 연결하는 중입니다. 입력은 유지되며, 연결되면 자동으로 전송을 이어갑니다.
+        </p>
+      )}
       {!enabled && (
         <p className="text-xs text-muted-foreground">
           세션을 시작한 후 오디오 입력을 사용할 수 있습니다.
