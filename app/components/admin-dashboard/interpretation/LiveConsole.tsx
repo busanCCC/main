@@ -7,9 +7,15 @@ import { SessionStatusBadge } from "./SessionStatusBadge";
 import { AudioSourceController } from "./AudioSourceController";
 import {
   ParticipantPanel,
-  TranscriptMonitor,
-  TranslationMonitor,
+  InterpretationHistory,
 } from "./Monitors";
+import {
+  applyHistorySegments,
+  applyTranscript,
+  applyTranslation,
+  extractHistorySegments,
+  type HistoryEntry,
+} from "@/lib/interpretation/history";
 import { KeytermsPanel } from "./KeytermsPanel";
 import { TtsOutputPanel } from "./TtsOutputPanel";
 import { useTtsPipeline } from "@/lib/interpretation/useTtsPipeline";
@@ -46,12 +52,8 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
   const [connectionState, setConnectionState] = useState<
     "idle" | "connecting" | "connected" | "error"
   >("idle");
-  const [transcript, setTranscript] = useState({ text: "", isFinal: false });
-  const [translation, setTranslation] = useState({
-    text: "",
-    lang: "en",
-    isFinal: false,
-  });
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [monitorLang, setMonitorLang] = useState("en");
   const [logs, setLogs] = useState<string[]>([]);
   const [participantStats, setParticipantStats] = useState<RoomParticipantStats>({
     total: 0,
@@ -94,6 +96,7 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
     roomId: session?.roomId,
     targetLanguages: session?.targetLanguages ?? [],
     ready: isStreamReady,
+    live: session?.status === "live",
     onLog: appendLog,
   });
 
@@ -113,10 +116,7 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
       monitorLangRef.current = data.targetLanguages[0] ?? "en";
       targetLanguagesRef.current = data.targetLanguages;
       setParticipantStats(mergeParticipantCounts(data.targetLanguages));
-      setTranslation((prev) => ({
-        ...prev,
-        lang: data.targetLanguages[0] ?? "en",
-      }));
+      setMonitorLang(data.targetLanguages[0] ?? "en");
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "세션 정보를 불러오지 못했습니다.",
@@ -301,15 +301,21 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
           targetLanguagesRef.current,
         );
 
+        // 구독 직후의 백필도 같은 기록에 넣는다. 콘솔을 새로 열거나 재접속해도
+        // 앞부분이 비지 않는다
+        if (msg.type === "history") {
+          const segments = extractHistorySegments(
+            msg as unknown as Record<string, unknown>,
+          );
+          setHistory((prev) => applyHistorySegments(prev, segments));
+        }
         if (msg.type === "transcript") {
           const t = msg as StreamTranscriptEvent;
-          setTranscript({ text: t.text, isFinal: t.isFinal });
+          setHistory((prev) => applyTranscript(prev, t));
         }
         if (msg.type === "translation") {
           const t = msg as StreamTranslationEvent;
-          if (t.lang === monitorLangRef.current) {
-            setTranslation({ text: t.text, lang: t.lang, isFinal: t.isFinal });
-          }
+          setHistory((prev) => applyTranslation(prev, t, monitorLangRef.current));
         }
         if (msg.type === "ready") appendLog("모니터 ready");
         if (msg.type === "session_ended") appendLog("모니터: 세션 종료");
@@ -493,7 +499,8 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
           <AudioSourceController
-            enabled={isLive && connectionState === "connected"}
+            enabled={isLive}
+            connected={connectionState === "connected"}
             onChunk={handleAudioChunk}
           />
           <TtsOutputPanel
@@ -506,21 +513,15 @@ export function LiveConsole({ sessionId }: LiveConsoleProps) {
             configs={tts.configs}
             statuses={tts.statuses}
             onPresetChange={tts.setPreset}
+            speakerStyle={tts.speakerStyle}
+            onSpeakerStyleChange={tts.setSpeakerStyle}
             onChannelChange={tts.updateChannel}
             onStart={tts.start}
             onStop={tts.stop}
             onToggleMute={tts.toggleMute}
             onClearQueues={tts.clearQueues}
           />
-          <TranscriptMonitor
-            text={transcript.text}
-            isFinal={transcript.isFinal}
-          />
-          <TranslationMonitor
-            text={translation.text}
-            lang={translation.lang}
-            isFinal={translation.isFinal}
-          />
+          <InterpretationHistory entries={history} lang={monitorLang} />
         </div>
         <div className="space-y-4">
           <KeytermsPanel session={session} onUpdated={setSession} />

@@ -6,6 +6,7 @@ import { Button } from "@/app/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getLanguageLabel } from "@/lib/interpretation/streamStats";
 import {
+  CUSTOM_VOICE_PREFIX,
   TTS_PRESETS,
   TTS_VOICES,
   type ChannelConfig,
@@ -28,6 +29,8 @@ interface TtsOutputPanelProps {
   configs: Record<string, ChannelConfig>;
   statuses: Record<string, ChannelStatus>;
   onPresetChange: (preset: TtsPreset) => void;
+  speakerStyle: string;
+  onSpeakerStyleChange: (style: string) => void;
   onChannelChange: (lang: string, patch: Partial<ChannelConfig>) => void;
   onStart: () => Promise<void> | void;
   onStop: () => void;
@@ -53,6 +56,8 @@ export function TtsOutputPanel({
   configs,
   statuses,
   onPresetChange,
+  speakerStyle,
+  onSpeakerStyleChange,
   onChannelChange,
   onStart,
   onStop,
@@ -194,6 +199,28 @@ export function TtsOutputPanel({
         </div>
       </div>
 
+      <div className="space-y-1.5">
+        <label
+          htmlFor="tts-speaker-style"
+          className="text-xs font-medium text-muted-foreground"
+        >
+          화자 말투
+        </label>
+        <textarea
+          id="tts-speaker-style"
+          value={speakerStyle}
+          onChange={(event) => onSpeakerStyleChange(event.target.value)}
+          rows={2}
+          maxLength={400}
+          placeholder="예: 50대 남성 목사의 설교. 따뜻하고 힘 있는 목소리, 핵심 구절에서 천천히 강조하고 호소할 때 점점 고조된다."
+          className="flex w-full resize-y rounded-md border border-input bg-background px-2.5 py-1.5 text-xs"
+        />
+        <p className="text-[11px] text-muted-foreground">
+          세션 내내 음성에 적용됩니다. 문장별 감정·강세는 문맥 정제가 원문을 보고 따로 붙입니다
+          {TTS_PRESETS[preset].refine ? "." : " (지금 프리셋은 정제가 꺼져 있어 이 설명만 적용됩니다)."}
+        </p>
+      </div>
+
       {devices.length === 0 || unlabeled ? (
         <p className="rounded-md bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
           출력 장치 이름은 마이크 권한을 준 뒤에 보입니다. 위의{" "}
@@ -270,7 +297,11 @@ export function TtsOutputPanel({
                     </select>
 
                     <select
-                      value={config.voice}
+                      value={
+                        config.voice.startsWith(CUSTOM_VOICE_PREFIX)
+                          ? CUSTOM_VOICE_PREFIX
+                          : config.voice
+                      }
                       onChange={(event) =>
                         onChannelChange(lang, { voice: event.target.value })
                       }
@@ -281,6 +312,7 @@ export function TtsOutputPanel({
                           {voice.label}
                         </option>
                       ))}
+                      <option value={CUSTOM_VOICE_PREFIX}>화자 음성 (커스텀)</option>
                     </select>
 
                     <select
@@ -297,6 +329,18 @@ export function TtsOutputPanel({
                       ))}
                     </select>
                   </div>
+
+                  {config.voice.startsWith(CUSTOM_VOICE_PREFIX) && (
+                    <input
+                      type="text"
+                      value={config.voice}
+                      onChange={(event) =>
+                        onChannelChange(lang, { voice: event.target.value.trim() })
+                      }
+                      placeholder="voice_로 시작하는 OpenAI 커스텀 보이스 ID"
+                      className="flex h-8 w-full rounded-md border border-input bg-background px-2 font-mono text-xs"
+                    />
+                  )}
 
                   {status?.currentText ? (
                     <p className="truncate text-xs text-muted-foreground" title={status.currentText}>

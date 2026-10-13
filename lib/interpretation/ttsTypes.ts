@@ -24,31 +24,35 @@ export interface PresetProfile {
 export const TTS_PRESETS: Record<TtsPreset, PresetProfile> = {
   "low-latency": {
     label: "저지연",
-    maxHoldMs: 400,
-    idleMs: 300,
+    maxHoldMs: 1500,
+    idleMs: 500,
     refine: false,
     refineTimeoutMs: 0,
   },
+  /**
+   * 문장 단위로 읽는 것이 기본이다. 예전 값(900ms)은 한 문장을 0.9초마다 잘라
+   * 번역이 덜 된 토막을 합성했고, TTS 가 문장 끝을 못 봐 억양이 매번 꺾였다.
+   */
   balanced: {
     label: "균형",
-    maxHoldMs: 900,
-    idleMs: 450,
+    maxHoldMs: 3500,
+    idleMs: 900,
     refine: true,
     /**
-     * 실측 1.9~2.7s (haiku, 출력 20~64토큰).
+     * 실측 1.9~2.7s (haiku, 출력 20~64토큰) + 어조 지시 몇 토큰.
      *
      * 커밋 즉시 시작해 앞 발화 재생과 겹치므로 이 값이 종단 지연에 그대로
      * 얹히지는 않는다 — 첫 발화에서만 온전히 드러난다. 넉넉히 잡아도
      * 안전한 이유는 큐가 밀리면(CATCHUP_QUEUE_DEPTH) 정제를 아예 건너뛰기 때문이다.
      */
-    refineTimeoutMs: 3000,
+    refineTimeoutMs: 4000,
   },
   accurate: {
     label: "정확도",
-    maxHoldMs: 1800,
-    idleMs: 700,
+    maxHoldMs: 6000,
+    idleMs: 1400,
     refine: true,
-    refineTimeoutMs: 5000,
+    refineTimeoutMs: 6000,
   },
 };
 
@@ -72,6 +76,8 @@ export interface SpeechUnit {
 /** 정제 결과. 실패하거나 늦으면 이 값 없이 초안을 그대로 읽는다. */
 export interface RefineResult {
   text: string;
+  /** 이 문장을 어떤 어조로 읽을지. TTS instructions 로 넘어간다 */
+  delivery: string;
   changed: boolean;
   /** 이 세션에서 확정한 애매어 선택. 다음 발화부터 강제된다 */
   decisions: { term: string; chosen: string }[];
@@ -114,20 +120,32 @@ export const DEFAULT_CHANNEL_CONFIG: ChannelConfig = {
   enabled: false,
   sinkDeviceId: "",
   sinkLabel: "",
-  voice: "alloy",
+  voice: "marin",
   rate: 1,
   gain: 1,
 };
 
-/** OpenAI TTS 보이스. 언어와 무관하게 쓸 수 있다. */
+/**
+ * OpenAI TTS 보이스. 언어와 무관하게 쓸 수 있다.
+ * marin·cedar 가 가장 자연스럽고 instructions(어조 지시)를 잘 따른다.
+ */
 export const TTS_VOICES = [
-  { value: "alloy", label: "Alloy (중성)" },
+  { value: "marin", label: "Marin (여성·자연스러움)" },
+  { value: "cedar", label: "Cedar (남성·자연스러움)" },
+  { value: "ash", label: "Ash (남성)" },
+  { value: "ballad", label: "Ballad (남성·부드러움)" },
+  { value: "coral", label: "Coral (여성)" },
+  { value: "sage", label: "Sage (여성·차분)" },
+  { value: "verse", label: "Verse (남성·표현력)" },
   { value: "echo", label: "Echo (남성)" },
-  { value: "fable", label: "Fable (남성)" },
   { value: "onyx", label: "Onyx (저음 남성)" },
   { value: "nova", label: "Nova (여성)" },
   { value: "shimmer", label: "Shimmer (여성)" },
+  { value: "alloy", label: "Alloy (중성)" },
 ] as const;
+
+/** OpenAI 커스텀 보이스(화자 음성 등록) id 는 이 접두어로 온다 */
+export const CUSTOM_VOICE_PREFIX = "voice_";
 
 /** OpenAI TTS 의 raw PCM 출력 규격 — s16le, mono */
 export const TTS_PCM_SAMPLE_RATE = 24000;

@@ -28,10 +28,10 @@ const MainCarousel = () => {
 
   const slides = [
     {
-      image: "/IMG_2015 2.jpg",
-      title: "25-26 부산지구 채움총단 소개",
-      description: "부산지구, 부산땅에 예수님으로 가득 채워지길 소망합니다✨",
-      link: "https://www.instagram.com/p/DOKY7XBkix9/?igsh=MTFnbDM1ejZ4em5scQ==",
+      image: "/dream-chongdan-2627.jpg",
+      title: "26-27 부산지구 드림총단",
+      description: "함께 하나님의 꿈을 꾸고 누리는 부산지구 되길 소망합니다🌷",
+      link: "https://www.instagram.com/p/DdfgPYMEgqd/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA%3D%3D",
     },
   ];
 

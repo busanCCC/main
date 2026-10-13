@@ -191,9 +191,21 @@ export function SessionForm() {
               id="sourceLanguage"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               value={form.sourceLanguage}
-              onChange={(e) =>
-                setForm({ ...form, sourceLanguage: e.target.value })
-              }
+              onChange={(e) => {
+                const sourceLanguage = e.target.value;
+                // 원문과 같은 언어로는 통역하지 않는다. 남겨 두면 스트림 서버가
+                // 원문→원문 번역을 돌리고, 목록이 비면 영어로 되돌린다
+                const targets = form.targetLanguages.filter(
+                  (lang) => lang !== sourceLanguage,
+                );
+                setForm({
+                  ...form,
+                  sourceLanguage,
+                  targetLanguages: targets.length
+                    ? targets
+                    : [sourceLanguage === "en" ? "ko" : "en"],
+                });
+              }}
             >
               {SOURCE_LANGUAGES.map((lang) => (
                 <option key={lang.value} value={lang.value}>
@@ -206,7 +218,9 @@ export function SessionForm() {
           <div className="space-y-2">
             <Label>번역 언어 (1개 이상)</Label>
             <div className="flex flex-wrap gap-2">
-              {TARGET_LANGUAGES.map((lang) => {
+              {TARGET_LANGUAGES.filter(
+                (lang) => lang.value !== form.sourceLanguage,
+              ).map((lang) => {
                 const selected = form.targetLanguages.includes(lang.value);
                 return (
                   <button

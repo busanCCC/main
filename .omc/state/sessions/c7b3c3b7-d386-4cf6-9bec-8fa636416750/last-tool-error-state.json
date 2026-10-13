@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"grep -rnE \\\"\\\\brole\\\\b|is_admin|is_staff|super_admin\\\" app lib components utils --include=*.ts --include=*.tsx | grep -v stories | cut -c1-180 | head -40; echo ---; grep -rlnE \\\"openai|ant...",
+  "error": "Exit code 1\n(eval):1: no matches found: --include=*.ts\n---\n(eval):1: no matches found: --include=*.ts",
+  "timestamp": "2026-10-03T12:52:32.231Z",
+  "retry_count": 1
+}

@@ -1,0 +1,338 @@
+{
+  "version": 1,
+  "jobId": "2a508297-0657-48bd-b1a2-7b7f183a0f04",
+  "sessionId": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+  "scopeKey": "22ace6e4005685adde2bd6b7f7a992324af62c893eeb8dd70e0b3a6da56272e2",
+  "revision": 60,
+  "createdAt": "2026-10-10T05:35:06.428Z",
+  "updatedAt": "2026-10-10T05:35:39.413Z",
+  "producerGraceExpiresAt": "2026-10-10T05:35:36.428Z",
+  "bestEffortDeadlineAt": "2026-10-10T05:36:27.428Z",
+  "producers": {
+    "core": {
+      "state": "sealed",
+      "intentKey": "77ef130411faff8f4bda2a25be213558b3a0ab52fc536064305705c0f532f09d",
+      "payloadDigest": "77ef130411faff8f4bda2a25be213558b3a0ab52fc536064305705c0f532f09d",
+      "sealedAt": "2026-10-10T05:35:37.460Z",
+      "sealedBy": "recovery"
+    },
+    "wiki": {
+      "state": "no-op",
+      "sealedAt": "2026-10-10T05:35:06.449Z",
+      "sealedBy": "wiki-producer"
+    }
+  },
+  "actions": {
+    "foreground-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "749b7f02f1952deb6bae27202d5e98ec6dda433d10d081ad4ef06de54ac3fb0e",
+      "payload": {
+        "transcriptPath": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+        "cwd": "/Users/kimgarden/dev/main",
+        "reason": "other",
+        "input": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "transcript_path": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+          "cwd": "/Users/kimgarden/dev/main",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073/scratchpad",
+          "prompt_id": "311ccb0a-c8f9-4a5a-b94f-558916d6c221",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "ended_at": "2026-10-10T05:35:36.694Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-10-10T05:35:36.550Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "dbca534a-eed8-4d55-835a-1a138399e0a1",
+        "phase": "terminal",
+        "deadlineAt": "2026-10-10T05:35:46.427Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-10-10T05:35:37.442Z"
+    },
+    "wiki-capture": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 0,
+      "idempotencyKey": "12a493ac1d529b5eddde41d4a2f51560a5bb0203874fbd3dc645141dca1bf5e8",
+      "payload": {
+        "transcriptPath": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+        "cwd": "/Users/kimgarden/dev/main",
+        "reason": "other",
+        "input": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "transcript_path": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+          "cwd": "/Users/kimgarden/dev/main",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073/scratchpad",
+          "prompt_id": "311ccb0a-c8f9-4a5a-b94f-558916d6c221",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {}
+      },
+      "budgetMs": 9000,
+      "completedAt": "2026-10-10T05:35:06.449Z"
+    },
+    "team-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "3dbb652981dba13373577be8b4765353b2148cb907f7355be59829984549b603",
+      "payload": {
+        "transcriptPath": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+        "cwd": "/Users/kimgarden/dev/main",
+        "reason": "other",
+        "input": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "transcript_path": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+          "cwd": "/Users/kimgarden/dev/main",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073/scratchpad",
+          "prompt_id": "311ccb0a-c8f9-4a5a-b94f-558916d6c221",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "ended_at": "2026-10-10T05:35:36.694Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-10-10T05:35:37.501Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "d7e53050-7f5f-42e7-928b-e26f3b5168e1",
+        "phase": "terminal",
+        "deadlineAt": "2026-10-10T05:35:46.427Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-10-10T05:35:37.727Z"
+    },
+    "python-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "0ae47236133d187814fe9cf62252b19bafee5aea3bb29d8d64e4516b89bde1b7",
+      "payload": {
+        "transcriptPath": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+        "cwd": "/Users/kimgarden/dev/main",
+        "reason": "other",
+        "input": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "transcript_path": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+          "cwd": "/Users/kimgarden/dev/main",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073/scratchpad",
+          "prompt_id": "311ccb0a-c8f9-4a5a-b94f-558916d6c221",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "ended_at": "2026-10-10T05:35:36.694Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-10-10T05:35:37.781Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "849c61ea-dac9-4197-aca5-f57e95be75c6",
+        "phase": "terminal",
+        "deadlineAt": "2026-10-10T05:35:46.427Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-10-10T05:35:38.037Z"
+    },
+    "reply-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "5938d62a391fbde943ba1fb56a2442af41444d111a23eafa1e3105c117c7509e",
+      "payload": {
+        "transcriptPath": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+        "cwd": "/Users/kimgarden/dev/main",
+        "reason": "other",
+        "input": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "transcript_path": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+          "cwd": "/Users/kimgarden/dev/main",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073/scratchpad",
+          "prompt_id": "311ccb0a-c8f9-4a5a-b94f-558916d6c221",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {}
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-10-10T05:35:38.105Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "9aeb8add-7dad-431d-b022-71dea919d70b",
+        "phase": "terminal",
+        "deadlineAt": "2026-10-10T05:35:46.427Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-10-10T05:35:38.373Z"
+    },
+    "callback": {
+      "class": "best-effort",
+      "phase": "deferred-best-effort",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "9bf721ae7f6c6ca64b7229d4c078aa87067f0c32a8cfa06c0789cad26f0e2b13",
+      "payload": {
+        "transcriptPath": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+        "cwd": "/Users/kimgarden/dev/main",
+        "reason": "other",
+        "input": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "transcript_path": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+          "cwd": "/Users/kimgarden/dev/main",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073/scratchpad",
+          "prompt_id": "311ccb0a-c8f9-4a5a-b94f-558916d6c221",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "ended_at": "2026-10-10T05:35:36.694Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 2000,
+      "claimedAt": "2026-10-10T05:35:38.438Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "9a657b0d-2a82-45d6-a325-331644b1ac1a",
+        "phase": "terminal",
+        "deadlineAt": "2026-10-10T05:35:46.427Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-10-10T05:35:38.679Z"
+    },
+    "notification": {
+      "class": "best-effort",
+      "phase": "deferred-best-effort",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "e557745d3bf9981f4df1b6f0137239a80416ce02d9b55ff6d04a5ee87a07eb5c",
+      "payload": {
+        "transcriptPath": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+        "cwd": "/Users/kimgarden/dev/main",
+        "reason": "other",
+        "input": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "transcript_path": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+          "cwd": "/Users/kimgarden/dev/main",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073/scratchpad",
+          "prompt_id": "311ccb0a-c8f9-4a5a-b94f-558916d6c221",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "ended_at": "2026-10-10T05:35:36.694Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 2000,
+      "claimedAt": "2026-10-10T05:35:38.752Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "35bbb015-7184-4dce-89be-6b351f1974cc",
+        "phase": "terminal",
+        "deadlineAt": "2026-10-10T05:35:46.427Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-10-10T05:35:38.974Z"
+    },
+    "openclaw": {
+      "class": "best-effort",
+      "phase": "deferred-best-effort",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "5abe746394244f2e9133fcb0e0a2c7332a6f95ed4f19a9da342c2354c9e372c6",
+      "payload": {
+        "transcriptPath": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+        "cwd": "/Users/kimgarden/dev/main",
+        "reason": "other",
+        "input": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "transcript_path": "/Users/kimgarden/.claude/projects/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073.jsonl",
+          "cwd": "/Users/kimgarden/dev/main",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-kimgarden-dev-main/d52b34cf-a7ee-436b-84d1-34dc71a2d073/scratchpad",
+          "prompt_id": "311ccb0a-c8f9-4a5a-b94f-558916d6c221",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "d52b34cf-a7ee-436b-84d1-34dc71a2d073",
+          "ended_at": "2026-10-10T05:35:36.694Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 2000,
+      "claimedAt": "2026-10-10T05:35:39.038Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "bd533b53-0359-4a61-82ab-44bcfb0bfded",
+        "phase": "terminal",
+        "deadlineAt": "2026-10-10T05:35:46.427Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-10-10T05:35:39.290Z"
+    }
+  },
+  "owner": null,
+  "phase": "complete",
+  "completion": {
+    "completedAt": "2026-10-10T05:35:39.362Z",
+    "terminalDigest": "877be713b88f685d4e18ef4b7d46df54a21880191cea0c12f650d872b3ed2ba8",
+    "terminalRevision": 59
+  }
+}
