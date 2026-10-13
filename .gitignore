@@ -47,3 +47,5 @@ storybook-static
 *.stories.jsx
 .storybook/
 stories/
+
+.omc
