@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1790773010829,
+  "lastScanned": 1791883887158,
   "projectRoot": "/Users/kimgarden/dev/main",
   "techStack": {
     "languages": [
@@ -91,7 +91,7 @@
       "path": "api",
       "purpose": "API routes",
       "fileCount": 2,
-      "lastAccessed": 1790773010822,
+      "lastAccessed": 1791883887150,
       "keyFiles": [
         "posts.ts",
         "supabase.ts"
@@ -101,7 +101,7 @@
       "path": "app",
       "purpose": "Application code",
       "fileCount": 4,
-      "lastAccessed": 1790773010824,
+      "lastAccessed": 1791883887151,
       "keyFiles": [
         "favicon.png",
         "globals.css",
@@ -112,7 +112,7 @@
       "path": "components",
       "purpose": "UI components",
       "fileCount": 1,
-      "lastAccessed": 1790773010824,
+      "lastAccessed": 1791883887152,
       "keyFiles": [
         "SessionProvider.tsx"
       ]
@@ -121,7 +121,7 @@
       "path": "lib",
       "purpose": "Library code",
       "fileCount": 2,
-      "lastAccessed": 1790773010824,
+      "lastAccessed": 1791883887152,
       "keyFiles": [
         "gtag.ts",
         "utils.ts"
@@ -131,7 +131,7 @@
       "path": "public",
       "purpose": "Public files",
       "fileCount": 25,
-      "lastAccessed": 1790773010824,
+      "lastAccessed": 1791883887153,
       "keyFiles": [
         "2025Next.png",
         "2025_scposter.jpg",
@@ -144,7 +144,7 @@
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1790773010824,
+      "lastAccessed": 1791883887153,
       "keyFiles": [
         "supabase.d.ts",
         "supabase.local.ts"
@@ -154,7 +154,7 @@
       "path": "stories",
       "purpose": null,
       "fileCount": 10,
-      "lastAccessed": 1790773010825,
+      "lastAccessed": 1791883887153,
       "keyFiles": [
         "Button.stories.ts",
         "Button.tsx",
@@ -167,14 +167,14 @@
       "path": "supabase",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1790773010825,
+      "lastAccessed": 1791883887153,
       "keyFiles": []
     },
     "types": {
       "path": "types",
       "purpose": "Type definitions",
       "fileCount": 1,
-      "lastAccessed": 1790773010825,
+      "lastAccessed": 1791883887153,
       "keyFiles": [
         "react-tournament-brackets.d.ts"
       ]
@@ -183,21 +183,21 @@
       "path": "utils",
       "purpose": "Utility functions",
       "fileCount": 0,
-      "lastAccessed": 1790773010825,
+      "lastAccessed": 1791883887153,
       "keyFiles": []
     },
     "app/api": {
       "path": "app/api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1790773010825,
+      "lastAccessed": 1791883887154,
       "keyFiles": []
     },
     "app/components": {
       "path": "app/components",
       "purpose": "UI components",
       "fileCount": 17,
-      "lastAccessed": 1790773010826,
+      "lastAccessed": 1791883887154,
       "keyFiles": [
         "Accordion.tsx",
         "AnnouncementSection.tsx",
@@ -208,7 +208,7 @@
       "path": "app/types",
       "purpose": "Type definitions",
       "fileCount": 2,
-      "lastAccessed": 1790773010826,
+      "lastAccessed": 1791883887155,
       "keyFiles": [
         "global.d.ts",
         "worship.d.ts"
@@ -218,7 +218,7 @@
       "path": "stories/assets",
       "purpose": "Static assets",
       "fileCount": 16,
-      "lastAccessed": 1790773010827,
+      "lastAccessed": 1791883887155,
       "keyFiles": [
         "accessibility.png",
         "accessibility.svg",
@@ -229,7 +229,7 @@
       "path": "supabase/migrations",
       "purpose": "Database migrations",
       "fileCount": 3,
-      "lastAccessed": 1790773010827,
+      "lastAccessed": 1791883887155,
       "keyFiles": [
         "20260904000000_chapel_summary_jobs.sql",
         "20260904010000_chapel_prayer_topics.sql",
@@ -248,6 +248,12 @@
       "path": "lib/interpretation/speechSegmenter.ts",
       "accessCount": 2,
       "lastAccessed": 1790841256173,
+      "type": "file"
+    },
+    {
+      "path": "app/components/MainCarousel.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1791883967369,
       "type": "file"
     },
     {
