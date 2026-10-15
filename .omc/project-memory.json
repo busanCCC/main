@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1791883887158,
+  "lastScanned": 1792000128268,
   "projectRoot": "/Users/kimgarden/dev/main",
   "techStack": {
     "languages": [
@@ -91,7 +91,7 @@
       "path": "api",
       "purpose": "API routes",
       "fileCount": 2,
-      "lastAccessed": 1791883887150,
+      "lastAccessed": 1792000128253,
       "keyFiles": [
         "posts.ts",
         "supabase.ts"
@@ -101,7 +101,7 @@
       "path": "app",
       "purpose": "Application code",
       "fileCount": 4,
-      "lastAccessed": 1791883887151,
+      "lastAccessed": 1792000128254,
       "keyFiles": [
         "favicon.png",
         "globals.css",
@@ -112,7 +112,7 @@
       "path": "components",
       "purpose": "UI components",
       "fileCount": 1,
-      "lastAccessed": 1791883887152,
+      "lastAccessed": 1792000128255,
       "keyFiles": [
         "SessionProvider.tsx"
       ]
@@ -121,7 +121,7 @@
       "path": "lib",
       "purpose": "Library code",
       "fileCount": 2,
-      "lastAccessed": 1791883887152,
+      "lastAccessed": 1792000128255,
       "keyFiles": [
         "gtag.ts",
         "utils.ts"
@@ -130,8 +130,8 @@
     "public": {
       "path": "public",
       "purpose": "Public files",
-      "fileCount": 25,
-      "lastAccessed": 1791883887153,
+      "fileCount": 26,
+      "lastAccessed": 1792000128256,
       "keyFiles": [
         "2025Next.png",
         "2025_scposter.jpg",
@@ -144,7 +144,7 @@
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1791883887153,
+      "lastAccessed": 1792000128256,
       "keyFiles": [
         "supabase.d.ts",
         "supabase.local.ts"
@@ -154,7 +154,7 @@
       "path": "stories",
       "purpose": null,
       "fileCount": 10,
-      "lastAccessed": 1791883887153,
+      "lastAccessed": 1792000128256,
       "keyFiles": [
         "Button.stories.ts",
         "Button.tsx",
@@ -167,14 +167,14 @@
       "path": "supabase",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1791883887153,
+      "lastAccessed": 1792000128256,
       "keyFiles": []
     },
     "types": {
       "path": "types",
       "purpose": "Type definitions",
       "fileCount": 1,
-      "lastAccessed": 1791883887153,
+      "lastAccessed": 1792000128256,
       "keyFiles": [
         "react-tournament-brackets.d.ts"
       ]
@@ -183,21 +183,21 @@
       "path": "utils",
       "purpose": "Utility functions",
       "fileCount": 0,
-      "lastAccessed": 1791883887153,
+      "lastAccessed": 1792000128257,
       "keyFiles": []
     },
     "app/api": {
       "path": "app/api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1791883887154,
+      "lastAccessed": 1792000128257,
       "keyFiles": []
     },
     "app/components": {
       "path": "app/components",
       "purpose": "UI components",
       "fileCount": 17,
-      "lastAccessed": 1791883887154,
+      "lastAccessed": 1792000128266,
       "keyFiles": [
         "Accordion.tsx",
         "AnnouncementSection.tsx",
@@ -208,7 +208,7 @@
       "path": "app/types",
       "purpose": "Type definitions",
       "fileCount": 2,
-      "lastAccessed": 1791883887155,
+      "lastAccessed": 1792000128267,
       "keyFiles": [
         "global.d.ts",
         "worship.d.ts"
@@ -218,7 +218,7 @@
       "path": "stories/assets",
       "purpose": "Static assets",
       "fileCount": 16,
-      "lastAccessed": 1791883887155,
+      "lastAccessed": 1792000128267,
       "keyFiles": [
         "accessibility.png",
         "accessibility.svg",
@@ -229,7 +229,7 @@
       "path": "supabase/migrations",
       "purpose": "Database migrations",
       "fileCount": 3,
-      "lastAccessed": 1791883887155,
+      "lastAccessed": 1792000128267,
       "keyFiles": [
         "20260904000000_chapel_summary_jobs.sql",
         "20260904010000_chapel_prayer_topics.sql",
@@ -326,6 +326,24 @@
       "path": "lib/interpretation/segmentOrderer.ts",
       "accessCount": 1,
       "lastAccessed": 1790840835466,
+      "type": "file"
+    },
+    {
+      "path": "app/api/admin/table-policy.ts",
+      "accessCount": 1,
+      "lastAccessed": 1792057467718,
+      "type": "file"
+    },
+    {
+      "path": "lib/admin/adminAuth.ts",
+      "accessCount": 1,
+      "lastAccessed": 1792057480902,
+      "type": "file"
+    },
+    {
+      "path": "app/api/admin/route.ts",
+      "accessCount": 1,
+      "lastAccessed": 1792057510246,
       "type": "file"
     }
   ],
