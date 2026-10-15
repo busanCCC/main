@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { verifyAdmin } from "@/lib/chapel-summary/auth";
 import { getChapelSummaryJob } from "@/lib/chapel-summary/jobs";
+import { adminAuthErrorResponse, authenticateAdmin } from "@/lib/admin/adminAuth";
 
 export const maxDuration = 10;
 export const dynamic = "force-dynamic";
@@ -10,12 +10,8 @@ export async function GET(
   _request: Request,
   { params }: { params: { id: string } }
 ) {
-  if (!(await verifyAdmin())) {
-    return NextResponse.json(
-      { ok: false, reason: "관리자 권한이 필요합니다." },
-      { status: 403 }
-    );
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   const job = await getChapelSummaryJob(params.id);
   if (!job) {

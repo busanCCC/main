@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
-import { verifyInterpretationAdmin } from "@/lib/interpretation/adminAuth";
 import * as sessions from "@/lib/interpretation/supabaseSessions";
+import { adminAuthErrorResponse, authenticateAdmin } from "@/lib/admin/adminAuth";
 
 type Params = { params: { id: string } };
 
 export async function POST(_request: Request, { params }: Params) {
-  const auth = await verifyInterpretationAdmin();
-  if (!auth.ok) {
-    return NextResponse.json({ ok: false, reason: "관리자 권한이 필요합니다." }, { status: 403 });
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   try {
     await sessions.startSession(params.id);

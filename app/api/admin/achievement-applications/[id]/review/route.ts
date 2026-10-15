@@ -1,33 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-
-function getAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY가 설정되지 않았습니다.");
-  }
-  return createClient(url, serviceKey, { auth: { persistSession: false } });
-}
-
-async function verifyAdmin(): Promise<{ ok: boolean; userId?: string }> {
-  const supabase = createRouteHandlerClient({ cookies });
-  const { data: { session } } = await supabase.auth.getSession();
-  const userId = session?.user?.id;
-  if (!userId) return { ok: false };
-
-  const adminClient = getAdminClient();
-  const { data, error } = await adminClient
-    .from("user_info")
-    .select("is_admin")
-    .eq("id", userId)
-    .single();
-
-  if (error || !data?.is_admin) return { ok: false };
-  return { ok: true, userId };
-}
+import { adminAuthErrorResponse, authenticateAdmin, getAdminClient } from "@/lib/admin/adminAuth";
 
 /** POST /api/admin/achievement-applications/[id]/review
  * body: { status: "approved" | "rejected" }
@@ -37,13 +9,8 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const auth = await verifyAdmin();
-  if (!auth.ok || !auth.userId) {
-    return NextResponse.json(
-      { ok: false, reason: "관리자 권한이 필요합니다." },
-      { status: 403 }
-    );
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   let body: { status?: string; rejection_reason?: string };
   try {

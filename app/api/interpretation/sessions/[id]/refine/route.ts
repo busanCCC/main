@@ -10,7 +10,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { verifyInterpretationAdmin } from "@/lib/interpretation/adminAuth";
 import {
   buildRecentContext,
   buildStablePrefix,
@@ -20,6 +19,7 @@ import {
   recordSpoken,
   refreshSummaryIfStale,
 } from "@/lib/interpretation/refineContext";
+import { adminAuthErrorResponse, authenticateAdmin } from "@/lib/admin/adminAuth";
 
 type Params = { params: { id: string } };
 
@@ -86,13 +86,8 @@ function respond(text: string, changed: boolean) {
 }
 
 export async function POST(request: NextRequest, { params }: Params) {
-  const auth = await verifyInterpretationAdmin();
-  if (!auth.ok) {
-    return NextResponse.json(
-      { ok: false, reason: "관리자 권한이 필요합니다." },
-      { status: 403 },
-    );
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   let body: {
     lang?: string;

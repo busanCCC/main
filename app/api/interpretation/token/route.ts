@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
-import { verifyInterpretationAdmin } from "@/lib/interpretation/adminAuth";
 import { createCccAdminToken } from "@/lib/interpretation/devToken";
 import { CCC_STREAM_URL } from "@/lib/interpretation/constants";
+import { adminAuthErrorResponse, authenticateAdmin } from "@/lib/admin/adminAuth";
 
 export async function GET() {
-  const auth = await verifyInterpretationAdmin();
-  if (!auth.ok) {
-    return NextResponse.json({ ok: false, reason: "관리자 권한이 필요합니다." }, { status: 403 });
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   return NextResponse.json({
     ok: true,

@@ -257,6 +257,12 @@
       "type": "file"
     },
     {
+      "path": "lib/admin/adminAuth.ts",
+      "accessCount": 2,
+      "lastAccessed": 1792061086211,
+      "type": "file"
+    },
+    {
       "path": "app/api/interpretation/tts/route.ts",
       "accessCount": 1,
       "lastAccessed": 1790773196019,
@@ -335,15 +341,15 @@
       "type": "file"
     },
     {
-      "path": "lib/admin/adminAuth.ts",
-      "accessCount": 1,
-      "lastAccessed": 1792057480902,
-      "type": "file"
-    },
-    {
       "path": "app/api/admin/route.ts",
       "accessCount": 1,
       "lastAccessed": 1792057510246,
+      "type": "file"
+    },
+    {
+      "path": "supabase/migrations/20261015000000_protect_user_info_is_admin.sql",
+      "accessCount": 1,
+      "lastAccessed": 1792059155021,
       "type": "file"
     }
   ],

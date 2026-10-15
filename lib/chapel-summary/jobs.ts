@@ -1,4 +1,4 @@
-import { getAdminClient } from "./auth";
+import { getAdminClient } from "@/lib/admin/adminAuth";
 import { generateChapelSummary } from "./generate";
 import type { GenerateSummaryInput } from "./prompt";
 import type { ChapelSummaryDraft } from "./types";

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminClient, getVerifiedAdminId } from "@/lib/admin/adminAuth";
+import {
+  adminAuthErrorResponse,
+  authenticateAdmin,
+  getAdminClient,
+} from "@/lib/admin/adminAuth";
 import {
   MAX_PAGE_SIZE,
   canPerform,
@@ -16,8 +20,6 @@ import {
 function fail(reason: string, status: number) {
   return NextResponse.json({ ok: false, reason }, { status });
 }
-
-const FORBIDDEN = () => fail("관리자 권한이 필요합니다.", 403);
 
 /** 테이블 화이트리스트와 작업 권한을 함께 확인 */
 function authorizeTable(
@@ -75,7 +77,8 @@ function queryParams(searchParams: URLSearchParams): Record<string, string> {
 
 // --- GET: 목록 조회, 단건 조회, 배치 카운트 ---
 export async function GET(request: NextRequest) {
-  if (!(await getVerifiedAdminId())) return FORBIDDEN();
+  const adminAuth = await authenticateAdmin();
+  if (!adminAuth.ok) return adminAuthErrorResponse(adminAuth);
 
   const { searchParams } = new URL(request.url);
   const table = searchParams.get("table");
@@ -179,7 +182,8 @@ export async function GET(request: NextRequest) {
 
 // --- POST: 레코드 생성 (onConflict 지정 시 upsert) ---
 export async function POST(request: NextRequest) {
-  if (!(await getVerifiedAdminId())) return FORBIDDEN();
+  const adminAuth = await authenticateAdmin();
+  if (!adminAuth.ok) return adminAuthErrorResponse(adminAuth);
 
   const body = await readJsonBody(request);
   if (!body) return fail("잘못된 요청 본문입니다.", 400);
@@ -227,7 +231,8 @@ export async function POST(request: NextRequest) {
 
 // --- PUT: 레코드 수정 ---
 export async function PUT(request: NextRequest) {
-  if (!(await getVerifiedAdminId())) return FORBIDDEN();
+  const adminAuth = await authenticateAdmin();
+  if (!adminAuth.ok) return adminAuthErrorResponse(adminAuth);
 
   const body = await readJsonBody(request);
   if (!body) return fail("잘못된 요청 본문입니다.", 400);
@@ -268,7 +273,8 @@ export async function PUT(request: NextRequest) {
 
 // --- DELETE: 레코드 삭제 ---
 export async function DELETE(request: NextRequest) {
-  if (!(await getVerifiedAdminId())) return FORBIDDEN();
+  const adminAuth = await authenticateAdmin();
+  if (!adminAuth.ok) return adminAuthErrorResponse(adminAuth);
 
   const { searchParams } = new URL(request.url);
   const table = searchParams.get("table");
