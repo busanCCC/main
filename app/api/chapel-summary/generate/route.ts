@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateChapelSummary } from "@/lib/chapel-summary/generate";
 import type { TranscriptSegment } from "@/lib/chapel-summary/transcript";
-import { verifyAdmin } from "@/lib/chapel-summary/auth";
+import { adminAuthErrorResponse, authenticateAdmin } from "@/lib/admin/adminAuth";
 
 /** Vercel Hobby 플랜은 Serverless Function 최대 60초 */
 export const maxDuration = 60;
@@ -17,12 +17,8 @@ interface GenerateRequestBody {
 
 /** @deprecated POST /api/chapel-summary/jobs 를 사용하세요 (백그라운드 큐) */
 export async function POST(request: NextRequest) {
-  if (!(await verifyAdmin())) {
-    return NextResponse.json(
-      { ok: false, reason: "관리자 권한이 필요합니다." },
-      { status: 403 }
-    );
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   const body = (await request.json()) as GenerateRequestBody;
   const transcript = body.transcript ?? [];

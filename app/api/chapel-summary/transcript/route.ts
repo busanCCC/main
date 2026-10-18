@@ -4,7 +4,7 @@ import {
   fetchTranscriptFromProvider,
   parseTranscript,
 } from "@/lib/chapel-summary/transcript";
-import { verifyAdmin } from "@/lib/chapel-summary/auth";
+import { adminAuthErrorResponse, authenticateAdmin } from "@/lib/admin/adminAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -23,12 +23,8 @@ interface TranscriptRequestBody {
  * 유튜브 자막을 서버에서 직접 긁어오는 경로는 없다 — timedtext 가 막혀 있다.
  */
 export async function POST(request: NextRequest) {
-  if (!(await verifyAdmin())) {
-    return NextResponse.json(
-      { ok: false, reason: "관리자 권한이 필요합니다." },
-      { status: 403 }
-    );
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   const body = (await request.json()) as TranscriptRequestBody;
   const raw = body.raw?.trim() ?? "";

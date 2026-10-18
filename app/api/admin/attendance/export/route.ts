@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getAdminClient, verifyAdmin } from "@/lib/admin/adminAuth";
 import { parseAttendanceQuery } from "@/lib/attendance/params";
 import { loadAttendanceSummary } from "@/lib/attendance/server";
 import {
   buildAttendanceFileName,
   buildAttendanceWorkbook,
 } from "@/lib/attendance/workbook";
+import { adminAuthErrorResponse, authenticateAdmin, getAdminClient } from "@/lib/admin/adminAuth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,12 +18,8 @@ const ASCII_FALLBACK_FILE_NAME = "attendance.xlsx";
 
 /** GET /api/admin/attendance/export?semester=2026-1&filter=all — 엑셀 다운로드 */
 export async function GET(request: NextRequest) {
-  if (!(await verifyAdmin())) {
-    return NextResponse.json(
-      { ok: false, reason: "관리자 권한이 필요합니다." },
-      { status: 403 }
-    );
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   const { searchParams } = new URL(request.url);
 

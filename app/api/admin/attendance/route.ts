@@ -1,20 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getAdminClient, verifyAdmin } from "@/lib/admin/adminAuth";
 import { parseAttendanceQuery } from "@/lib/attendance/params";
 import { loadAttendanceSummary } from "@/lib/attendance/server";
+import { adminAuthErrorResponse, authenticateAdmin, getAdminClient } from "@/lib/admin/adminAuth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /** GET /api/admin/attendance?semester=2026-1&filter=all — 채플/리트릿 출석 집계 */
 export async function GET(request: NextRequest) {
-  if (!(await verifyAdmin())) {
-    return NextResponse.json(
-      { ok: false, reason: "관리자 권한이 필요합니다." },
-      { status: 403 }
-    );
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   const { searchParams } = new URL(request.url);
 

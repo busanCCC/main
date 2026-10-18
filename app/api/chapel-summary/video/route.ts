@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { extractVideoId, fetchVideoMeta } from "@/lib/chapel-summary/youtube";
-import { verifyAdmin } from "@/lib/chapel-summary/auth";
+import { adminAuthErrorResponse, authenticateAdmin } from "@/lib/admin/adminAuth";
 
 const YOUTUBE_API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
 
@@ -8,12 +8,8 @@ export const dynamic = "force-dynamic";
 
 /** 유튜브 링크를 받아 영상 메타데이터(제목/썸네일/길이)를 돌려준다 */
 export async function GET(request: NextRequest) {
-  if (!(await verifyAdmin())) {
-    return NextResponse.json(
-      { ok: false, reason: "관리자 권한이 필요합니다." },
-      { status: 403 }
-    );
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   const url = request.nextUrl.searchParams.get("url") ?? "";
   const videoId = extractVideoId(url);

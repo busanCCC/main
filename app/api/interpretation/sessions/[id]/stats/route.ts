@@ -1,20 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyInterpretationAdmin } from "@/lib/interpretation/adminAuth";
 import { fetchRoomParticipantStats } from "@/lib/interpretation/streamStats";
 import * as sessions from "@/lib/interpretation/supabaseSessions";
+import { adminAuthErrorResponse, authenticateAdmin } from "@/lib/admin/adminAuth";
 
 type Params = { params: { id: string } };
 
 export const dynamic = "force-dynamic";
 
 export async function GET(_request: NextRequest, { params }: Params) {
-  const auth = await verifyInterpretationAdmin();
-  if (!auth.ok) {
-    return NextResponse.json(
-      { ok: false, reason: "관리자 권한이 필요합니다." },
-      { status: 403 },
-    );
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   try {
     const session = await sessions.getSession(params.id);

@@ -15,9 +15,9 @@
 
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
-import { verifyInterpretationAdmin } from "@/lib/interpretation/adminAuth";
 import { getLanguageLabel } from "@/lib/interpretation/streamStats";
 import { CUSTOM_VOICE_PREFIX } from "@/lib/interpretation/ttsTypes";
+import { adminAuthErrorResponse, authenticateAdmin } from "@/lib/admin/adminAuth";
 
 export const dynamic = "force-dynamic";
 /** 스트리밍 응답이므로 Edge 가 아니라 Node 런타임이어야 한다 */
@@ -66,8 +66,8 @@ function fail(status: number, reason: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await verifyInterpretationAdmin();
-  if (!auth.ok) return fail(403, "관리자 권한이 필요합니다.");
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   if (!process.env.OPENAI_API_KEY) {
     return fail(500, "OPENAI_API_KEY 가 설정되지 않았습니다.");

@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyInterpretationAdmin } from "@/lib/interpretation/adminAuth";
 import * as sessions from "@/lib/interpretation/supabaseSessions";
 import type { CreateSessionInput } from "@/lib/interpretation/types";
+import { adminAuthErrorResponse, authenticateAdmin } from "@/lib/admin/adminAuth";
 
 export async function GET() {
-  const auth = await verifyInterpretationAdmin();
-  if (!auth.ok) {
-    return NextResponse.json({ ok: false, reason: "관리자 권한이 필요합니다." }, { status: 403 });
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   try {
     const data = await sessions.listSessions();
@@ -21,10 +19,8 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await verifyInterpretationAdmin();
-  if (!auth.ok) {
-    return NextResponse.json({ ok: false, reason: "관리자 권한이 필요합니다." }, { status: 403 });
-  }
+  const auth = await authenticateAdmin();
+  if (!auth.ok) return adminAuthErrorResponse(auth);
 
   try {
     const body = (await request.json()) as CreateSessionInput;
