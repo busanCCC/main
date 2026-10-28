@@ -7,7 +7,7 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { Noto_Serif_KR } from "next/font/google";
+import { Anton, Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
 import { useEffect, useState, type ReactNode } from "react";
 
 const titleFont = Noto_Serif_KR({
@@ -16,11 +16,96 @@ const titleFont = Noto_Serif_KR({
   display: "swap",
 });
 
+const posterFont = Anton({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const posterSubFont = Noto_Sans_KR({
+  weight: "900",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 const EASE_IN_OUT: [number, number, number, number] = [0.42, 0, 0.58, 1];
-const LAND_MS = 1600;
-const LAND_DELAY = 0.08;
+const HIKER_DELAY = 0.2;
+const HIKER_S = 1.2;
+// 인물이 흑백 배경 위에 다 들어선 뒤 찢김이 시작된다
+const TEAR_DELAY = HIKER_DELAY + HIKER_S + 0.15;
+const CRACK_S = 0.55;
+const PULL_S = 1.6;
 const NAV_H = 52;
 const ACCENT = "#e8c983";
+const POSTER_INK = "#2a237a";
+const POSTER_SUB = "#6c62c4";
+
+// 16:9 무대 좌표(px). 포스터 원본의 흰 찢김선을 추적한 값이며, 마지막 구간은 바위 턱을 따라 내려간다.
+const STAGE_W = 1600;
+const STAGE_H = 900;
+const TEAR_LINE: [number, number][] = [
+  [0.232, -0.02],
+  [0.247, 0.056],
+  [0.259, 0.111],
+  [0.27, 0.167],
+  [0.286, 0.222],
+  [0.299, 0.278],
+  [0.316, 0.333],
+  [0.327, 0.389],
+  [0.348, 0.444],
+  [0.357, 0.5],
+  [0.367, 0.556],
+  [0.39, 0.611],
+  [0.398, 0.667],
+  [0.405, 0.722],
+  [0.416, 0.78],
+  [0.43, 0.818],
+  [0.47, 0.83],
+  [0.53, 0.835],
+  [0.6, 0.85],
+  [0.632, 0.9],
+  [0.652, 1.02],
+];
+
+function seeded(seed: number) {
+  let s = seed;
+  return () => {
+    s = (s * 16807) % 2147483647;
+    return s / 2147483647;
+  };
+}
+
+// 찢김선을 잘게 나눠 법선 방향으로 흔들어 종이 섬유 같은 가장자리를 만든다. offset > 0 이면 찢겨 나가는 쪽으로 밀린다.
+function tornEdge(seed: number, offset: number, amp: number) {
+  const rand = seeded(seed);
+  const pts: [number, number][] = [];
+  for (let i = 0; i < TEAR_LINE.length - 1; i++) {
+    const x0 = TEAR_LINE[i][0] * STAGE_W;
+    const y0 = TEAR_LINE[i][1] * STAGE_H;
+    const x1 = TEAR_LINE[i + 1][0] * STAGE_W;
+    const y1 = TEAR_LINE[i + 1][1] * STAGE_H;
+    const len = Math.hypot(x1 - x0, y1 - y0);
+    const nx = (y1 - y0) / len;
+    const ny = -(x1 - x0) / len;
+    const steps = Math.max(1, Math.round(len / 6));
+    for (let s = 0; s < steps; s++) {
+      const t = s / steps;
+      const d = offset + (rand() - 0.5) * 2 * amp;
+      pts.push([x0 + (x1 - x0) * t + nx * d, y0 + (y1 - y0) * t + ny * d]);
+    }
+  }
+  const [lx, ly] = TEAR_LINE[TEAR_LINE.length - 1];
+  pts.push([lx * STAGE_W + offset, ly * STAGE_H]);
+  return pts.map(
+    ([x, y]) => `${((x / STAGE_W) * 100).toFixed(3)}% ${((y / STAGE_H) * 100).toFixed(3)}%`,
+  );
+}
+
+const CUT_EDGE = tornEdge(7, 0, 2.2);
+const FIBER_EDGE = tornEdge(13, 15, 5);
+const KEEP_CLIP = `polygon(-1% -2%, ${CUT_EDGE.join(", ")}, -1% 102%)`;
+const FIBER_CLIP = `polygon(-1% -2%, ${FIBER_EDGE.join(", ")}, -1% 102%)`;
+const TORN_CLIP = `polygon(${CUT_EDGE.join(", ")}, 101% 102%, 101% -2%)`;
 
 function easeInOut(t: number) {
   return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
@@ -42,25 +127,19 @@ const SECTIONS = [
 ] as const;
 
 const SCRIPTURE = [
+  { n: 18, t: "너희는 이전 일을 기억하지 말며 옛날 일을 생각하지 말라" },
   {
-    n: 1,
-    t: "내가 내 파수하는 곳에 서며 성루에 서리라 그가 내게 무엇이라 말씀하실는지 기다리고 바라보며 나의 질문에 대하여 어떻게 대답하실는지 보리라 하였더니",
+    n: 19,
+    t: "보라 내가 새 일을 행하리니 이제 나타낼 것이라 너희가 그것을 알지 못하겠느냐 반드시 내가 광야에 길을 사막에 강을 내리니",
   },
   {
-    n: 2,
-    t: "여호와께서 내게 대답하여 이르시되 너는 이 묵시를 기록하여 판에 명백히 새기되 달려가면서도 읽을 수 있게 하라",
+    n: 20,
+    t: "장차 들짐승 곧 승냥이와 타조도 나를 존경할 것은 내가 광야에 물을, 사막에 강들을 내어 내 백성, 내가 택한 자에게 마시게 할 것임이라",
   },
-  {
-    n: 3,
-    t: "이 묵시는 정한 때가 있나니 그 종말이 속히 이르겠고 결코 거짓되지 아니하리라 비록 더딜지라도 기다리라 지체되지 않고 반드시 응하리라",
-  },
-  {
-    n: 4,
-    t: "보라 그의 마음은 교만하며 그 속에서 정직하지 못하나 의인은 그의 믿음으로 말미암아 살리라",
-  },
+  { n: 21, t: "이 백성은 내가 나를 위하여 지었나니 나의 찬송을 부르게 하려 함이니라" },
 ] as const;
 
-const KEY_VERSES = new Set<number>([3, 4]);
+const KEY_VERSES = new Set<number>([19]);
 
 const KINDS = {
   worship: { label: "예배 · 집회", rgb: "232,201,131" },
@@ -125,15 +204,32 @@ const COL_DAYS = [
 ] as const;
 
 const FEES = [
-  { name: "가등록", price: "2만원", note: "먼저 자리를 확보합니다" },
-  { name: "완등록", price: "6만원", note: "가등록 2만원 포함 · 잔액 4만원", highlight: true },
+  {
+    name: "가등록",
+    price: "6만원",
+    note: "신청 시 가등록금을 먼저 납부합니다",
+    highlight: true,
+    parts: [
+      { label: "가등록금", price: "2만원", sub: "신청 시 납부", strong: true },
+      { label: "완등록금", price: "4만원", sub: "나머지 금액" },
+    ],
+  },
   { name: "현장등록", price: "7만원", note: "당일 현장에서 등록 시" },
 ] as const;
 
 const APPLY_STEPS = [
-  { title: "CCC 커뮤니티 앱 실행", desc: "앱을 열고 홈 화면으로 이동합니다." },
-  { title: "금식수련회 선택", desc: "홈의 수련회 카드에서 금식수련회를 누릅니다." },
-  { title: "신청하기", desc: "하단의 신청하기에서 가등록 또는 완등록을 진행합니다." },
+  {
+    title: "가등록",
+    desc: "신청하기에서 가등록을 신청한 뒤, 각 캠퍼스 재정담당자에게 가등록금 2만원을 납부하면 가등록이 완료됩니다.",
+  },
+  {
+    title: "특강 신청",
+    desc: "특강 신청 기간에 선착순으로 특강 신청을 진행합니다.",
+  },
+  {
+    title: "완등록",
+    desc: "각 캠퍼스 재정담당자에게 완등록금 4만원을 납부하면 완등록이 완료됩니다.",
+  },
 ] as const;
 
 const MAP_URL = `https://map.naver.com/p/search/${encodeURIComponent("감림산기도원")}`;
@@ -332,10 +428,10 @@ export default function FastingTeaser() {
   const [dayIndex, setDayIndex] = useState(0);
   const [showAll, setShowAll] = useState(true);
   const { scrollY } = useScroll();
-  const skyWipe = useMotionValue(0);
-  const skyMask = useTransform(skyWipe, (t) => {
-    const p = t * 128;
-    return `linear-gradient(to bottom, #000 ${Math.max(0, p - 26)}%, transparent ${p}%)`;
+  const crack = useMotionValue(0);
+  const crackMask = useTransform(crack, (t) => {
+    const p = t * 110;
+    return `linear-gradient(to bottom, #000 ${Math.max(0, p - 10)}%, transparent ${p}%)`;
   });
 
   const smallH = (vw * 9) / 16;
@@ -353,6 +449,9 @@ export default function FastingTeaser() {
     const t = easeInOut(Math.min(1, Math.max(0, y / shrinkDist)));
     return 1 - 0.42 * t;
   });
+  const eventOpacity = useTransform(scrollY, (y) =>
+    Math.max(0, 1 - y / (shrinkDist * 0.5)),
+  );
 
   useEffect(() => {
     const update = () => {
@@ -383,13 +482,13 @@ export default function FastingTeaser() {
 
   useEffect(() => {
     if (!ready) return;
-    const control = animate(skyWipe, 1, {
-      delay: LAND_DELAY + LAND_MS / 1000 + 0.55,
-      duration: 2.1,
-      ease: EASE_IN_OUT,
+    const control = animate(crack, 1, {
+      delay: TEAR_DELAY,
+      duration: CRACK_S,
+      ease: "easeIn",
     });
     return () => control.stop();
-  }, [ready, skyWipe]);
+  }, [ready, crack]);
 
   useEffect(() => {
     const update = () => {
@@ -419,74 +518,152 @@ export default function FastingTeaser() {
     <main className="w-full [overflow-anchor:none]" style={{ backgroundColor: "#050d1c" }}>
       <motion.section
         className="fixed inset-x-0 top-0 z-10 w-full overflow-hidden"
-        style={{ height: heroH }}
+        style={{ height: heroH, containerType: "size" }}
       >
-        <motion.div
-          className="absolute inset-0 z-0"
+        {/* 16:9 무대를 cover 로 깔고, 세로 화면에서는 찢김선이 보이도록 왼쪽 42% 지점을 기준으로 자른다 */}
+        <div
+          className="absolute"
           style={{
-            WebkitMaskImage: skyMask,
-            maskImage: skyMask,
-            WebkitMaskSize: "100% 100%",
-            maskSize: "100% 100%",
+            width: "max(100cqw, 177.78cqh)",
+            height: "max(100cqh, 56.25cqw)",
+            left: "calc((100cqw - max(100cqw, 177.78cqh)) * 0.42)",
+            top: "calc((100cqh - max(100cqh, 56.25cqw)) * 0.5)",
           }}
         >
-          <img
-            src="/retreat/2025fasting-sky.jpg"
+          <motion.img
+            src="/retreat/2026fasting-dawn.jpg"
             alt=""
-            className="h-full w-full object-cover object-center"
+            className="absolute inset-0 h-full w-full object-cover"
+            initial={{ scale: 1.08 }}
+            animate={ready ? { scale: 1 } : { scale: 1.08 }}
+            transition={{ delay: TEAR_DELAY + CRACK_S, duration: 2.6, ease: EASE_IN_OUT }}
           />
+
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              transformOrigin: "100% 100%",
+              filter: "drop-shadow(-14px 6px 22px rgba(0,0,0,0.5))",
+            }}
+            initial={{ x: "0%", y: "0%", rotate: 0, opacity: 1 }}
+            animate={
+              ready
+                ? {
+                    x: ["0%", "0.5%", "72%"],
+                    y: ["0%", "-0.4%", "-8%"],
+                    rotate: [0, 0.8, 17],
+                    opacity: [1, 1, 0],
+                  }
+                : { x: "0%", y: "0%", rotate: 0, opacity: 1 }
+            }
+            transition={{
+              delay: TEAR_DELAY,
+              duration: CRACK_S + PULL_S,
+              times: [0, CRACK_S / (CRACK_S + PULL_S), 1],
+              ease: ["easeOut", [0.55, 0, 0.8, 0.4]],
+              opacity: {
+                delay: TEAR_DELAY + CRACK_S + PULL_S * 0.7,
+                duration: PULL_S * 0.3,
+              },
+            }}
+          >
+            <img
+              src="/retreat/2026fasting-storm.jpg"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ clipPath: TORN_CLIP }}
+            />
+          </motion.div>
+
+          <div
+            className="absolute inset-0"
+            style={{ filter: "drop-shadow(5px 2px 8px rgba(0,0,0,0.3))" }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-[#f4f1ea]"
+              style={{
+                clipPath: FIBER_CLIP,
+                WebkitMaskImage: crackMask,
+                maskImage: crackMask,
+              }}
+            />
+            <img
+              src="/retreat/2026fasting-storm.jpg"
+              alt="폭풍 구름 아래 절벽이 종이처럼 찢겨 나가고, 그 뒤로 해가 뜨는 산골짜기와 굽이치는 강이 드러나는 장면"
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ clipPath: KEEP_CLIP }}
+            />
+          </div>
+
+          {/* 원본 1672×941 캔버스에서 잘라낸 인물 영역의 위치(%) — 찢긴 조각이 사라진 뒤 컬러로 바뀐다 */}
+          <motion.img
+            src="/retreat/2026fasting-hiker.png"
+            alt=""
+            className="absolute"
+            style={{ left: "39.713%", top: "49.734%", width: "7.895%", height: "35.069%" }}
+            initial={{ opacity: 0, x: "-22%", y: "8%", filter: "grayscale(1)" }}
+            animate={
+              ready
+                ? { opacity: 1, x: "0%", y: "0%", filter: "grayscale(0)" }
+                : { opacity: 0, x: "-22%", y: "8%", filter: "grayscale(1)" }
+            }
+            transition={{
+              delay: HIKER_DELAY,
+              duration: HIKER_S,
+              ease: EASE_IN_OUT,
+              filter: { delay: TEAR_DELAY + CRACK_S + PULL_S, duration: 0.9, ease: EASE_IN_OUT },
+            }}
+          />
+        </div>
+
+        <motion.div
+          className="absolute inset-x-0 top-[8%] z-30 origin-top px-5 text-center sm:left-auto sm:right-[5%] sm:origin-top-right sm:px-0 sm:text-right"
+          style={{ scale: titleScale }}
+          initial={{ opacity: 0, y: 14 }}
+          animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+          transition={{ duration: 1.2, ease: EASE_IN_OUT, delay: TEAR_DELAY + CRACK_S + 1 }}
+        >
+          <h1
+            className={`${posterFont.className} text-[3.6rem] uppercase leading-[0.9] sm:text-[clamp(4rem,9vw,10.5rem)]`}
+            style={{ color: POSTER_INK }}
+          >
+            No way?
+            <br />
+            God’s way!
+          </h1>
+          <p
+            className={`${posterSubFont.className} mt-3 text-[1.2rem] leading-snug sm:text-[clamp(1.25rem,2.7vw,3.2rem)]`}
+            style={{ color: POSTER_SUB }}
+          >
+            길이 없는 곳에
+            <br />
+            길을 만드시는 하나님
+          </p>
+          <p
+            className={`${posterSubFont.className} mt-1 text-[12px] sm:text-[clamp(0.8rem,1.1vw,1.3rem)]`}
+            style={{ color: POSTER_SUB }}
+          >
+            사 43:18–21
+          </p>
         </motion.div>
 
         <motion.div
-          className="absolute inset-0 z-10"
-          style={{ mixBlendMode: "screen" }}
-          initial={{ opacity: 0 }}
-          animate={ready ? { opacity: 1 } : { opacity: 0 }}
-          transition={{
-            duration: 1.5,
-            ease: EASE_IN_OUT,
-            delay: LAND_DELAY + LAND_MS / 1000,
-          }}
+          className="absolute inset-x-0 bottom-[7%] z-30 px-5 text-center text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.55)]"
+          style={{ opacity: eventOpacity }}
         >
-          <img
-            src="/retreat/2025fasting-cloud.png"
-            alt=""
-            className="h-full w-full translate-y-[3%] object-cover object-center"
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+            transition={{ duration: 1.2, ease: EASE_IN_OUT, delay: TEAR_DELAY + CRACK_S + 1.4 }}
+          >
+            <p className={`${posterSubFont.className} text-[1.6rem] sm:text-[clamp(1.8rem,3.6vw,4rem)]`}>
+              2026 부산CCC 금식수련회
+            </p>
+            <p className="mt-1 text-[14px] font-medium sm:text-[clamp(0.95rem,1.7vw,1.9rem)]">
+              12월 28–30일 / 감림산기도원
+            </p>
+          </motion.div>
         </motion.div>
-
-        <motion.div
-          className="absolute inset-0 z-20"
-          initial={{ y: "42%", opacity: 0 }}
-          animate={ready ? { y: "0%", opacity: 1 } : { y: "42%", opacity: 0 }}
-          transition={{
-            duration: LAND_MS / 1000,
-            ease: EASE_IN_OUT,
-            delay: LAND_DELAY,
-          }}
-        >
-          <img
-            src="/retreat/2025fasting-land.png?v=3"
-            alt=""
-            className="h-full w-full object-cover object-center"
-          />
-        </motion.div>
-
-        <motion.h1
-          className={`${titleFont.className} absolute inset-x-0 top-[11%] z-30 origin-top px-5 text-center text-[2.15rem] leading-[1.45] tracking-[0.08em] sm:text-5xl md:text-6xl`}
-          style={{ color: "#f3efe6", scale: titleScale }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-          transition={{
-            duration: 1.6,
-            ease: EASE_IN_OUT,
-            delay: LAND_DELAY + LAND_MS / 1000 + 0.2,
-          }}
-        >
-          더딘 시대,
-          <br />
-          믿음으로 꿈꾸라
-        </motion.h1>
 
         <motion.div
           aria-hidden
@@ -529,7 +706,7 @@ export default function FastingTeaser() {
         <div className="mx-auto w-full max-w-3xl px-4 pt-10 sm:px-8">
           <motion.div className="mb-10 text-center" {...fadeUp}>
             <p className="text-[12px] tracking-[0.3em] text-white/40">
-              2025 부산지구 CCC
+              2026 부산지구 CCC
             </p>
             <p className={`${titleFont.className} mt-2 text-[26px] text-[#f3efe6] sm:text-3xl`}>
               금식수련회
@@ -541,9 +718,9 @@ export default function FastingTeaser() {
             {...fadeUp}
           >
             {[
-              { k: "일시", v: "12.29 – 12.31", s: "월 – 수 · 2박 3일" },
+              { k: "일시", v: "12.28 – 12.30", s: "월 – 수 · 2박 3일" },
               { k: "장소", v: "감림산기도원", s: "경남 양산시" },
-              { k: "회비", v: "6만원", s: "완등록 기준" },
+              { k: "회비", v: "6만원", s: "가등록 기준" },
               { k: "신청", v: "CCC 커뮤니티 앱", s: "앱에서만 신청" },
             ].map((item) => (
               <div
@@ -562,10 +739,13 @@ export default function FastingTeaser() {
               <p
                 className={`${titleFont.className} text-center text-2xl leading-relaxed text-[#f3efe6] sm:text-[28px]`}
               >
-                더딘 시대, 믿음으로 꿈꾸라
+                No Way? God’s Way!
+              </p>
+              <p className="mt-2 text-center text-[16px] text-white/70">
+                길이 없는 곳에 길을 만드시는 하나님
               </p>
               <p className="mt-2 text-center text-[13px] text-white/45">
-                하박국 2장 1–4절
+                이사야 43장 18–21절
               </p>
               <ol className="mt-7 space-y-3">
                 {SCRIPTURE.map((verse) => {
@@ -578,7 +758,7 @@ export default function FastingTeaser() {
                       }`}
                     >
                       <span
-                        className={`${titleFont.className} w-4 shrink-0 text-[13px] leading-7`}
+                        className={`${titleFont.className} w-5 shrink-0 text-[13px] leading-7`}
                         style={{ color: key ? ACCENT : "rgba(255,255,255,0.3)" }}
                       >
                         {verse.n}
@@ -595,9 +775,9 @@ export default function FastingTeaser() {
                 <div className="flex gap-4">
                   <dt className="w-14 shrink-0 text-[13px] leading-6 text-white/45">일시</dt>
                   <dd className="text-white/90">
-                    2025년 12월 29일(월) – 31일(수)
+                    2026년 12월 28일(월) – 30일(수)
                     <span className="mt-0.5 block text-[13px] text-white/45">
-                      2박 3일 · 첫날 오전 10시 등록
+                      2박 3일
                     </span>
                   </dd>
                 </div>
@@ -623,28 +803,61 @@ export default function FastingTeaser() {
             </SectionCard>
 
             <SectionCard id="fee" index={3} eyebrow="Fee" title="회비" scrollMargin={scrollMargin}>
-              <ul className="grid gap-2.5 sm:grid-cols-3">
+              <ul className="grid gap-2.5 sm:grid-cols-2">
                 {FEES.map((fee) => {
                   const highlight = "highlight" in fee && fee.highlight;
                   return (
                     <li
                       key={fee.name}
-                      className="flex items-center justify-between rounded-2xl border px-4 py-4 sm:flex-col sm:items-start sm:gap-3"
+                      className="rounded-2xl border px-4 py-4"
                       style={{
                         borderColor: highlight ? `${ACCENT}66` : "rgba(255,255,255,0.1)",
                         backgroundColor: highlight ? `${ACCENT}14` : "rgba(255,255,255,0.03)",
                       }}
                     >
-                      <div>
-                        <p className="text-[15px] font-medium text-white/90">{fee.name}</p>
-                        <p className="mt-0.5 text-[12px] text-white/45">{fee.note}</p>
+                      <div className="flex items-center justify-between sm:flex-col sm:items-start sm:gap-3">
+                        <div>
+                          <p className="text-[15px] font-medium text-white/90">{fee.name}</p>
+                          <p className="mt-0.5 text-[12px] text-white/45">{fee.note}</p>
+                        </div>
+                        <p
+                          className={`${titleFont.className} text-2xl`}
+                          style={{ color: highlight ? ACCENT : "#f3efe6" }}
+                        >
+                          {fee.price}
+                        </p>
                       </div>
-                      <p
-                        className={`${titleFont.className} text-2xl`}
-                        style={{ color: highlight ? ACCENT : "#f3efe6" }}
-                      >
-                        {fee.price}
-                      </p>
+                      {"parts" in fee ? (
+                        <dl className="mt-4 grid grid-cols-2 gap-2">
+                          {fee.parts.map((part) => {
+                            const strong = "strong" in part && part.strong;
+                            return (
+                              <div
+                                key={part.label}
+                                className="rounded-xl border px-3 py-2.5"
+                                style={{
+                                  borderColor: strong ? ACCENT : "rgba(255,255,255,0.08)",
+                                  backgroundColor: strong ? `${ACCENT}26` : "rgba(255,255,255,0.03)",
+                                }}
+                              >
+                                <dt
+                                  className="text-[12px] font-medium"
+                                  style={{ color: strong ? ACCENT : "rgba(255,255,255,0.5)" }}
+                                >
+                                  {part.label}
+                                </dt>
+                                <dd
+                                  className={`${titleFont.className} mt-0.5 ${strong ? "text-[22px]" : "text-[18px]"}`}
+                                  style={{ color: strong ? ACCENT : "rgba(255,255,255,0.75)" }}
+                                >
+                                  {part.price}
+                                </dd>
+                                <dd className="text-[11px] text-white/40">{part.sub}</dd>
+                              </div>
+                            );
+                          })}
+                        </dl>
+                      ) : null}
                     </li>
                   );
                 })}
@@ -658,58 +871,72 @@ export default function FastingTeaser() {
             </SectionCard>
 
             <SectionCard id="schedule" index={4} eyebrow="Time Table" title="일정" scrollMargin={scrollMargin}>
-              <KindLegend />
+              <div className="relative">
+                {/* 2026 일정표 확정 전까지 지난 일정표를 흑백·비활성으로만 보여준다 */}
+                <fieldset
+                  disabled
+                  aria-hidden
+                  className="pointer-events-none min-w-0 select-none opacity-40 blur-[1.5px] grayscale"
+                >
+                  <KindLegend />
 
-              <div className="sm:hidden">
-                <div className="mb-3 flex justify-end">
-                  <button
-                    type="button"
-                    aria-pressed={showAll}
-                    onClick={() => setShowAll((v) => !v)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3.5 py-1.5 text-[13px] text-white/75 transition-colors active:bg-white/10"
-                  >
-                    <span aria-hidden>{showAll ? "☰" : "▦"}</span>
-                    {showAll ? "일자별로 보기" : "한꺼번에 보기"}
-                  </button>
-                </div>
-
-                {showAll ? (
-                  <TimeGrid compact />
-                ) : (
-                  <>
-                    <div
-                      role="tablist"
-                      aria-label="날짜 선택"
-                      className="mb-4 grid grid-cols-3 gap-1 rounded-2xl bg-white/[0.05] p-1"
-                    >
-                      {COL_DAYS.map((col, i) => {
-                        const on = dayIndex === i;
-                        return (
-                          <button
-                            key={col.label}
-                            type="button"
-                            role="tab"
-                            aria-selected={on}
-                            onClick={() => setDayIndex(i)}
-                            className={`rounded-xl py-2 text-center transition-colors duration-300 ${
-                              on ? "bg-[#f3efe6] text-[#050d1c]" : "text-white/55"
-                            }`}
-                          >
-                            <span className="block text-[11px] opacity-70">{i + 1}일차</span>
-                            <span className="text-[14px] font-medium">
-                              {col.date} ({col.day})
-                            </span>
-                          </button>
-                        );
-                      })}
+                  <div className="sm:hidden">
+                    <div className="mb-3 flex justify-end">
+                      <button
+                        type="button"
+                        aria-pressed={showAll}
+                        onClick={() => setShowAll((v) => !v)}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3.5 py-1.5 text-[13px] text-white/75 transition-colors active:bg-white/10"
+                      >
+                        <span aria-hidden>{showAll ? "☰" : "▦"}</span>
+                        {showAll ? "일자별로 보기" : "한꺼번에 보기"}
+                      </button>
                     </div>
-                    <DayList dayIndex={dayIndex} />
-                  </>
-                )}
-              </div>
 
-              <div className="hidden sm:block">
-                <TimeGrid />
+                    {showAll ? (
+                      <TimeGrid compact />
+                    ) : (
+                      <>
+                        <div
+                          role="tablist"
+                          aria-label="날짜 선택"
+                          className="mb-4 grid grid-cols-3 gap-1 rounded-2xl bg-white/[0.05] p-1"
+                        >
+                          {COL_DAYS.map((col, i) => {
+                            const on = dayIndex === i;
+                            return (
+                              <button
+                                key={col.label}
+                                type="button"
+                                role="tab"
+                                aria-selected={on}
+                                onClick={() => setDayIndex(i)}
+                                className={`rounded-xl py-2 text-center transition-colors duration-300 ${
+                                  on ? "bg-[#f3efe6] text-[#050d1c]" : "text-white/55"
+                                }`}
+                              >
+                                <span className="block text-[11px] opacity-70">{i + 1}일차</span>
+                                <span className="text-[14px] font-medium">
+                                  {col.date} ({col.day})
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <DayList dayIndex={dayIndex} />
+                      </>
+                    )}
+                  </div>
+
+                  <div className="hidden sm:block">
+                    <TimeGrid />
+                  </div>
+                </fieldset>
+                <div className="absolute inset-0 flex items-start justify-center pt-24">
+                  <p className="rounded-full border border-white/20 bg-[#050d1c]/85 px-5 py-2.5 text-[15px] text-white/85 backdrop-blur">
+                    일정표는 추후 공개됩니다
+                  </p>
+                </div>
               </div>
             </SectionCard>
 
