@@ -148,6 +148,22 @@ const chapelsSchema = z.object({
     .positive("출석 가능 반경은 1 이상이어야 합니다.")
     .optional()
     .default(DEFAULT_ATTENDANCE_RADIUS_M),
+  // 리트릿 장소가 채플과 다를 때만 채운다. 비어 있으면 채플 장소를 그대로 쓴다
+  retreat_place: z.string().optional().nullable(),
+  retreat_place_link: z
+    .string()
+    .url("올바른 URL을 입력해주세요.")
+    .optional()
+    .nullable()
+    .or(z.literal("")),
+  retreat_latitude: z.coerce.number().min(-90).max(90).optional().nullable(),
+  retreat_longitude: z.coerce.number().min(-180).max(180).optional().nullable(),
+  retreat_attendance_radius_m: z.coerce
+    .number()
+    .int("출석 가능 반경은 정수(m)여야 합니다.")
+    .positive("출석 가능 반경은 1 이상이어야 합니다.")
+    .optional()
+    .nullable(),
   active_from: z.string().min(1, "노출 시작일을 입력해주세요."),
   active_until: z.string().min(1, "노출 종료일을 입력해주세요."),
 });
@@ -488,6 +504,36 @@ export const tableConfig: Record<string, TableMeta> = {
         label: "리트릿 시작 시간",
         type: "datetime",
         placeholder: "미진행 시 비워두세요",
+      },
+      {
+        name: "retreat_place",
+        label: "리트릿 장소",
+        type: "text",
+        placeholder: "채플과 같은 장소면 비워두세요",
+      },
+      {
+        name: "retreat_latitude",
+        label: "리트릿 위도",
+        type: "number",
+        placeholder: "채플과 같은 장소면 비워두세요",
+      },
+      {
+        name: "retreat_longitude",
+        label: "리트릿 경도",
+        type: "number",
+        placeholder: "채플과 같은 장소면 비워두세요",
+      },
+      {
+        name: "retreat_attendance_radius_m",
+        label: "리트릿 출석 가능 반경 (m)",
+        type: "number",
+        placeholder: "비우면 채플 반경 사용",
+      },
+      {
+        name: "retreat_place_link",
+        label: "리트릿 지도 링크",
+        type: "url",
+        placeholder: "https://maps.google.com/...",
       },
       {
         name: "thumbnail_url",

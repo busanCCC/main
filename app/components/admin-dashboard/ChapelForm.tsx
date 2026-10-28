@@ -37,6 +37,13 @@ const chapelFormSchema = z
     latitude: z.string().optional().default(""),
     longitude: z.string().optional().default(""),
     attendance_radius_m: z.string().optional().default(""),
+    // 리트릿을 채플과 다른 곳에서 할 때만 쓴다. 미체크면 리트릿 장소 컬럼은 모두 NULL(= 채플 장소)
+    retreat_venue_separate: z.boolean().optional().default(false),
+    retreat_place: z.string().optional().default(""),
+    retreat_place_link: z.string().url("올바른 URL을 입력해주세요.").optional().or(z.literal("")),
+    retreat_latitude: z.string().optional().default(""),
+    retreat_longitude: z.string().optional().default(""),
+    retreat_attendance_radius_m: z.string().optional().default(""),
     active_from: z.string().min(1, "노출 시작일을 입력해주세요."),
     active_until: z.string().min(1, "노출 종료일을 입력해주세요."),
     topic_undecided: z.boolean().optional().default(false),
@@ -85,34 +92,79 @@ const chapelFormSchema = z
       }
     }
 
-    const lat = data.latitude?.trim() ?? "";
-    const lng = data.longitude?.trim() ?? "";
+    validateVenue(ctx, data, {
+      latitude: "latitude",
+      longitude: "longitude",
+      radius: "attendance_radius_m",
+    });
 
-    if (lat && (!Number.isFinite(Number(lat)) || Math.abs(Number(lat)) > 90)) {
-      ctx.addIssue({ code: "custom", message: "위도는 -90 ~ 90 사이의 숫자여야 합니다.", path: ["latitude"] });
-    }
-    if (lng && (!Number.isFinite(Number(lng)) || Math.abs(Number(lng)) > 180)) {
-      ctx.addIssue({ code: "custom", message: "경도는 -180 ~ 180 사이의 숫자여야 합니다.", path: ["longitude"] });
-    }
-    // 출석 거리 계산에 둘 다 필요하므로 한쪽만 채워진 상태를 막는다
-    if (lat && !lng) {
-      ctx.addIssue({ code: "custom", message: "경도도 함께 입력해주세요.", path: ["longitude"] });
-    }
-    if (lng && !lat) {
-      ctx.addIssue({ code: "custom", message: "위도도 함께 입력해주세요.", path: ["latitude"] });
-    }
-
-    const radius = data.attendance_radius_m?.trim() ?? "";
-    if (radius && (!Number.isInteger(Number(radius)) || Number(radius) <= 0)) {
-      ctx.addIssue({
-        code: "custom",
-        message: "출석 가능 반경은 1 이상의 정수(m)여야 합니다.",
-        path: ["attendance_radius_m"],
+    if (data.retreat_enabled && data.retreat_venue_separate) {
+      if (!data.retreat_place?.trim()) {
+        ctx.addIssue({ code: "custom", message: "리트릿 장소를 입력해주세요.", path: ["retreat_place"] });
+      }
+      // 좌표가 비면 앱이 채플 좌표로 판정하므로, 다른 장소라면 좌표는 필수다
+      if (!data.retreat_latitude?.trim() && !data.retreat_longitude?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          message: "리트릿 출석 위치 좌표를 입력해주세요.",
+          path: ["retreat_latitude"],
+        });
+      }
+      validateVenue(ctx, data, {
+        latitude: "retreat_latitude",
+        longitude: "retreat_longitude",
+        radius: "retreat_attendance_radius_m",
       });
     }
   });
 
 type ChapelFormValues = z.infer<typeof chapelFormSchema>;
+
+type VenueFieldKey =
+  | "latitude"
+  | "longitude"
+  | "attendance_radius_m"
+  | "retreat_latitude"
+  | "retreat_longitude"
+  | "retreat_attendance_radius_m";
+
+/** 출석 위치(좌표·반경) 입력값 검증. 채플과 리트릿 장소가 같은 규칙을 쓴다 */
+function validateVenue(
+  ctx: z.RefinementCtx,
+  data: Partial<Record<VenueFieldKey, string>>,
+  keys: { latitude: VenueFieldKey; longitude: VenueFieldKey; radius: VenueFieldKey }
+) {
+  const lat = data[keys.latitude]?.trim() ?? "";
+  const lng = data[keys.longitude]?.trim() ?? "";
+
+  if (lat && (!Number.isFinite(Number(lat)) || Math.abs(Number(lat)) > 90)) {
+    ctx.addIssue({ code: "custom", message: "위도는 -90 ~ 90 사이의 숫자여야 합니다.", path: [keys.latitude] });
+  }
+  if (lng && (!Number.isFinite(Number(lng)) || Math.abs(Number(lng)) > 180)) {
+    ctx.addIssue({ code: "custom", message: "경도는 -180 ~ 180 사이의 숫자여야 합니다.", path: [keys.longitude] });
+  }
+  // 출석 거리 계산에 둘 다 필요하므로 한쪽만 채워진 상태를 막는다
+  if (lat && !lng) {
+    ctx.addIssue({ code: "custom", message: "경도도 함께 입력해주세요.", path: [keys.longitude] });
+  }
+  if (lng && !lat) {
+    ctx.addIssue({ code: "custom", message: "위도도 함께 입력해주세요.", path: [keys.latitude] });
+  }
+
+  const radius = data[keys.radius]?.trim() ?? "";
+  if (radius && (!Number.isInteger(Number(radius)) || Number(radius) <= 0)) {
+    ctx.addIssue({
+      code: "custom",
+      message: "출석 가능 반경은 1 이상의 정수(m)여야 합니다.",
+      path: [keys.radius],
+    });
+  }
+}
+
+/** 좌표 입력 문자열을 지도 미리보기용 숫자로 */
+function parseCoordinate(value: string | undefined): number | null {
+  return value?.trim() ? Number(value) : null;
+}
 
 interface ChapelFormProps {
   defaultValues?: Record<string, unknown>;
@@ -180,6 +232,14 @@ function toFormDefaults(
     attendance_radius_m: record?.attendance_radius_m == null
       ? String(DEFAULT_ATTENDANCE_RADIUS_M)
       : get("attendance_radius_m"),
+    // 리트릿 좌표나 장소명이 따로 저장돼 있으면 "다른 장소"로 본다
+    retreat_venue_separate:
+      record?.retreat_latitude != null || record?.retreat_place != null,
+    retreat_place: get("retreat_place"),
+    retreat_place_link: get("retreat_place_link"),
+    retreat_latitude: get("retreat_latitude"),
+    retreat_longitude: get("retreat_longitude"),
+    retreat_attendance_radius_m: get("retreat_attendance_radius_m"),
     active_from: get("active_from") || autoPeriod?.activeFrom || "",
     active_until: get("active_until") || autoPeriod?.activeUntil || "",
     topic_undecided: get("topic") === "미정",
@@ -217,12 +277,14 @@ export function ChapelForm({
     mode === "edit"
   );
   const [showPlaceSearch, setShowPlaceSearch] = useState(false);
+  const [showRetreatPlaceSearch, setShowRetreatPlaceSearch] = useState(false);
 
   const topicUndecided = watchedValues.topic_undecided;
   const messengerUndecided = watchedValues.messenger_undecided;
   const placeUndecided = watchedValues.place_undecided;
   const datetimeUndecided = watchedValues.datetime_undecided;
   const retreatEnabled = watchedValues.retreat_enabled;
+  const retreatVenueSeparate = retreatEnabled && watchedValues.retreat_venue_separate;
 
   const prevTopic = useRef(topicUndecided);
   const prevMessenger = useRef(messengerUndecided);
@@ -295,6 +357,8 @@ export function ChapelForm({
   }, [retreatEnabled, setValue]);
 
   const processSubmit = (data: ChapelFormValues): Record<string, unknown> => {
+    // 리트릿 미진행이거나 채플과 같은 장소면 리트릿 장소 컬럼은 모두 NULL
+    const separateVenue = data.retreat_enabled && data.retreat_venue_separate;
     return {
       topic: data.topic_undecided ? "미정" : (data.topic?.trim() || "미정"),
       messenger: data.messenger_undecided ? "미정" : (data.messenger?.trim() || "미정"),
@@ -318,6 +382,17 @@ export function ChapelForm({
       attendance_radius_m: data.attendance_radius_m?.trim()
         ? Number(data.attendance_radius_m)
         : DEFAULT_ATTENDANCE_RADIUS_M,
+      retreat_place: separateVenue ? data.retreat_place?.trim() || null : null,
+      retreat_place_link: separateVenue ? data.retreat_place_link?.trim() || null : null,
+      retreat_latitude:
+        separateVenue && data.retreat_latitude?.trim() ? Number(data.retreat_latitude) : null,
+      retreat_longitude:
+        separateVenue && data.retreat_longitude?.trim() ? Number(data.retreat_longitude) : null,
+      // 비우면 NULL → 채플 반경을 그대로 쓴다
+      retreat_attendance_radius_m:
+        separateVenue && data.retreat_attendance_radius_m?.trim()
+          ? Number(data.retreat_attendance_radius_m)
+          : null,
       active_from: data.active_from?.trim() || "",
       active_until: data.active_until?.trim() || "",
     };
@@ -340,17 +415,37 @@ export function ChapelForm({
     setValue("longitude", nextLng.toFixed(6), { shouldValidate: true });
   };
 
-  const parsedLatitude = watchedValues.latitude?.trim()
-    ? Number(watchedValues.latitude)
-    : null;
-  const parsedLongitude = watchedValues.longitude?.trim()
-    ? Number(watchedValues.longitude)
-    : null;
+  /** 리트릿 장소 검색 결과 선택 시 리트릿 장소/좌표/지도 링크를 채운다 */
+  const handleRetreatPlaceSelect = (result: PlaceSearchResult) => {
+    setValue("retreat_place", result.placeName, { shouldValidate: true });
+    setValue("retreat_latitude", String(result.latitude), { shouldValidate: true });
+    setValue("retreat_longitude", String(result.longitude), { shouldValidate: true });
+    if (result.placeLink && !watchedValues.retreat_place_link?.trim()) {
+      setValue("retreat_place_link", result.placeLink, { shouldValidate: true });
+    }
+    setShowRetreatPlaceSearch(false);
+  };
+
+  const handleRetreatMapCoordinateChange = (nextLat: number, nextLng: number) => {
+    setValue("retreat_latitude", nextLat.toFixed(6), { shouldValidate: true });
+    setValue("retreat_longitude", nextLng.toFixed(6), { shouldValidate: true });
+  };
+
+  const parsedLatitude = parseCoordinate(watchedValues.latitude);
+  const parsedLongitude = parseCoordinate(watchedValues.longitude);
   const parsedRadius = Number(watchedValues.attendance_radius_m);
   const previewRadius =
     Number.isFinite(parsedRadius) && parsedRadius > 0
       ? parsedRadius
       : DEFAULT_ATTENDANCE_RADIUS_M;
+  // 리트릿 반경을 비우면 채플 반경을 따른다
+  const parsedRetreatRadius = Number(watchedValues.retreat_attendance_radius_m);
+  const retreatPreviewRadius =
+    watchedValues.retreat_attendance_radius_m?.trim() &&
+    Number.isFinite(parsedRetreatRadius) &&
+    parsedRetreatRadius > 0
+      ? parsedRetreatRadius
+      : previewRadius;
 
   const previewValues = {
     topic: topicUndecided ? "미정" : watchedValues.topic,
@@ -616,7 +711,126 @@ export function ChapelForm({
                   : "리트릿을 진행하는 날만 체크하세요. 체크하지 않으면 미진행으로 저장됩니다."}
               </p>
             )}
+
+            {retreatEnabled && (
+              <label className="flex items-center gap-2 cursor-pointer text-sm pt-1">
+                <input
+                  {...register("retreat_venue_separate")}
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-input"
+                />
+                채플과 다른 장소에서 진행
+              </label>
+            )}
           </div>
+
+          {/* 리트릿 장소 (채플과 다를 때만) */}
+          {retreatVenueSeparate && (
+            <div className="space-y-6 rounded-lg border p-4">
+              <div className="space-y-2">
+                <Label htmlFor="retreat_place">리트릿 장소 *</Label>
+                <div className="flex gap-2">
+                  <Input
+                    {...register("retreat_place")}
+                    type="text"
+                    placeholder="예: 넘치는 교회 소예배실"
+                    className={errors.retreat_place ? "border-destructive" : ""}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowRetreatPlaceSearch((prev) => !prev)}
+                    className="shrink-0"
+                  >
+                    <Search className="h-4 w-4 mr-2" />
+                    주소 검색
+                  </Button>
+                </div>
+                {showRetreatPlaceSearch && (
+                  <PlaceSearchDialog
+                    initialQuery={watchedValues.retreat_place ?? ""}
+                    onSelect={handleRetreatPlaceSelect}
+                  />
+                )}
+                {errors.retreat_place && (
+                  <p className="text-sm text-destructive">{errors.retreat_place.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label>리트릿 좌표 *</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Input
+                      {...register("retreat_latitude")}
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="위도 (예: 37.481234)"
+                      className={errors.retreat_latitude ? "border-destructive" : ""}
+                    />
+                    {errors.retreat_latitude && (
+                      <p className="text-sm text-destructive">{errors.retreat_latitude.message}</p>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <Input
+                      {...register("retreat_longitude")}
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="경도 (예: 126.952345)"
+                      className={errors.retreat_longitude ? "border-destructive" : ""}
+                    />
+                    {errors.retreat_longitude && (
+                      <p className="text-sm text-destructive">{errors.retreat_longitude.message}</p>
+                    )}
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  리트릿 출석은 이 좌표 기준으로 판정됩니다.
+                </p>
+                <KakaoMapPreview
+                  latitude={parseCoordinate(watchedValues.retreat_latitude)}
+                  longitude={parseCoordinate(watchedValues.retreat_longitude)}
+                  radiusM={retreatPreviewRadius}
+                  onCoordinateChange={handleRetreatMapCoordinateChange}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="retreat_attendance_radius_m">리트릿 출석 가능 반경 (m)</Label>
+                <Input
+                  {...register("retreat_attendance_radius_m")}
+                  type="number"
+                  min={1}
+                  step={1}
+                  placeholder={String(previewRadius)}
+                  className={errors.retreat_attendance_radius_m ? "border-destructive" : ""}
+                />
+                {errors.retreat_attendance_radius_m ? (
+                  <p className="text-sm text-destructive">
+                    {errors.retreat_attendance_radius_m.message}
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    비워두면 채플 반경({previewRadius}m)을 그대로 씁니다.
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="retreat_place_link">리트릿 지도 링크</Label>
+                <Input
+                  {...register("retreat_place_link")}
+                  type="url"
+                  placeholder="https://maps.google.com/..."
+                  className={errors.retreat_place_link ? "border-destructive" : ""}
+                />
+                {errors.retreat_place_link && (
+                  <p className="text-sm text-destructive">{errors.retreat_place_link.message}</p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* 썸네일 URL */}
           <div className="space-y-2">
