@@ -6,6 +6,7 @@ import {
   useMotionValue,
   useScroll,
   useTransform,
+  type Variants,
 } from "framer-motion";
 import { Anton, Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -41,6 +42,37 @@ const SCHEDULE_PUBLISHED = false;
 const ACCENT = "#e8c983";
 const POSTER_INK = "#2a237a";
 const POSTER_SUB = "#6c62c4";
+
+const HERO_IMAGES = [
+  "/retreat/2026fasting-dawn.jpg",
+  "/retreat/2026fasting-torn.webp",
+  "/retreat/2026fasting-fiber.webp",
+  "/retreat/2026fasting-keep.webp",
+  "/retreat/2026fasting-hiker.png",
+  "/retreat/2026fasting-hiker-gray.png",
+] as const;
+// 이미지가 끝내 오지 않아도 이 시간이 지나면 인트로를 시작한다
+const PRELOAD_TIMEOUT_MS = 3000;
+
+const TORN_VARIANTS = {
+  intact: { x: "0%", y: "0%", rotate: 0, opacity: 1 },
+  torn: {
+    x: ["0%", "0.5%", "72%"],
+    y: ["0%", "-0.4%", "-8%"],
+    rotate: [0, 0.8, 17],
+    opacity: [1, 1, 0],
+    transition: {
+      delay: TEAR_DELAY,
+      duration: CRACK_S + PULL_S,
+      times: [0, CRACK_S / (CRACK_S + PULL_S), 1],
+      ease: ["easeOut", [0.55, 0, 0.8, 0.4]],
+      opacity: {
+        delay: TEAR_DELAY + CRACK_S + PULL_S * 0.7,
+        duration: PULL_S * 0.3,
+      },
+    },
+  },
+} satisfies Variants;
 
 // 찢김 모양·그림자·흑백 인물은 scripts/bake-fasting-hero.py 로 미리 구운 이미지다 (런타임 clip-path/filter 를 쓰지 않는다)
 
@@ -422,8 +454,20 @@ export default function FastingTeaser() {
     const raf = requestAnimationFrame(toTop);
     window.addEventListener("load", toTop);
     window.addEventListener("pageshow", toTop);
-    setReady(true);
+    let cancelled = false;
+    const preload = Promise.all(
+      HERO_IMAGES.map((src) => {
+        const img = new Image();
+        img.src = src;
+        return img.decode().catch(() => undefined);
+      }),
+    );
+    const timeout = new Promise((resolve) => setTimeout(resolve, PRELOAD_TIMEOUT_MS));
+    Promise.race([preload, timeout]).then(() => {
+      if (!cancelled) setReady(true);
+    });
     return () => {
+      cancelled = true;
       cancelAnimationFrame(raf);
       window.removeEventListener("load", toTop);
       window.removeEventListener("pageshow", toTop);
@@ -506,9 +550,15 @@ export default function FastingTeaser() {
             src="/retreat/2026fasting-dawn.jpg"
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
-            initial={{ scale: 1.08 }}
-            animate={ready ? { scale: 1 } : { scale: 1.08 }}
-            transition={{ delay: TEAR_DELAY + CRACK_S, duration: 2.6, ease: EASE_IN_OUT }}
+            // 찢긴 조각 이미지가 아직 없을 때 컬러가 먼저 비쳐 '크롭이 사라진' 화면이 되지 않도록 ready 전에는 숨긴다
+            initial={{ scale: 1.08, opacity: 0 }}
+            animate={ready ? { scale: 1, opacity: 1 } : { scale: 1.08, opacity: 0 }}
+            transition={{
+              delay: TEAR_DELAY + CRACK_S,
+              duration: 2.6,
+              ease: EASE_IN_OUT,
+              opacity: { duration: 0 },
+            }}
           />
 
           {tornGone ? null : (
@@ -517,29 +567,12 @@ export default function FastingTeaser() {
               alt=""
               className="absolute inset-0 h-full w-full object-cover"
               style={{ transformOrigin: "100% 100%" }}
-              initial={{ x: "0%", y: "0%", rotate: 0, opacity: 1 }}
-              animate={
-                ready
-                  ? {
-                      x: ["0%", "0.5%", "72%"],
-                      y: ["0%", "-0.4%", "-8%"],
-                      rotate: [0, 0.8, 17],
-                      opacity: [1, 1, 0],
-                    }
-                  : { x: "0%", y: "0%", rotate: 0, opacity: 1 }
-              }
-              transition={{
-                delay: TEAR_DELAY,
-                duration: CRACK_S + PULL_S,
-                times: [0, CRACK_S / (CRACK_S + PULL_S), 1],
-                ease: ["easeOut", [0.55, 0, 0.8, 0.4]],
-                opacity: {
-                  delay: TEAR_DELAY + CRACK_S + PULL_S * 0.7,
-                  duration: PULL_S * 0.3,
-                },
-              }}
-              onAnimationComplete={() => {
-                if (ready) setTornGone(true);
+              variants={TORN_VARIANTS}
+              initial="intact"
+              animate={ready ? "torn" : "intact"}
+              // 'intact' 제자리 애니메이션 완료 콜백이 ready 이후 호출되면 조각이 미리 사라지므로, 'torn' 완료만 받는다
+              onAnimationComplete={(definition) => {
+                if (definition === "torn") setTornGone(true);
               }}
             />
           )}

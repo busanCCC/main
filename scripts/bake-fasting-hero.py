@@ -89,8 +89,8 @@ def main(storm_path, hiker_path):
     fiber_mask = mask([(-1, -2), *fiber, (-1, 102)])
     torn_mask = mask([*cut, (101, 102), (101, -2)])
 
-    # 남는 흑백 절벽
-    with_alpha(storm, keep_mask).save(OUT / "2026fasting-keep.webp", quality=86, method=6)
+    # 남는 흑백 절벽. 찢길 조각과 경계를 1–2px 겹쳐, 두 레이어의 안티에일리어싱 틈으로 뒤가 비치는 실선을 없앤다
+    with_alpha(storm, keep_mask.filter(ImageFilter.MaxFilter(5))).save(OUT / "2026fasting-keep.webp", quality=86, method=6)
 
     # 흰 종이 단면 + 남는 조각이 드리우는 그림자 (찢김이 내려가며 함께 드러난다)
     paper = Image.new("RGBA", (W, H), (244, 241, 234, 0))
