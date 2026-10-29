@@ -240,8 +240,8 @@
   "hotPaths": [
     {
       "path": "app/components/retreat/FastingTeaser.tsx",
-      "accessCount": 16,
-      "lastAccessed": 1793264592526,
+      "accessCount": 19,
+      "lastAccessed": 1793265646024,
       "type": "file"
     },
     {
