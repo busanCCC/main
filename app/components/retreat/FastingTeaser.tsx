@@ -172,14 +172,24 @@ const COL_DAYS = [
   },
 ] as const;
 
+const PRE_REG_DEADLINE = "11월 27일(금)";
+// 가등록 마감 다음 날 0시(KST). D-day 계산 기준
+const PRE_REG_END = Date.parse("2026-11-28T00:00:00+09:00");
+
+function preRegDday(now: number) {
+  const days = Math.floor((PRE_REG_END - now) / 86_400_000);
+  if (days < 0) return "마감";
+  return days === 0 ? "D-DAY" : `D-${days}`;
+}
+
 const FEES = [
   {
     name: "가등록",
     price: "6만원",
-    note: "신청 시 가등록금을 먼저 납부합니다",
+    note: `가등록 기간 ${PRE_REG_DEADLINE}까지`,
     highlight: true,
     parts: [
-      { label: "가등록금", price: "2만원", sub: "신청 시 납부", strong: true },
+      { label: "가등록금", price: "2만원", sub: `${PRE_REG_DEADLINE}까지`, strong: true },
       { label: "완등록금", price: "4만원", sub: "나머지 금액" },
     ],
   },
@@ -193,7 +203,8 @@ const APPLY_STEPS = [
   },
   {
     title: "가등록",
-    desc: "가등록 기간 내에 각 캠퍼스 재정담당자에게 가등록금 2만원을 납부하면 가등록이 완료됩니다.",
+    desc: `가등록 기간(2026년 ${PRE_REG_DEADLINE}까지) 내에 각 캠퍼스 재정담당자에게 가등록금 2만원을 납부하면 가등록이 완료됩니다.`,
+    emphasis: `2026년 ${PRE_REG_DEADLINE}까지`,
   },
   {
     title: "특강 신청",
@@ -408,6 +419,8 @@ export default function FastingTeaser() {
   const [dayIndex, setDayIndex] = useState(0);
   const [showAll, setShowAll] = useState(true);
   const [tornGone, setTornGone] = useState(false);
+  // 서버/클라이언트 시각 차로 hydration 이 어긋나지 않도록 D-day 는 마운트 후에 계산한다
+  const [dday, setDday] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
   const crack = useMotionValue(0);
@@ -454,6 +467,7 @@ export default function FastingTeaser() {
     const raf = requestAnimationFrame(toTop);
     window.addEventListener("load", toTop);
     window.addEventListener("pageshow", toTop);
+    setDday(preRegDday(Date.now()));
     let cancelled = false;
     const preload = Promise.all(
       HERO_IMAGES.map((src) => {
@@ -713,7 +727,7 @@ export default function FastingTeaser() {
             {[
               { k: "일시", v: "12.28 – 12.30", s: "월 – 수 · 2박 3일" },
               { k: "장소", v: "감림산기도원", s: "경남 양산시" },
-              { k: "회비", v: "6만원", s: "가등록 기준" },
+              { k: "회비", v: "6만원", s: "가등록 ~ 11.27(금)", accent: true },
               { k: "신청", v: "CCC 커뮤니티 앱", s: "앱에서만 신청" },
             ].map((item) => (
               <div
@@ -722,10 +736,46 @@ export default function FastingTeaser() {
               >
                 <dt className="text-[12px] text-white/45">{item.k}</dt>
                 <dd className="mt-1 text-[16px] font-medium text-white/90">{item.v}</dd>
-                <dd className="mt-0.5 text-[12px] text-white/40">{item.s}</dd>
+                <dd
+                  className={`mt-0.5 text-[12px] ${"accent" in item ? "font-medium" : "text-white/40"}`}
+                  style={"accent" in item ? { color: ACCENT } : undefined}
+                >
+                  {item.s}
+                </dd>
               </div>
             ))}
           </motion.dl>
+
+          <motion.button
+            type="button"
+            onClick={() => goTo("fee")}
+            className="-mt-6 mb-10 flex w-full items-center gap-4 rounded-2xl border px-5 py-4 text-left"
+            style={{ borderColor: ACCENT, backgroundColor: `${ACCENT}1f` }}
+            {...fadeUp}
+          >
+            <span
+              className="shrink-0 rounded-full px-3 py-1 text-[13px] font-bold tabular-nums text-[#050d1c]"
+              style={{ backgroundColor: ACCENT }}
+            >
+              {dday ?? "가등록"}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[12px] text-white/60">가등록 마감</span>
+              <span
+                className={`${titleFont.className} block text-[20px] leading-snug sm:text-[22px]`}
+                style={{ color: ACCENT }}
+              >
+                <span className="hidden sm:inline">2026년 </span>
+                {PRE_REG_DEADLINE}까지
+              </span>
+              <span className="mt-0.5 block text-[12px] text-white/55">
+                <span className="hidden sm:inline">캠퍼스 재정담당자에게 </span>가등록금 2만원 납부
+              </span>
+            </span>
+            <span aria-hidden className="shrink-0 text-white/40">
+              →
+            </span>
+          </motion.button>
 
           <div className="space-y-5">
             <SectionCard id="theme" index={1} eyebrow="Theme" title="주제" scrollMargin={scrollMargin}>
@@ -814,7 +864,7 @@ export default function FastingTeaser() {
                           <p className="mt-0.5 text-[12px] text-white/45">{fee.note}</p>
                         </div>
                         <p
-                          className={`${titleFont.className} text-2xl`}
+                          className={`${titleFont.className} shrink-0 whitespace-nowrap text-2xl`}
                           style={{ color: highlight ? ACCENT : "#f3efe6" }}
                         >
                           {fee.price}
@@ -958,7 +1008,20 @@ export default function FastingTeaser() {
                       {i + 1}
                     </span>
                     <p className="text-[16px] font-medium leading-8 text-white/90">{step.title}</p>
-                    <p className="mt-0.5 text-[14px] leading-6 text-white/55">{step.desc}</p>
+                    <p className="mt-0.5 text-[14px] leading-6 text-white/55">
+                      {"emphasis" in step
+                        ? step.desc.split(step.emphasis).flatMap((chunk, j) =>
+                            j === 0
+                              ? [chunk]
+                              : [
+                                  <strong key={j} className="font-semibold" style={{ color: ACCENT }}>
+                                    {step.emphasis}
+                                  </strong>,
+                                  chunk,
+                                ],
+                          )
+                        : step.desc}
+                    </p>
                   </li>
                 ))}
               </ol>
