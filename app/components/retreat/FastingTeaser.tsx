@@ -655,7 +655,7 @@ export default function FastingTeaser() {
         </motion.div>
 
         <motion.div
-          className="absolute inset-x-0 bottom-[7%] z-30 px-5 text-center text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.55)]"
+          className="absolute inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+112px)] z-30 px-5 text-center text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.55)]"
           style={{ opacity: eventOpacity }}
         >
           <motion.div
