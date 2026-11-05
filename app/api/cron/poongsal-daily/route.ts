@@ -17,7 +17,7 @@ async function fetchWithRetry(
 ): Promise<Response> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      return await fetch(url, init);
+      return await fetch(url, { ...init, cache: "no-store" });
     } catch (err) {
       if (attempt >= retries) throw err;
       await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
@@ -32,7 +32,13 @@ function getAdminClient() {
   if (!serviceKey) {
     throw new Error("SUPABASE_SERVICE_ROLE_KEY가 설정되지 않았습니다.");
   }
-  return createClient(url, serviceKey, { auth: { persistSession: false } });
+  return createClient(url, serviceKey, {
+    auth: { persistSession: false },
+    // Next 14 Data Cache가 supabase GET 응답을 영구 캐시하지 않도록 강제
+    global: {
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
+  });
 }
 
 function getNowInKst() {
@@ -59,6 +65,30 @@ function getNowInKst() {
 }
 
 export const dynamic = "force-dynamic";
+// Next 14 route handler는 force-dynamic만으로는 fetch 캐시가 꺼지지 않음(GET-only 라우트).
+// 캐시되면 매일 같은 YouTube/DB 응답이 재사용되어 이전 영상이 반복 저장된다.
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
+
+type PlaylistItem = {
+  snippet?: {
+    title?: string;
+    publishedAt?: string;
+    resourceId?: { videoId?: string };
+    thumbnails?: { medium?: { url?: string }; default?: { url?: string } };
+  };
+};
+
+/** 제목의 "[11월 6일 풍삶" 같은 날짜가 대상 날짜(YYYY-MM-DD)와 일치하는지 */
+function titleMatchesDate(title: string, dateStr: string) {
+  const [, m, d] = dateStr.split("-").map(Number);
+  const re = /(\d{1,2})\s*월\s*(\d{1,2})\s*일/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(title)) !== null) {
+    if (Number(match[1]) === m && Number(match[2]) === d) return true;
+  }
+  return false;
+}
 
 /** 매일 자정 00시(KST) 실행 — 최신 YouTube 영상을 오늘 날짜의 daily_devotions에 매칭 */
 export async function GET(request: NextRequest) {
@@ -108,7 +138,7 @@ export async function GET(request: NextRequest) {
     new URLSearchParams({
       part: "snippet",
       playlistId: UPLOADS_PLAYLIST_ID,
-      maxResults: "5",
+      maxResults: "10",
       key: YOUTUBE_API_KEY,
     }).toString();
 
@@ -123,7 +153,7 @@ export async function GET(request: NextRequest) {
   }
 
   const ytData = await ytRes.json();
-  const items = ytData.items ?? [];
+  const items: PlaylistItem[] = ytData.items ?? [];
   if (items.length === 0) {
     return NextResponse.json({
       ok: true,
@@ -132,26 +162,39 @@ export async function GET(request: NextRequest) {
   }
 
   // 이미 다른 날짜에 저장된 영상은 제외하고 새 영상만 선택
-  const candidateVideoIds = items.map(
-    (item: { snippet?: { resourceId?: { videoId?: string } } }) =>
-      item.snippet?.resourceId?.videoId
-  ).filter(Boolean) as string[];
+  const candidateVideoIds = items
+    .map((item) => item.snippet?.resourceId?.videoId)
+    .filter(Boolean) as string[];
 
-  const { data: alreadyUsed } = await adminClient
+  const { data: alreadyUsed, error: usedError } = await adminClient
     .from("daily_devotions")
-    .select("youtube_video_id")
+    .select("date, youtube_video_id")
     .in("youtube_video_id", candidateVideoIds);
 
-  const usedIds = new Set(
-    (alreadyUsed ?? []).map((r: { youtube_video_id: string }) => r.youtube_video_id)
-  );
+  if (usedError) {
+    console.error("[poongsal-daily] used check error:", usedError.message);
+    return NextResponse.json(
+      { ok: false, reason: "중복 확인 실패" },
+      { status: 500 }
+    );
+  }
 
-  const freshItem = items.find(
-    (item: { snippet?: { resourceId?: { videoId?: string } } }) => {
-      const vid = item.snippet?.resourceId?.videoId;
-      return vid && !usedIds.has(vid);
-    }
+  // 오늘 행 자신에 저장된 영상은 "사용됨"으로 보지 않음 (재실행 시 그대로 유지 가능)
+  const usedIds = new Set(
+    (alreadyUsed ?? [])
+      .filter((r: { date: string }) => r.date !== todayKst)
+      .map((r: { youtube_video_id: string }) => r.youtube_video_id)
   );
+  const isFresh = (item: PlaylistItem) => {
+    const vid = item.snippet?.resourceId?.videoId;
+    return !!vid && !usedIds.has(vid);
+  };
+
+  // 1순위: 제목 날짜가 오늘(KST)과 일치하는 영상, 2순위: 아직 사용되지 않은 최신 영상
+  const freshItem =
+    items.find(
+      (item) => isFresh(item) && titleMatchesDate(item.snippet?.title ?? "", todayKst)
+    ) ?? items.find(isFresh);
 
   if (!freshItem) {
     return NextResponse.json({
@@ -161,7 +204,7 @@ export async function GET(request: NextRequest) {
   }
 
   const snippet = freshItem.snippet ?? {};
-  const videoId: string = snippet.resourceId?.videoId;
+  const videoId = snippet.resourceId?.videoId ?? "";
   const title: string = snippet.title ?? "";
   const publishedAt: string = snippet.publishedAt ?? "";
   const thumbnail: string | undefined =
