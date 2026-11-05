@@ -670,6 +670,34 @@ export default function FastingTeaser() {
               12월 28–30일 / 감림산기도원
             </p>
           </motion.div>
+
+          {/* 첫 화면이 히어로로 꽉 차 아래에 안내가 있다는 걸 알 수 없다는 피드백 → 스크롤 유도 */}
+          <motion.button
+            type="button"
+            onClick={() => goTo(SECTIONS[0].id)}
+            className="mx-auto mt-5 flex flex-col items-center gap-1 text-[12px] font-medium tracking-[0.12em] text-white/85"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: ready ? 1 : 0 }}
+            transition={{ duration: 0.8, ease: EASE_IN_OUT, delay: TEAR_DELAY + CRACK_S + 2.2 }}
+          >
+            스크롤해서 안내 보기
+            <motion.svg
+              aria-hidden
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]"
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 1.6, ease: EASE_IN_OUT, repeat: Infinity }}
+            >
+              <path d="m6 9 6 6 6-6" />
+            </motion.svg>
+          </motion.button>
         </motion.div>
 
         <motion.div

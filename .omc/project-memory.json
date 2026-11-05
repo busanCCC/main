@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1793095854955,
+  "lastScanned": 1793900340849,
   "projectRoot": "/Users/kimgarden/dev/main",
   "techStack": {
     "languages": [
@@ -78,7 +78,8 @@
       "app",
       "components",
       "lib",
-      "public"
+      "public",
+      "scripts"
     ],
     "gitBranches": {
       "defaultBranch": "main",
@@ -91,7 +92,7 @@
       "path": "api",
       "purpose": "API routes",
       "fileCount": 2,
-      "lastAccessed": 1793095854938,
+      "lastAccessed": 1793900340843,
       "keyFiles": [
         "posts.ts",
         "supabase.ts"
@@ -101,7 +102,7 @@
       "path": "app",
       "purpose": "Application code",
       "fileCount": 4,
-      "lastAccessed": 1793095854939,
+      "lastAccessed": 1793900340844,
       "keyFiles": [
         "favicon.png",
         "globals.css",
@@ -112,7 +113,7 @@
       "path": "components",
       "purpose": "UI components",
       "fileCount": 1,
-      "lastAccessed": 1793095854940,
+      "lastAccessed": 1793900340844,
       "keyFiles": [
         "SessionProvider.tsx"
       ]
@@ -121,7 +122,7 @@
       "path": "lib",
       "purpose": "Library code",
       "fileCount": 2,
-      "lastAccessed": 1793095854940,
+      "lastAccessed": 1793900340844,
       "keyFiles": [
         "gtag.ts",
         "utils.ts"
@@ -131,7 +132,7 @@
       "path": "public",
       "purpose": "Public files",
       "fileCount": 26,
-      "lastAccessed": 1793095854940,
+      "lastAccessed": 1793900340844,
       "keyFiles": [
         "2025Next.png",
         "2025_scposter.jpg",
@@ -140,11 +141,20 @@
         "Instagram.png"
       ]
     },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 1,
+      "lastAccessed": 1793900340844,
+      "keyFiles": [
+        "bake-fasting-hero.py"
+      ]
+    },
     "shared": {
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1793095854942,
+      "lastAccessed": 1793900340845,
       "keyFiles": [
         "supabase.d.ts",
         "supabase.local.ts"
@@ -154,7 +164,7 @@
       "path": "stories",
       "purpose": null,
       "fileCount": 10,
-      "lastAccessed": 1793095854950,
+      "lastAccessed": 1793900340845,
       "keyFiles": [
         "Button.stories.ts",
         "Button.tsx",
@@ -167,14 +177,14 @@
       "path": "supabase",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1793095854951,
+      "lastAccessed": 1793900340845,
       "keyFiles": []
     },
     "types": {
       "path": "types",
       "purpose": "Type definitions",
       "fileCount": 1,
-      "lastAccessed": 1793095854952,
+      "lastAccessed": 1793900340845,
       "keyFiles": [
         "react-tournament-brackets.d.ts"
       ]
@@ -183,21 +193,21 @@
       "path": "utils",
       "purpose": "Utility functions",
       "fileCount": 0,
-      "lastAccessed": 1793095854952,
+      "lastAccessed": 1793900340845,
       "keyFiles": []
     },
     "app/api": {
       "path": "app/api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1793095854953,
+      "lastAccessed": 1793900340846,
       "keyFiles": []
     },
     "app/components": {
       "path": "app/components",
       "purpose": "UI components",
       "fileCount": 17,
-      "lastAccessed": 1793095854954,
+      "lastAccessed": 1793900340846,
       "keyFiles": [
         "Accordion.tsx",
         "AnnouncementSection.tsx",
@@ -208,7 +218,7 @@
       "path": "app/types",
       "purpose": "Type definitions",
       "fileCount": 2,
-      "lastAccessed": 1793095854954,
+      "lastAccessed": 1793900340846,
       "keyFiles": [
         "global.d.ts",
         "worship.d.ts"
@@ -218,7 +228,7 @@
       "path": "stories/assets",
       "purpose": "Static assets",
       "fileCount": 16,
-      "lastAccessed": 1793095854955,
+      "lastAccessed": 1793900340846,
       "keyFiles": [
         "accessibility.png",
         "accessibility.svg",
@@ -229,7 +239,7 @@
       "path": "supabase/migrations",
       "purpose": "Database migrations",
       "fileCount": 7,
-      "lastAccessed": 1793095854955,
+      "lastAccessed": 1793900340846,
       "keyFiles": [
         "20260904000000_chapel_summary_jobs.sql",
         "20260904010000_chapel_prayer_topics.sql",
@@ -240,8 +250,8 @@
   "hotPaths": [
     {
       "path": "app/components/retreat/FastingTeaser.tsx",
-      "accessCount": 20,
-      "lastAccessed": 1793269059586,
+      "accessCount": 23,
+      "lastAccessed": 1793900416088,
       "type": "file"
     },
     {
