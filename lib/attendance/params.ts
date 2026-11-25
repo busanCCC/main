@@ -1,19 +1,28 @@
 import { SEMESTER_AUTO } from "./semester";
-import { isAttendanceFilter, type AttendanceFilter } from "./types";
+import {
+  isAttendanceFilter,
+  isAttendanceRoleFilter,
+  type AttendanceFilter,
+  type AttendanceRoleFilter,
+} from "./types";
 
 const DEFAULT_FILTER: AttendanceFilter = "all";
+const DEFAULT_ROLE: AttendanceRoleFilter = "all";
 
 export interface AttendanceQuery {
   semesterId: string;
   filter: AttendanceFilter;
+  role: AttendanceRoleFilter;
 }
 
 /** 조회/내보내기 라우트가 같은 규칙으로 쿼리스트링을 읽도록 한 곳에 둔다. */
 export function parseAttendanceQuery(searchParams: URLSearchParams): AttendanceQuery {
   const filterParam = searchParams.get("filter") ?? DEFAULT_FILTER;
+  const roleParam = searchParams.get("role") ?? DEFAULT_ROLE;
   return {
     semesterId: searchParams.get("semester") ?? SEMESTER_AUTO,
     filter: isAttendanceFilter(filterParam) ? filterParam : DEFAULT_FILTER,
+    role: isAttendanceRoleFilter(roleParam) ? roleParam : DEFAULT_ROLE,
   };
 }
 
@@ -21,6 +30,7 @@ export function parseAttendanceQuery(searchParams: URLSearchParams): AttendanceQ
 export function toAttendanceSearchParams({
   semesterId,
   filter,
+  role,
 }: AttendanceQuery): string {
-  return new URLSearchParams({ semester: semesterId, filter }).toString();
+  return new URLSearchParams({ semester: semesterId, filter, role }).toString();
 }

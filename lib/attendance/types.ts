@@ -18,6 +18,38 @@ export function isAttendanceFilter(value: string): value is AttendanceFilter {
   return (ATTENDANCE_FILTERS as readonly string[]).includes(value);
 }
 
+/** 순장/순원 구분 (profiles.role 기준) */
+export const ATTENDANCE_ROLES = ["leader", "member"] as const;
+export type AttendanceRole = (typeof ATTENDANCE_ROLES)[number];
+
+export const ATTENDANCE_ROLE_LABEL: Record<AttendanceRole, string> = {
+  leader: "순장",
+  member: "순원",
+};
+
+/** 화면/내보내기 순장·순원 필터 값 */
+export const ATTENDANCE_ROLE_FILTERS = ["all", ...ATTENDANCE_ROLES] as const;
+export type AttendanceRoleFilter = (typeof ATTENDANCE_ROLE_FILTERS)[number];
+
+export const ATTENDANCE_ROLE_FILTER_LABEL: Record<AttendanceRoleFilter, string> = {
+  all: "전체",
+  ...ATTENDANCE_ROLE_LABEL,
+};
+
+export function isAttendanceRoleFilter(value: string): value is AttendanceRoleFilter {
+  return (ATTENDANCE_ROLE_FILTERS as readonly string[]).includes(value);
+}
+
+/**
+ * 순장으로 볼 profiles.role 값 (대소문자 무시). 그 외 값·빈 값은 모두 순원으로 본다.
+ * 커뮤니티 앱이 쓰는 값이 다르면 여기만 고치면 된다.
+ */
+const LEADER_ROLE_VALUES = new Set(["leader", "순장"]);
+
+export function toAttendanceRole(role: string | null | undefined): AttendanceRole {
+  return LEADER_ROLE_VALUES.has((role ?? "").trim().toLowerCase()) ? "leader" : "member";
+}
+
 /** 출석자 1명의 집계 결과 */
 export interface AttendanceRankingRow {
   rank: number;
@@ -27,6 +59,7 @@ export interface AttendanceRankingRow {
   /** 캠퍼스 학번 (profiles.student_id) */
   studentId: string | null;
   campus: string | null;
+  role: AttendanceRole;
   chapelCount: number;
   retreatCount: number;
   totalCount: number;
@@ -57,6 +90,8 @@ export interface AttendanceTotals {
   retreatSessions: number;
   /** 선택한 필터 기준 회차당 평균 출석 인원 */
   averagePerSession: number;
+  /** 순장·순원 필터 적용 전 구분별 출석 인원 (탭 배지용) */
+  participantsByRole: Record<AttendanceRole, number>;
 }
 
 export interface AttendanceSummary {
@@ -66,6 +101,7 @@ export interface AttendanceSummary {
   semesterId: string;
   semesterLabel: string;
   filter: AttendanceFilter;
+  role: AttendanceRoleFilter;
   totals: AttendanceTotals;
   rankings: AttendanceRankingRow[];
   sessions: AttendanceSessionRow[];

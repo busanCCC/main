@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ElementType } from "react";
+import { useCallback, useEffect, useMemo, useState, type ElementType } from "react";
 import {
   CalendarCheck,
   ClipboardCheck,
@@ -23,11 +23,17 @@ import {
   fetchAttendanceSummary,
 } from "@/lib/attendance/clientApi";
 import type { AttendanceQuery } from "@/lib/attendance/params";
+import { assignRanks } from "@/lib/attendance/ranking";
 import { SEMESTER_ALL, SEMESTER_AUTO } from "@/lib/attendance/semester";
 import {
   ATTENDANCE_FILTERS,
   ATTENDANCE_FILTER_LABEL,
+  ATTENDANCE_ROLES,
+  ATTENDANCE_ROLE_FILTERS,
+  ATTENDANCE_ROLE_FILTER_LABEL,
+  ATTENDANCE_ROLE_LABEL,
   type AttendanceFilter,
+  type AttendanceRoleFilter,
   type AttendanceSummary,
 } from "@/lib/attendance/types";
 
@@ -63,11 +69,14 @@ export default function AttendanceDashboardPage() {
   const [query, setQuery] = useState<AttendanceQuery>({
     semesterId: SEMESTER_AUTO,
     filter: "all",
+    role: "all",
   });
   const [summary, setSummary] = useState<AttendanceSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [search, setSearch] = useState("");
+  /** 전체 명단을 순장·순원 두 표로 나눠 본다 */
+  const [groupByRole, setGroupByRole] = useState(false);
 
   const loadSummary = useCallback(async () => {
     setIsLoading(true);
@@ -97,6 +106,7 @@ export default function AttendanceDashboardPage() {
       await downloadAttendanceExcel({
         semesterId: selectedSemesterId,
         filter: query.filter,
+        role: query.role,
       });
       toast.success("엑셀 파일을 내려받았습니다.");
     } catch (error) {
@@ -111,7 +121,21 @@ export default function AttendanceDashboardPage() {
   const setFilter = (filter: AttendanceFilter) =>
     setQuery((current) => ({ ...current, filter }));
 
+  const setRole = (role: AttendanceRoleFilter) =>
+    setQuery((current) => ({ ...current, role }));
+
   const totals = isLoading ? null : summary?.totals;
+  const isGrouped = groupByRole && query.role === "all";
+
+  // 나눠 보기에서는 각 그룹 안에서 순위를 다시 매긴다 (서버 순위는 합계 내림차순)
+  const groupedRankings = useMemo(
+    () =>
+      ATTENDANCE_ROLES.map((role) => ({
+        role,
+        rows: assignRanks((summary?.rankings ?? []).filter((row) => row.role === role)),
+      })),
+    [summary]
+  );
 
   return (
     <div className="p-8">
@@ -184,6 +208,50 @@ export default function AttendanceDashboardPage() {
           ))}
         </div>
 
+        <div className="flex rounded-md border p-0.5" role="group" aria-label="순장/순원 구분">
+          {ATTENDANCE_ROLE_FILTERS.map((role) => {
+            const count =
+              role === "all"
+                ? summary
+                  ? summary.totals.participantsByRole.leader +
+                    summary.totals.participantsByRole.member
+                  : null
+                : summary?.totals.participantsByRole[role] ?? null;
+            return (
+              <button
+                key={role}
+                type="button"
+                onClick={() => setRole(role)}
+                className={`rounded px-3 py-1.5 text-sm transition-colors ${
+                  query.role === role
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {ATTENDANCE_ROLE_FILTER_LABEL[role]}
+                {count !== null && !isLoading ? (
+                  <span className="ml-1 tabular-nums opacity-80">{count}</span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+
+        <label
+          className={`flex items-center gap-2 text-sm ${
+            query.role === "all" ? "" : "cursor-not-allowed opacity-50"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={isGrouped}
+            disabled={query.role !== "all"}
+            onChange={(event) => setGroupByRole(event.target.checked)}
+            className="h-4 w-4 accent-primary"
+          />
+          순장·순원 나눠 보기
+        </label>
+
         <div className="relative w-full max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -206,7 +274,7 @@ export default function AttendanceDashboardPage() {
                 icon: Users,
                 label: "출석 인원",
                 value: `${totals.participants}명`,
-                hint: `${summary?.semesterLabel} · ${ATTENDANCE_FILTER_LABEL[query.filter]}`,
+                hint: `${summary?.semesterLabel} · ${ATTENDANCE_FILTER_LABEL[query.filter]} · ${ATTENDANCE_ROLE_FILTER_LABEL[query.role]}`,
               },
               {
                 icon: ClipboardCheck,
@@ -237,11 +305,32 @@ export default function AttendanceDashboardPage() {
             항목을 클릭하면 해당 기준으로 정렬됩니다
           </span>
         </div>
-        <AttendanceRankingTable
-          rows={summary?.rankings ?? []}
-          isLoading={isLoading}
-          search={search}
-        />
+        {isGrouped ? (
+          <div className="space-y-8">
+            {groupedRankings.map(({ role, rows }) => (
+              <div key={role}>
+                <h3 className="mb-2 text-sm font-semibold">
+                  {ATTENDANCE_ROLE_LABEL[role]}
+                  <span className="ml-1.5 font-normal text-muted-foreground">
+                    {isLoading ? "" : `${rows.length}명`}
+                  </span>
+                </h3>
+                <AttendanceRankingTable
+                  rows={rows}
+                  isLoading={isLoading}
+                  search={search}
+                  emptyDescription={`선택한 학기와 구분에 출석한 ${ATTENDANCE_ROLE_LABEL[role]}이 없습니다.`}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <AttendanceRankingTable
+            rows={summary?.rankings ?? []}
+            isLoading={isLoading}
+            search={search}
+          />
+        )}
       </section>
 
       {/* Sessions */}
