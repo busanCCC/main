@@ -41,10 +41,10 @@ export function isAttendanceRoleFilter(value: string): value is AttendanceRoleFi
 }
 
 /**
- * 순장으로 볼 profiles.role 값 (대소문자 무시). 그 외 값·빈 값은 모두 순원으로 본다.
- * 커뮤니티 앱이 쓰는 값이 다르면 여기만 고치면 된다.
+ * profiles.role 은 "LEADER"(순장) / "MEMBER"(순원) 이다. 대소문자는 무시한다.
+ * 값이 비어 있거나 다른 값이면 순원으로 본다.
  */
-const LEADER_ROLE_VALUES = new Set(["leader", "순장"]);
+const LEADER_ROLE_VALUES = new Set(["leader"]);
 
 export function toAttendanceRole(role: string | null | undefined): AttendanceRole {
   return LEADER_ROLE_VALUES.has((role ?? "").trim().toLowerCase()) ? "leader" : "member";
