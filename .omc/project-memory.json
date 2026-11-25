@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1793900340849,
+  "lastScanned": 1795608603038,
   "projectRoot": "/Users/kimgarden/dev/main",
   "techStack": {
     "languages": [
@@ -92,7 +92,7 @@
       "path": "api",
       "purpose": "API routes",
       "fileCount": 2,
-      "lastAccessed": 1793900340843,
+      "lastAccessed": 1795608603027,
       "keyFiles": [
         "posts.ts",
         "supabase.ts"
@@ -102,7 +102,7 @@
       "path": "app",
       "purpose": "Application code",
       "fileCount": 4,
-      "lastAccessed": 1793900340844,
+      "lastAccessed": 1795608603028,
       "keyFiles": [
         "favicon.png",
         "globals.css",
@@ -113,7 +113,7 @@
       "path": "components",
       "purpose": "UI components",
       "fileCount": 1,
-      "lastAccessed": 1793900340844,
+      "lastAccessed": 1795608603029,
       "keyFiles": [
         "SessionProvider.tsx"
       ]
@@ -122,7 +122,7 @@
       "path": "lib",
       "purpose": "Library code",
       "fileCount": 2,
-      "lastAccessed": 1793900340844,
+      "lastAccessed": 1795608603029,
       "keyFiles": [
         "gtag.ts",
         "utils.ts"
@@ -132,7 +132,7 @@
       "path": "public",
       "purpose": "Public files",
       "fileCount": 26,
-      "lastAccessed": 1793900340844,
+      "lastAccessed": 1795608603029,
       "keyFiles": [
         "2025Next.png",
         "2025_scposter.jpg",
@@ -145,7 +145,7 @@
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 1,
-      "lastAccessed": 1793900340844,
+      "lastAccessed": 1795608603031,
       "keyFiles": [
         "bake-fasting-hero.py"
       ]
@@ -154,7 +154,7 @@
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1793900340845,
+      "lastAccessed": 1795608603032,
       "keyFiles": [
         "supabase.d.ts",
         "supabase.local.ts"
@@ -164,7 +164,7 @@
       "path": "stories",
       "purpose": null,
       "fileCount": 10,
-      "lastAccessed": 1793900340845,
+      "lastAccessed": 1795608603034,
       "keyFiles": [
         "Button.stories.ts",
         "Button.tsx",
@@ -177,14 +177,14 @@
       "path": "supabase",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1793900340845,
+      "lastAccessed": 1795608603035,
       "keyFiles": []
     },
     "types": {
       "path": "types",
       "purpose": "Type definitions",
       "fileCount": 1,
-      "lastAccessed": 1793900340845,
+      "lastAccessed": 1795608603035,
       "keyFiles": [
         "react-tournament-brackets.d.ts"
       ]
@@ -193,21 +193,21 @@
       "path": "utils",
       "purpose": "Utility functions",
       "fileCount": 0,
-      "lastAccessed": 1793900340845,
+      "lastAccessed": 1795608603035,
       "keyFiles": []
     },
     "app/api": {
       "path": "app/api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1793900340846,
+      "lastAccessed": 1795608603036,
       "keyFiles": []
     },
     "app/components": {
       "path": "app/components",
       "purpose": "UI components",
       "fileCount": 17,
-      "lastAccessed": 1793900340846,
+      "lastAccessed": 1795608603037,
       "keyFiles": [
         "Accordion.tsx",
         "AnnouncementSection.tsx",
@@ -218,7 +218,7 @@
       "path": "app/types",
       "purpose": "Type definitions",
       "fileCount": 2,
-      "lastAccessed": 1793900340846,
+      "lastAccessed": 1795608603037,
       "keyFiles": [
         "global.d.ts",
         "worship.d.ts"
@@ -228,7 +228,7 @@
       "path": "stories/assets",
       "purpose": "Static assets",
       "fileCount": 16,
-      "lastAccessed": 1793900340846,
+      "lastAccessed": 1795608603038,
       "keyFiles": [
         "accessibility.png",
         "accessibility.svg",
@@ -239,7 +239,7 @@
       "path": "supabase/migrations",
       "purpose": "Database migrations",
       "fileCount": 7,
-      "lastAccessed": 1793900340846,
+      "lastAccessed": 1795608603038,
       "keyFiles": [
         "20260904000000_chapel_summary_jobs.sql",
         "20260904010000_chapel_prayer_topics.sql",
@@ -408,6 +408,12 @@
       "path": "scripts/bake-fasting-hero.py",
       "accessCount": 1,
       "lastAccessed": 1793264301308,
+      "type": "file"
+    },
+    {
+      "path": "lib/attendance/types.ts",
+      "accessCount": 1,
+      "lastAccessed": 1795609137010,
       "type": "file"
     }
   ],

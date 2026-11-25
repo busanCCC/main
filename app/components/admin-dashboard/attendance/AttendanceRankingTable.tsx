@@ -6,11 +6,16 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { EmptyState } from "@/app/components/admin-dashboard/EmptyState";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { formatKstDateTime } from "@/lib/attendance/format";
-import type { AttendanceRankingRow } from "@/lib/attendance/types";
+import {
+  ATTENDANCE_ROLE_LABEL,
+  type AttendanceRankingRow,
+  type AttendanceRole,
+} from "@/lib/attendance/types";
 
 type SortKey = keyof Pick<
   AttendanceRankingRow,
   | "rank"
+  | "role"
   | "name"
   | "studentId"
   | "campus"
@@ -33,6 +38,7 @@ interface ColumnConfig {
 
 const COLUMNS: ColumnConfig[] = [
   { key: "rank", label: "순위", initialDirection: "asc", numeric: true },
+  { key: "role", label: "구분", initialDirection: "asc", numeric: false },
   { key: "name", label: "이름", initialDirection: "asc", numeric: false },
   { key: "studentId", label: "학번", initialDirection: "asc", numeric: false },
   { key: "campus", label: "캠퍼스", initialDirection: "asc", numeric: false },
@@ -53,6 +59,11 @@ const RANK_BADGE_CLASS: Record<number, string> = {
   3: "bg-orange-100 text-orange-800 dark:bg-orange-500/20 dark:text-orange-300",
 };
 
+const ROLE_BADGE_CLASS: Record<AttendanceRole, string> = {
+  leader: "bg-primary/10 text-primary",
+  member: "bg-muted text-muted-foreground",
+};
+
 function compareValues(
   a: AttendanceRankingRow,
   b: AttendanceRankingRow,
@@ -71,6 +82,8 @@ function compareValues(
 
 function renderCell(row: AttendanceRankingRow, key: SortKey): string {
   switch (key) {
+    case "role":
+      return ATTENDANCE_ROLE_LABEL[row.role];
     case "attendanceRate":
       return `${row.attendanceRate}%`;
     case "lastAttendedAt":
@@ -89,12 +102,15 @@ interface AttendanceRankingTableProps {
   isLoading: boolean;
   /** 이름 또는 학번 검색어 */
   search: string;
+  /** 출석 기록이 없을 때 보여줄 안내 문구 */
+  emptyDescription?: string;
 }
 
 export function AttendanceRankingTable({
   rows,
   isLoading,
   search,
+  emptyDescription = "선택한 학기와 구분에 해당하는 출석 기록이 아직 없습니다.",
 }: AttendanceRankingTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>("rank");
   const [direction, setDirection] = useState<SortDirection>("asc");
@@ -139,7 +155,7 @@ export function AttendanceRankingTable({
     return (
       <EmptyState
         title="출석 기록이 없습니다"
-        description="선택한 학기와 구분에 해당하는 출석 기록이 아직 없습니다."
+        description={emptyDescription}
       />
     );
   }
@@ -204,6 +220,14 @@ export function AttendanceRankingTable({
                       }`}
                     >
                       {row.rank}
+                    </span>
+                  ) : column.key === "role" ? (
+                    <span
+                      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                        ROLE_BADGE_CLASS[row.role]
+                      }`}
+                    >
+                      {renderCell(row, column.key)}
                     </span>
                   ) : (
                     <span className={column.key === "name" ? "font-medium" : ""}>

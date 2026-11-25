@@ -1,8 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { assignRanks } from "./ranking";
 import {
   ATTENDANCE_KIND_RETREAT,
+  toAttendanceRole,
   type AttendanceFilter,
+  type AttendanceRoleFilter,
   type AttendanceRankingRow,
   type AttendanceSessionRow,
   type AttendanceSummary,
@@ -20,7 +23,7 @@ const PAGE_SIZE = 1000;
 
 const CHAPEL_COLUMNS = "id,topic,place,datetime,retreat_datetime";
 const ATTENDANCE_COLUMNS =
-  "chapel_id,user_id,kind,created_at,profiles(name,student_id,campus)";
+  "chapel_id,user_id,kind,created_at,profiles(name,student_id,campus,role)";
 
 const ALL_SEMESTERS_LABEL = "전체 학기";
 const UNKNOWN_NAME = "(이름 없음)";
@@ -43,6 +46,7 @@ interface AttendanceRow {
     name: string | null;
     student_id: string | null;
     campus: string | null;
+    role: string | null;
   } | null;
 }
 
@@ -132,32 +136,21 @@ function buildSessions(
   });
 }
 
-/** 동점자는 같은 순위를 받고 다음 순위는 그만큼 건너뛴다 (1, 1, 3) */
-function assignRanks(rows: Omit<AttendanceRankingRow, "rank">[]): AttendanceRankingRow[] {
-  let previousTotal: number | null = null;
-  let previousRank = 0;
-
-  return rows.map((row, index) => {
-    const rank = row.totalCount === previousTotal ? previousRank : index + 1;
-    previousTotal = row.totalCount;
-    previousRank = rank;
-    return { ...row, rank };
-  });
-}
-
 function roundToTenth(value: number): number {
   return Math.round(value * 10) / 10;
 }
 
-function buildRankings(
+/** 순위 없이 합계 내림차순으로 정렬된 출석자 목록 */
+function buildRankingEntries(
   attendances: AttendanceRow[],
   sessionCount: number
-): AttendanceRankingRow[] {
+): Omit<AttendanceRankingRow, "rank">[] {
   interface Accumulator {
     userId: string;
     name: string;
     studentId: string | null;
     campus: string | null;
+    role: AttendanceRankingRow["role"];
     chapelCount: number;
     retreatCount: number;
     lastAttendedAt: string | null;
@@ -171,6 +164,7 @@ function buildRankings(
       name: row.profiles?.name?.trim() || UNKNOWN_NAME,
       studentId: row.profiles?.student_id ?? null,
       campus: row.profiles?.campus ?? null,
+      role: toAttendanceRole(row.profiles?.role),
       chapelCount: 0,
       retreatCount: 0,
       lastAttendedAt: null,
@@ -185,7 +179,7 @@ function buildRankings(
     byUser.set(row.user_id, entry);
   }
 
-  const sorted = Array.from(byUser.values())
+  return Array.from(byUser.values())
     .map((entry) => {
       const totalCount = entry.chapelCount + entry.retreatCount;
       return {
@@ -196,14 +190,13 @@ function buildRankings(
       };
     })
     .sort((a, b) => b.totalCount - a.totalCount || a.name.localeCompare(b.name, "ko"));
-
-  return assignRanks(sorted);
 }
 
 export interface LoadAttendanceOptions {
   /** "2026-1", "all", 또는 빈 문자열(가장 최근 학기 자동 선택) */
   semesterId: string;
   filter: AttendanceFilter;
+  role: AttendanceRoleFilter;
 }
 
 /**
@@ -212,7 +205,7 @@ export interface LoadAttendanceOptions {
  */
 export async function loadAttendanceSummary(
   client: SupabaseClient,
-  { semesterId, filter }: LoadAttendanceOptions
+  { semesterId, filter, role }: LoadAttendanceOptions
 ): Promise<AttendanceSummary> {
   const chapels = await fetchChapels(client);
   const semesters = collectSemesters(chapels.map((chapel) => chapel.datetime));
@@ -241,20 +234,33 @@ export async function loadAttendanceSummary(
     retreat: retreatSessions,
   };
   const sessionCount = sessionCountByFilter[filter];
-  const rankings = buildRankings(filtered, sessionCount);
+  const entries = buildRankingEntries(filtered, sessionCount);
+  // 순장·순원만 볼 때는 그 그룹 안에서 순위를 다시 매긴다
+  const scopedEntries =
+    role === "all" ? entries : entries.filter((entry) => entry.role === role);
+  const rankings = assignRanks(scopedEntries);
+  const scopedAttendances = scopedEntries.reduce(
+    (sum, entry) => sum + entry.totalCount,
+    0
+  );
 
   return {
     semesters,
     semesterId: semester?.id ?? SEMESTER_ALL,
     semesterLabel: semester?.label ?? ALL_SEMESTERS_LABEL,
     filter,
+    role,
     totals: {
       participants: rankings.length,
-      attendances: filtered.length,
+      attendances: scopedAttendances,
       chapelSessions,
       retreatSessions,
       averagePerSession:
-        sessionCount > 0 ? roundToTenth(filtered.length / sessionCount) : 0,
+        sessionCount > 0 ? roundToTenth(scopedAttendances / sessionCount) : 0,
+      participantsByRole: {
+        leader: entries.filter((entry) => entry.role === "leader").length,
+        member: entries.filter((entry) => entry.role === "member").length,
+      },
     },
     rankings,
     sessions,
