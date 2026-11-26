@@ -26,6 +26,7 @@ export const TARGET_LANGUAGES = [
   { value: "ko", label: "한국어" },
   { value: "ru", label: "Русский" },
   { value: "vi", label: "Tiếng Việt" },
+  { value: "id", label: "Bahasa Indonesia" },
 ] as const;
 
 export const AUDIO_CHUNK_INTERVAL_MS = 200;

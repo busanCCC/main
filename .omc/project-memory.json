@@ -415,6 +415,12 @@
       "accessCount": 1,
       "lastAccessed": 1795609137010,
       "type": "file"
+    },
+    {
+      "path": "lib/interpretation/constants.ts",
+      "accessCount": 1,
+      "lastAccessed": 1795672327476,
+      "type": "file"
     }
   ],
   "userDirectives": []
